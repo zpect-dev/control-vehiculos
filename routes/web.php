@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GeneralController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -8,9 +9,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('general', function () {
-        return Inertia::render('general');
-    })->name('general');
+    Route::get('general', [GeneralController::class, 'index'])->name('general');
 
     Route::get('diario', function () {
         return Inertia::render('diario');
