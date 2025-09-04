@@ -29,9 +29,13 @@ class PasswordResetLinkController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'cedula' => 'required|string|exists:users,cedula',
+            'email' => 'required|email',
         ]);
 
-        return redirect()->route('password.reset', ['cedula' => $request->cedula]);
+        Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return back()->with('status', __('A reset link will be sent if the account exists.'));
     }
 }
