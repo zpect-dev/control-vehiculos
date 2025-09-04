@@ -1,12 +1,153 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { Head, router } from '@inertiajs/react';
+import { PanelTopOpen } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Fluidos() {
+    const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+    const fluidosPorRevisar = [
+        { id: 'aceite', nombre: 'Aceite de Motor' },
+        { id: 'caja', nombre: 'Aceite de Caja' },
+        { id: 'refrigerante', nombre: 'Refrigerante o Agua' },
+        { id: 'direccion', nombre: 'Líquido de Dirección' },
+        { id: 'frenos', nombre: 'Liga de Frenos' },
+    ];
+
+    const [revisiones, setRevisiones] = useState(
+        diasSemana.reduce((diasAcc: any, dia) => {
+            diasAcc[dia] = fluidosPorRevisar.reduce((acc: any, fluido) => {
+                acc[fluido.id] = {
+                    nivel: '',
+                    foto: null,
+                    realizado: false,
+                };
+                return acc;
+            }, {});
+            return diasAcc;
+        }, {}),
+    );
+
+    const handleInputChange = (dia: string, fluidoId: string, campo: string, valor: any) => {
+        setRevisiones((prev: any) => ({
+            ...prev,
+            [dia]: {
+                ...prev[dia],
+                [fluidoId]: {
+                    ...prev[dia][fluidoId],
+                    [campo]: valor,
+                },
+            },
+        }));
+    };
+
+    const handleFormSubmit = (e: any) => {
+        e.preventDefault();
+        const formData = new FormData();
+
+        diasSemana.forEach((dia) => {
+            fluidosPorRevisar.forEach((fluido) => {
+                const revision = revisiones[dia][fluido.id];
+                formData.append(`${dia}_${fluido.id}_nivel`, revision.nivel);
+                formData.append(`${dia}_${fluido.id}_realizado`, revision.realizado);
+                if (revision.foto) {
+                    formData.append(`${dia}_${fluido.id}_foto`, revision.foto);
+                }
+            });
+        });
+
+        router.post('/ruta-de-tu-backend/revisiones-fluidos', formData, {
+            onSuccess: () => console.log('Revisiones registradas con éxito.'),
+            onError: (errors) => console.error('Error al registrar las revisiones:', errors),
+        });
+    };
+
+    const renderCamposPorDia = () =>
+        diasSemana.map((dia) => (
+            <Disclosure key={dia} as="div" className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg dark:bg-gray-800">
+                {({ open }) => (
+                    <>
+                        <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
+                            <span>{dia}</span>
+                            <PanelTopOpen className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`} />
+                        </DisclosureButton>
+                        <DisclosurePanel className="px-6 pt-2 pb-6">
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                {fluidosPorRevisar.map((fluido) => {
+                                    const revision = revisiones[dia][fluido.id];
+                                    return (
+                                        <div key={fluido.id} className="flex flex-col gap-3">
+                                            <label className="text-sm font-semibold text-muted-foreground">{fluido.nombre}</label>
+
+                                            <select
+                                                value={revision.nivel}
+                                                onChange={(e) => handleInputChange(dia, fluido.id, 'nivel', e.target.value)}
+                                                className="rounded-md border px-3 py-2 text-sm shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                            >
+                                                <option value="">Selecciona nivel</option>
+                                                <option value="Normal">Normal</option>
+                                                <option value="Bajo">Bajo</option>
+                                            </select>
+
+                                            <input
+                                                type="file"
+                                                onChange={(e) => handleInputChange(dia, fluido.id, 'foto', e.target.files?.[0] || null)}
+                                                className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                            />
+
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={revision.realizado}
+                                                    onChange={(e) => handleInputChange(dia, fluido.id, 'realizado', e.target.checked)}
+                                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm text-gray-700 dark:text-gray-300">Revisión realizada</span>
+                                            </div>
+
+                                            {/* Alertas visuales */}
+                                            {revision.nivel === 'Bajo' && (
+                                                <div className="mt-2 rounded-md border border-yellow-400 bg-yellow-100 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-200 dark:text-yellow-900">
+                                                    Nivel bajo detectado. Verifica si requiere atención.
+                                                </div>
+                                            )}
+
+                                            {!revision.realizado && (
+                                                <div className="mt-2 rounded-md border border-red-500 bg-red-100 px-3 py-2 text-sm text-red-800 dark:bg-red-200 dark:text-red-900">
+                                                    No se ha marcado como revisado.
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </DisclosurePanel>
+                    </>
+                )}
+            </Disclosure>
+        ));
+
     return (
         <AppLayout>
-            <Head title="Fluidos" />
-            <div className='p-4 bg-accent'>
-                <div className="">Registro de Fluidoss</div>
+            <Head title="Revisión Semanal de Fluidos" />
+            <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
+                <div className="mb-10 text-center">
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Revisión Diaria de Fluidos</h1>
+                </div>
+
+                <form onSubmit={handleFormSubmit} className="space-y-6">
+                    {renderCamposPorDia()}
+                    <div className="flex justify-end pt-6">
+                        <button
+                            type="submit"
+                            className="w-full rounded-full bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none md:w-auto"
+                        >
+                            Guardar Revisiones
+                        </button>
+                    </div>
+                </form>
             </div>
         </AppLayout>
     );

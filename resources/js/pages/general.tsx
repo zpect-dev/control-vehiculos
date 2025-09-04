@@ -17,6 +17,7 @@ export default function General() {
         { id: 'tipoCauchos', label: 'Tipo de Cauchos', type: 'text', placeholder: 'Ej: Medida, Marca' },
     ];
 
+    // Campos para el formulario de Permisología
     const permisologiaFields = [
         { id: 'titulo', label: 'Título del Vehículo', type: 'text' },
         { id: 'carnet', label: 'Carnet de Circulación', type: 'text' },
@@ -29,6 +30,7 @@ export default function General() {
         { id: 'trimestres', label: 'Trimestres', type: 'date' },
     ];
 
+    // Campos para el formulario de Accesorios
     const accesoriosFields = [
         {
             id: 'caja',
@@ -122,6 +124,7 @@ export default function General() {
         },
     ];
 
+    // Campos para el formulario de Piezas Revisadas
     const piezasRevisadasFields = [
         {
             id: 'aire',
@@ -470,17 +473,6 @@ export default function General() {
             ],
         },
         {
-            id: 'lucesInternas',
-            label: 'Luces Internas',
-            type: 'select',
-            placeholder: 'Descripción de la pieza',
-            options: [
-                { value: 'bueno', label: 'Bueno' },
-                { value: 'malo', label: 'Malo' },
-                { value: 'no-posee', label: 'No posee' },
-            ],
-        },
-        {
             id: 'manijasPuertas',
             label: 'Manijas de las Puertas',
             type: 'select',
@@ -592,6 +584,7 @@ export default function General() {
         },
     ];
 
+    // Función para manejar el envío de formularios
     const handleFormSubmit = (formData: any, formTitle: string) => {
         console.log(`Datos enviados del formulario "${formTitle}":`, formData);
         // Aquí puedes agregar la lógica para enviar los datos a una API

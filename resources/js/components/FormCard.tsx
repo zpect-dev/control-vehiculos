@@ -17,6 +17,7 @@ interface FormCardProps {
     fields: Field[];
     buttonText: string;
     onSubmit?: (formData: any) => void;
+     children?: React.ReactNode;
 }
 
 export default function FormCard({ title, fields, buttonText }: FormCardProps) {
@@ -83,7 +84,7 @@ export default function FormCard({ title, fields, buttonText }: FormCardProps) {
     };
 
     return (
-        <div className="mx-auto w-full max-w-5xl rounded-xl bg-gray-100 px-8 py-10 shadow-lg dark:bg-gray-800">
+        <div className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 px-8 py-10 shadow-lg dark:bg-gray-800">
             <h2 className="mb-8 border-b pb-4 text-center text-2xl font-semibold text-gray-800 dark:text-gray-100">{title}</h2>
             <form className="space-y-8">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">

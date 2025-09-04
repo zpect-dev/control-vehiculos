@@ -8,32 +8,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { diario, fluidos, general, semanal } from '@/routes';
+import { fluidos, general, semanal } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Menu } from 'lucide-react';
+import { CalendarRange, Car, Droplets, Menu } from 'lucide-react';
 
 const mainNavItems: NavItem[] = [
-    {
-        title: 'Ficha Técnica',
-        href: general(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Revisión de Fluidos',
-        href: fluidos(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Revisión Diaria',
-        href: diario(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Revisión Semanal',
-        href: semanal(),
-        icon: LayoutGrid,
-    },
+    { title: 'Ficha Técnica', href: general(), icon: Car },
+    { title: 'Revisión de Fluidos', href: fluidos(), icon: Droplets },
+    { title: 'Revisión Semanal', href: semanal(), icon: CalendarRange },
 ];
 
 interface AppHeaderProps {
@@ -44,10 +27,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
+
     return (
         <>
             <div className="border-b border-sidebar-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="mx-auto flex h-16 items-center justify-between px-4 md:max-w-7xl">
+                <div className="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                     {/* Mobile Menu */}
                     <div className="flex items-center lg:hidden">
                         <Sheet>
@@ -79,59 +63,66 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </div>
                             </SheetContent>
                         </Sheet>
-                        <Link href={general()} prefetch className="flex items-center space-x-2">
-                            <h2 className="text-xl font-semibold">Control de Vehículos</h2>
-                        </Link>
+                        <div className="flex items-center">
+                            <Link href={general()} prefetch className="flex items-center">
+                                <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                            </Link>
+                        </div>
                     </div>
 
-                    {/* Desktop Navigation */}
-                    <Link href={general()} prefetch className="hidden items-center lg:flex">
-                        <h2 className="text-xl font-semibold">Control de Vehículos</h2>
-                    </Link>
+                    {/* Desktop Menu */}
+                    <div className="hidden flex-1 items-center justify-between lg:flex">
+                        <div className="flex items-center">
+                            <Link href={general()} prefetch className="flex items-center">
+                                <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                            </Link>
+                        </div>
 
-                    <div className="hidden h-full items-center space-x-6 lg:flex">
-                        <NavigationMenu className="h-full space-x-4">
-                            <NavigationMenuList className="flex h-full items-center space-x-1">
-                                {mainNavItems.map((item, index) => (
-                                    <NavigationMenuItem key={index} className="flex h-full items-center px-2">
-                                        <Link
-                                            href={item.href}
-                                            className={cn(
-                                                navigationMenuTriggerStyle(),
-                                                'flex h-10 cursor-pointer items-center px-4 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800',
-                                                page.url === (typeof item.href === 'string' ? item.href : item.href.url)
-                                                    ? 'bg-gray-200 font-medium text-gray-900 dark:bg-gray-700 dark:text-gray-50'
-                                                    : 'text-gray-600 dark:text-gray-400',
-                                            )}
-                                        >
-                                            {item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}
-                                            {item.title}
-                                        </Link>
-                                    </NavigationMenuItem>
-                                ))}
-                            </NavigationMenuList>
-                        </NavigationMenu>
-                    </div>
+                        <div className="flex flex-1 justify-center">
+                            <NavigationMenu>
+                                <NavigationMenuList className="flex items-center space-x-2">
+                                    {mainNavItems.map((item, index) => (
+                                        <NavigationMenuItem key={index}>
+                                            <Link
+                                                href={item.href}
+                                                className={cn(
+                                                    navigationMenuTriggerStyle(),
+                                                    'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800',
+                                                    page.url === (typeof item.href === 'string' ? item.href : item.href.url)
+                                                        ? 'bg-gray-200 font-semibold text-gray-900 dark:bg-gray-700 dark:text-gray-50'
+                                                        : 'text-gray-600 dark:text-gray-400',
+                                                )}
+                                            >
+                                                {item.icon && <Icon iconNode={item.icon} className="mr-2 h-5 w-5" />}
+                                                {item.title}
+                                            </Link>
+                                        </NavigationMenuItem>
+                                    ))}
+                                </NavigationMenuList>
+                            </NavigationMenu>
+                        </div>
 
-                    <div className="ml-auto flex items-center space-x-2">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="size-10 rounded-full p-1">
-                                    <Avatar className="size-8 overflow-hidden rounded-full">
-                                        <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(auth.user.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end">
-                                <UserMenuContent user={auth.user} />
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="size-10 rounded-full p-1">
+                                        <Avatar className="size-8 overflow-hidden rounded-full">
+                                            <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                                            <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                {getInitials(auth.user.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56" align="end">
+                                    <UserMenuContent user={auth.user} />
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
                 </div>
             </div>
+
             {breadcrumbs.length > 1 && (
                 <div className="flex w-full border-b border-sidebar-border/70">
                     <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
