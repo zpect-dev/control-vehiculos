@@ -87,9 +87,9 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                 href={item.href}
                                                 className={cn(
                                                     navigationMenuTriggerStyle(),
-                                                    'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800',
+                                                    'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:hover:bg-[#3d9641] dark:hover:bg-gray-800',
                                                     page.url === (typeof item.href === 'string' ? item.href : item.href.url)
-                                                        ? 'bg-gray-200 font-semibold text-gray-900 dark:bg-gray-700 dark:text-gray-50'
+                                                        ? 'bg-[#49af4e] font-semibold text-white dark:bg-gray-700 dark:text-gray-50'
                                                         : 'text-gray-600 dark:text-gray-400',
                                                 )}
                                             >

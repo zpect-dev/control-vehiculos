@@ -26,6 +26,10 @@ class Vehiculo extends Model
     {
         return $this->hasMany(VehiculoPermisos::class, 'vehiculo_id', 'placa');
     }
+    public function usuario()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
     public function getUltimasPiezasAttribute()
     {

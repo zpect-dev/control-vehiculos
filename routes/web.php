@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\SemanalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,6 +11,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('general', [GeneralController::class, 'index'])->name('general');
+    Route::post('general', [GeneralController::class, 'store'])->name('general.store');
 
     Route::get('diario', function () {
         return Inertia::render('diario');
@@ -19,9 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('fluidos');
     })->name('fluidos');
 
-    Route::get('semanal', function () {
-        return Inertia::render('semanal');
-    })->name('semanal');
+    Route::get('semanal', [SemanalController::class, 'index'])->name('semanal');
 });
 
 require __DIR__ . '/settings.php';

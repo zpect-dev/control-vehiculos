@@ -3,12 +3,13 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function Fluidos() {
+export default function Fluidos({ vehiculo }: { vehiculo: any }) {
+    console.log('Cargando componente Fluidos...', vehiculo);
     const [weeklyVideo, setWeeklyVideo] = useState<File | null>(null);
 
     const getShortenedFileName = (fileName: string) => {
         if (!fileName) return '';
-        const maxLength = 25; // Longitud máxima deseada
+        const maxLength = 25;
         if (fileName.length <= maxLength) {
             return fileName;
         }
@@ -60,16 +61,13 @@ export default function Fluidos() {
                             <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Detalles del Vehículo</h3>
                             <div className="space-y-2 text-gray-700 dark:text-gray-300">
                                 <p>
-                                    <span className="font-semibold">Vehículo:</span> Chevrolet Tahoe
+                                    <span className="font-semibold">Placa:</span> {vehiculo?.placa}
                                 </p>
                                 <p>
-                                    <span className="font-semibold">Placa:</span> XYZ-1234
+                                    <span className="font-semibold">Modelo:</span> {vehiculo?.modelo}
                                 </p>
                                 <p>
-                                    <span className="font-semibold">Modelo:</span> 2023
-                                </p>
-                                <p>
-                                    <span className="font-semibold">Conductor Asignado:</span> Juan Pérez
+                                    <span className="font-semibold">Conductor:</span> {vehiculo?.conductor}
                                 </p>
                             </div>
                         </div>
@@ -101,7 +99,7 @@ export default function Fluidos() {
                     <div className="flex justify-end pt-6">
                         <button
                             type="submit"
-                            className="w-full rounded-full bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none md:w-auto"
+                            className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
                         >
                             Guardar Revision
                         </button>

@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FormCard from '@/components/FormCard';
 import AppLayout from '@/layouts/app-layout';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { Head } from '@inertiajs/react';
+import { PanelTopOpen } from 'lucide-react';
 
 export default function General() {
     // Definimos la estructura de los campos para cada formulario
@@ -36,7 +38,6 @@ export default function General() {
             id: 'caja',
             label: 'Caja de Herramienta',
             type: 'select',
-            placeholder: 'Descripción de la caja',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -47,7 +48,6 @@ export default function General() {
             id: 'conos',
             label: 'Conos de seguridad',
             type: 'select',
-            placeholder: 'Descripción de los conos',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -58,7 +58,6 @@ export default function General() {
             id: 'cuña',
             label: 'Cuña',
             type: 'select',
-            placeholder: 'Descripción de la cuña',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -69,7 +68,6 @@ export default function General() {
             id: 'extintor',
             label: 'Extintor',
             type: 'select',
-            placeholder: 'Descripción del extintor',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -80,7 +78,6 @@ export default function General() {
             id: 'gato',
             label: 'Gato',
             type: 'select',
-            placeholder: 'Descripción del gato',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -91,31 +88,26 @@ export default function General() {
             id: 'llave',
             label: 'Llave de cruz',
             type: 'select',
-            placeholder: 'Descripción de la llave',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'linterna',
             label: 'Linterna',
             type: 'select',
-            placeholder: 'Descripción de la linternaS',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'repuesto',
             label: 'Repuesto',
             type: 'select',
-            placeholder: 'Descripción de la linternaS',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -130,7 +122,6 @@ export default function General() {
             id: 'aire',
             label: 'Aire Acondicionado',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -141,7 +132,6 @@ export default function General() {
             id: 'cauchoDelDer',
             label: 'Caucho Delantero Der.',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -152,7 +142,6 @@ export default function General() {
             id: 'cauchoDelIzq',
             label: 'Caucho Delantero Izq.',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -163,7 +152,6 @@ export default function General() {
             id: 'cauchoTraDer',
             label: 'Caucho Tracero Der.',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -174,7 +162,6 @@ export default function General() {
             id: 'cauchoTraIzq',
             label: 'Caucho Tracero Izq.',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -185,7 +172,6 @@ export default function General() {
             id: 'cepillosPara',
             label: 'Cepillos Limpia Parabrisas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -196,7 +182,6 @@ export default function General() {
             id: 'cerraduras',
             label: 'Cerraduras de Puertas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -207,67 +192,56 @@ export default function General() {
             id: 'cinturones',
             label: 'Cinturones de Segurida',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'espejo',
             label: 'Espejo Interior de Cabina',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'espejoRetDer',
             label: 'Espejo Retovisor Der.',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'espejoRetIzq',
             label: 'Espejo Retovisor Izq.',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'bateria',
             label: 'Estado de la Bateria',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
                 { value: 'no-posee', label: 'No posee' },
             ],
         },
-
         {
             id: 'bornes',
             label: 'Estado de los Bornes de Bateria',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -278,7 +252,6 @@ export default function General() {
             id: 'carroceria',
             label: 'Estado de la Carroceria',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -289,7 +262,6 @@ export default function General() {
             id: 'parachoques',
             label: 'Estado del Parachoques',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -300,7 +272,6 @@ export default function General() {
             id: 'pintura',
             label: 'Estado de la Pintura',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -311,7 +282,6 @@ export default function General() {
             id: 'guardapolvos',
             label: 'Estado del Guardapolvos',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -322,7 +292,6 @@ export default function General() {
             id: 'fluidos',
             label: 'Estados de los Recipientes de Fluidos',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -333,7 +302,6 @@ export default function General() {
             id: 'enfriamiento',
             label: 'Estado del Sistema de Enfriamiento',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -344,7 +312,6 @@ export default function General() {
             id: 'gomas',
             label: 'Gomas de las Puertas y Ventanas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -355,7 +322,6 @@ export default function General() {
             id: 'lucesCrucesDel',
             label: 'Luces de los Cruces Delanteros',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -366,7 +332,6 @@ export default function General() {
             id: 'lucesCrucesTra',
             label: 'Luces de los Cruces Traceros',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -377,7 +342,6 @@ export default function General() {
             id: 'lucesFrenos',
             label: 'Luces de los Frenos',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -388,7 +352,6 @@ export default function General() {
             id: 'lucesNeblina',
             label: 'Luces de Neblina',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -399,7 +362,6 @@ export default function General() {
             id: 'lucesRetro',
             label: 'Luces de los Retroceso',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -410,7 +372,6 @@ export default function General() {
             id: 'lucesDelAltas',
             label: 'Luces Delanteras Altas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -421,7 +382,6 @@ export default function General() {
             id: 'lucesDelBajas',
             label: 'Luces Delanteras Bajas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -432,7 +392,6 @@ export default function General() {
             id: 'lucesIntermitentes',
             label: 'Luces Intermitentes Delanteras',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -443,7 +402,6 @@ export default function General() {
             id: 'lucesIntermitentesTra',
             label: 'Luces Intermitentes Traceras',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -454,7 +412,6 @@ export default function General() {
             id: 'lucesInternas',
             label: 'Luces Internas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -465,7 +422,6 @@ export default function General() {
             id: 'lucesTestigo',
             label: 'Luces Testigo',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -476,7 +432,6 @@ export default function General() {
             id: 'manijasPuertas',
             label: 'Manijas de las Puertas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -487,7 +442,6 @@ export default function General() {
             id: 'manijasVentanas',
             label: 'Manijas de las Ventanas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -498,7 +452,6 @@ export default function General() {
             id: 'vidriosLatDel',
             label: 'Vidrios Laterales Delanteros',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -509,7 +462,6 @@ export default function General() {
             id: 'vidriosLatTra',
             label: 'Vidrios Laterales Traceros',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -520,7 +472,6 @@ export default function General() {
             id: 'vidrioParabrisas',
             label: 'Vidrio Parabrisas',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -531,7 +482,6 @@ export default function General() {
             id: 'pito',
             label: 'Pito',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -542,7 +492,6 @@ export default function General() {
             id: 'esparragos',
             label: 'Revisión de Esparragos',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -553,7 +502,6 @@ export default function General() {
             id: 'tablero',
             label: 'Tablero',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -564,7 +512,6 @@ export default function General() {
             id: 'tapetes',
             label: 'Tapetes',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -575,7 +522,6 @@ export default function General() {
             id: 'tapiceria',
             label: 'Tapicería',
             type: 'select',
-            placeholder: 'Descripción de la pieza',
             options: [
                 { value: 'bueno', label: 'Bueno' },
                 { value: 'malo', label: 'Malo' },
@@ -598,39 +544,93 @@ export default function General() {
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Ficha Técnica / Registro General del Vehículo</h1>
                 </div>
 
-                <FormCard
-                    title="Expediente Técnico del Vehículo"
-                    fields={expedienteTecnicoFields}
-                    buttonText="Guardar Expediente"
-                    onSubmit={(data: any) => handleFormSubmit(data, 'Expediente Técnico del Vehículo')}
-                />
+                <Disclosure
+                    as="div"
+                    className="mx-auto my-4 w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg transition-all dark:bg-gray-800"
+                >
+                    {({ open }) => (
+                        <>
+                            <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
+                                <span>Expediente Técnico del Vehículo</span>
+                                <PanelTopOpen className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`} />
+                            </DisclosureButton>
+                            <DisclosurePanel className="px-6 pt-2 pb-6">
+                                <FormCard
+                                    fields={expedienteTecnicoFields}
+                                    buttonText="Guardar Expediente"
+                                    onSubmit={(data: any) => handleFormSubmit(data, 'Expediente Técnico del Vehículo')}
+                                    title={''}
+                                />
+                            </DisclosurePanel>
+                        </>
+                    )}
+                </Disclosure>
 
-                <div className="mt-10"></div>
+                <Disclosure
+                    as="div"
+                    className="mx-auto my-4 w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg transition-all dark:bg-gray-800"
+                >
+                    {({ open }) => (
+                        <>
+                            <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
+                                <span>Permisologia del Vehiculo</span>
+                                <PanelTopOpen className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`} />
+                            </DisclosureButton>
+                            <DisclosurePanel className="px-6 pt-2 pb-6">
+                                <FormCard
+                                    fields={permisologiaFields}
+                                    buttonText="Guardar Permisología"
+                                    onSubmit={(data: any) => handleFormSubmit(data, 'Permisologia del Vehiculo')}
+                                    title={''}
+                                />
+                            </DisclosurePanel>
+                        </>
+                    )}
+                </Disclosure>
 
-                <FormCard
-                    title="Permisologia del Vehiculo"
-                    fields={permisologiaFields}
-                    buttonText="Guardar Permisología"
-                    onSubmit={(data: any) => handleFormSubmit(data, 'Permisologia del Vehiculo')}
-                />
+                <Disclosure
+                    as="div"
+                    className="mx-auto my-4 w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg transition-all dark:bg-gray-800"
+                >
+                    {({ open }) => (
+                        <>
+                            <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
+                                <span>Accesorios del Vehiculo</span>
+                                <PanelTopOpen className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`} />
+                            </DisclosureButton>
+                            <DisclosurePanel className="px-6 pt-2 pb-6">
+                                <FormCard
+                                    fields={accesoriosFields}
+                                    buttonText="Guardar Accesorios"
+                                    onSubmit={(data: any) => handleFormSubmit(data, 'Accesorios del Vehiculo')}
+                                    title={''}
+                                />
+                            </DisclosurePanel>
+                        </>
+                    )}
+                </Disclosure>
 
-                <div className="mt-10"></div>
-
-                <FormCard
-                    title="Accesorios del Vehiculo"
-                    fields={accesoriosFields}
-                    buttonText="Guardar Accesorios"
-                    onSubmit={(data: any) => handleFormSubmit(data, 'Accesorios del Vehiculo')}
-                />
-
-                <div className="mt-10"></div>
-
-                <FormCard
-                    title="Piezas Revisadas"
-                    fields={piezasRevisadasFields}
-                    buttonText="Guardar Piezas"
-                    onSubmit={(data: any) => handleFormSubmit(data, 'Piezas Revisadas')}
-                />
+                <Disclosure
+                    as="div"
+                    className="mx-auto my-4 w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg transition-all dark:bg-gray-800"
+                >
+                    {({ open }) => (
+                        <>
+                            <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
+                                <span>Piezas Revisadas</span>
+                                <PanelTopOpen className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`} />
+                            </DisclosureButton>
+                            <DisclosurePanel className="px-6 pt-2 pb-6">
+                                <FormCard
+                                    fields={piezasRevisadasFields}
+                                    buttonText="Guardar Piezas"
+                                    onSubmit={(data: any) => handleFormSubmit(data, 'Piezas Revisadas')}
+                                    title={''}
+                                />
+                            </DisclosurePanel>
+                        </>
+                    )}
+                </Disclosure>
             </div>
         </AppLayout>
     );
