@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vehiculo;
+use App\Services\ConsultaSQL;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class FichaTecnicaController extends Controller
@@ -13,7 +14,9 @@ class FichaTecnicaController extends Controller
      */
     public function index(Request $request)
     {
+        $consultaSQL = new ConsultaSQL();
         $userId = $request->user()->id;
+<<<<<<< Updated upstream:app/Http/Controllers/FichaTecnicaController.php
         $vehiculos = Vehiculo::with('usuario')->get();
 
         $vehiculos->each->append('ultimas_piezas', 'ultimos_accesorios', 'ultimas_especificaciones', 'ultimos_permisos');
@@ -36,6 +39,14 @@ class FichaTecnicaController extends Controller
         // dd($vehiculos->toArray());
 
         return Inertia::render('fichaTecnica', [
+=======
+
+        $vehiculos = $consultaSQL->obtenerAccesorios($userId);
+        
+        dd($vehiculos);
+
+        return Inertia::render('general', [
+>>>>>>> Stashed changes:app/Http/Controllers/GeneralController.php
             'vehiculos' => $vehiculos
         ]);
     }
