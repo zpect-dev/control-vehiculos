@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 
-export default function General() {
+export default function adminRevisionSemanal() {
     return (
         <AppLayout>
             <Head title="Ficha Técnica / Registro General del Vehículo" />
