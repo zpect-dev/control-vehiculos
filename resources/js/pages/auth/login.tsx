@@ -16,7 +16,7 @@ interface LoginProps {
     canResetPassword: boolean;
 }
 
-export default function Login({ status, canResetPassword }: LoginProps) {
+export default function Login({ status, canResetPassword} : LoginProps) {
     return (
         <AuthLayout title="Accede a tu cuenta" description="Ingresa tus datos para continuar">
             <Head title="Acceder" />

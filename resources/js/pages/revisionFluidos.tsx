@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppLayout from '@/layouts/app-layout';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
@@ -5,7 +6,7 @@ import { Head, router } from '@inertiajs/react';
 import { PanelTopOpen } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Fluidos() {
+export default function revisionFluidos() {
     const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
     const getDayIndex = () => {

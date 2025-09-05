@@ -6,7 +6,7 @@ use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class GeneralController extends Controller
+class FichaTecnicaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,8 @@ class GeneralController extends Controller
     public function index(Request $request)
     {
         $userId = $request->user()->id;
-        $vehiculos = Vehiculo::where('user_id', $userId)->get();
+        $vehiculos = Vehiculo::with('usuario')->get();
+
         $vehiculos->each->append('ultimas_piezas', 'ultimos_accesorios', 'ultimas_especificaciones', 'ultimos_permisos');
 
         $vehiculos->each(function ($vehiculo) {
@@ -31,10 +32,10 @@ class GeneralController extends Controller
                 $permiso->load('permiso');
             });
         });
+        
+        // dd($vehiculos->toArray());
 
-        //dd($vehiculos->toArray());
-
-        return Inertia::render('general', [
+        return Inertia::render('fichaTecnica', [
             'vehiculos' => $vehiculos
         ]);
     }

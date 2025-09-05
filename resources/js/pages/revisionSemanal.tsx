@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function Fluidos({ vehiculo }: { vehiculo: any }) {
-    console.log('Cargando componente Fluidos...', vehiculo);
+export default function revisionFluidos({ vehiculo }: { vehiculo: any }) {
+    console.log(vehiculo);
     const [weeklyVideo, setWeeklyVideo] = useState<File | null>(null);
 
     const getShortenedFileName = (fileName: string) => {
@@ -67,7 +68,8 @@ export default function Fluidos({ vehiculo }: { vehiculo: any }) {
                                     <span className="font-semibold">Modelo:</span> {vehiculo?.modelo}
                                 </p>
                                 <p>
-                                    <span className="font-semibold">Conductor:</span> {vehiculo?.conductor}
+                                    <span className="font-semibold">Conductor:</span> {vehiculo.usuario?.name ?? 'Sin asignar'}
+
                                 </p>
                             </div>
                         </div>

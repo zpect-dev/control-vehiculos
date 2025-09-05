@@ -8,15 +8,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { fluidos, general, semanal } from '@/routes';
+import { fichaTecnica, revisionFluidos, revisionSemanal } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { CalendarRange, Car, Droplets, Menu } from 'lucide-react';
 
 const mainNavItems: NavItem[] = [
-    { title: 'Ficha Técnica', href: general(), icon: Car },
-    { title: 'Revisión de Fluidos', href: fluidos(), icon: Droplets },
-    { title: 'Revisión Semanal', href: semanal(), icon: CalendarRange },
+    { title: 'Ficha Técnica', href: fichaTecnica(), icon: Car },
+    { title: 'Revisión de Fluidos', href: revisionFluidos(), icon: Droplets },
+    { title: 'Revisión Semanal', href: revisionSemanal(), icon: CalendarRange },
 ];
 
 interface AppHeaderProps {
@@ -64,7 +64,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             </SheetContent>
                         </Sheet>
                         <div className="flex items-center">
-                            <Link href={general()} prefetch className="flex items-center">
+                            <Link href={fichaTecnica()} prefetch className="flex items-center">
                                 <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                             </Link>
                         </div>
@@ -73,7 +73,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     {/* Desktop Menu */}
                     <div className="hidden flex-1 items-center justify-between lg:flex">
                         <div className="flex items-center">
-                            <Link href={general()} prefetch className="flex items-center">
+                            <Link href={fichaTecnica()} prefetch className="flex items-center">
                                 <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                             </Link>
                         </div>

@@ -2,7 +2,7 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { general } from '@/routes';
+import { fichaTecnica } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
@@ -10,8 +10,8 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'General',
-        href: general(),
+        title: 'FichaTecnica',
+        href: fichaTecnica(),
         icon: LayoutGrid,
     },
 ];
@@ -36,7 +36,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={general()} prefetch>
+                            <Link href={fichaTecnica()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

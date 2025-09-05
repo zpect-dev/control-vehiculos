@@ -1,27 +1,32 @@
 <?php
 
-use App\Http\Controllers\GeneralController;
-use App\Http\Controllers\SemanalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\FichaTecnicaController;
+use App\Http\Controllers\RevisionSemanalController;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    return Auth::check()
+        ? redirect()->route('fichaTecnica')
+        : Inertia::render('auth/login');
 })->name('home');
 
+// Rutas protegidas
+
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('general', [GeneralController::class, 'index'])->name('general');
-    Route::post('general', [GeneralController::class, 'store'])->name('general.store');
 
-    Route::get('diario', function () {
-        return Inertia::render('diario');
-    })->name('diario');
+    // FichaTecnica
+    Route::get('fichaTecnica', [FichaTecnicaController::class, 'index'])->name('fichaTecnica');
+    Route::post('fichaTecnica', [FichaTecnicaController::class, 'store'])->name('fichaTecnica.store');
 
-    Route::get('fluidos', function () {
-        return Inertia::render('fluidos');
-    })->name('fluidos');
+    // RevisionFluidos
+    Route::get('revisionFluidos', function () {
+        return Inertia::render('revisionFluidos');
+    })->name('revisionFluidos');
 
-    Route::get('semanal', [SemanalController::class, 'index'])->name('semanal');
+    // RevisionSemanal
+    Route::get('revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
 });
 
 require __DIR__ . '/settings.php';

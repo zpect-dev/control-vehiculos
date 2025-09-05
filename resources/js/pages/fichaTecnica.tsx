@@ -5,7 +5,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react
 import { Head } from '@inertiajs/react';
 import { PanelTopOpen } from 'lucide-react';
 
-export default function General() {
+export default function fichaTecnica() {
     // Definimos la estructura de los campos para cada formulario
     const expedienteTecnicoFields = [
         { id: 'marcaAceite', label: 'Marca del Aceite', type: 'text', placeholder: 'Ej: Castrol' },
