@@ -14,35 +14,22 @@ class EspecificacionesSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Marca de aceite',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Marca de valvulina',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Marca de refrigerante',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Computadora bloqueada (Tiene o no tiene inmovilizador)',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Tipo de frenos',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Tipo de distribucion de motor (Cadena o correa)',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Sistema de enfriamiento',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Sistema de inyeccion (Carburado o inyeccion)',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Cauchos (Marca y medida)',
-        ]);
-        DB::table('especificaciones')->insert([
-            'especificacion' => 'Kilometraje',
-        ]);
+        $especificaciones = [
+            'Marca de aceite',
+            'Marca de valvulina',
+            'Marca de refrigerante',
+            'Computadora bloqueada',
+            'Tipo de frenos',
+            'Tipo de distribucion de motor',
+            'Sistema de enfriamiento',
+            'Sistema de inyeccion',
+            'Cauchos',
+            'Kilometraje',
+        ];
+        foreach ($especificaciones as $especificacion) {
+            DB::table('especificaciones')->insert([
+                'especificacion' => strtolower(str_replace(' ', '_', $especificacion)),
+            ]);
+        }
     }
 }

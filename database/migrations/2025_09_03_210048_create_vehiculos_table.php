@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('tipo');
             $table->string('modelo');
             $table->string('ubicacion')->nullable();
-            $table->foreignId('user_id')->default(1)->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->default(1)->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

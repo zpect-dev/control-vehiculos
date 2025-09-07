@@ -13,32 +13,21 @@ class PermisosSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('permisos')->insert([
-            'permiso' => 'Titulo de vehiculo',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Carnet de cirulacion',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Seguro rcv',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Roct',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Permiso de rotulado regional',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Permiso de rotulado nacional',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Salvoconducto',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Permiso de circulacion de alimentos y medicamentos',
-        ]);
-        DB::table('permisos')->insert([
-            'permiso' => 'Trimestres',
-        ]);
+        $permisos = [
+            'Titulo de vehiculo',
+            'Carnet de cirulacion',
+            'Seguro rcv',
+            'Roct',
+            'Permiso de rotulado regional',
+            'Permiso de rotulado nacional',
+            'Salvoconducto',
+            'Permiso de circulacion de alimentos y medicamentos',
+            'Trimestres',
+        ];
+        foreach ($permisos as $permiso) {
+            DB::table('permisos')->insert([
+                'permiso' => strtolower(str_replace(' ', '_', $permiso)),
+            ]);
+        }
     }
 }
