@@ -47,7 +47,6 @@ class FichaTecnicaController extends Controller
         $userId = $request->user()->id;
         
         $vehiculo = $consultaSQL->obtenerExpediente($userId, $placa);
-        dd($vehiculo);
 
         return Inertia::render('fichaTecnica', [
             'vehiculo' => $vehiculo

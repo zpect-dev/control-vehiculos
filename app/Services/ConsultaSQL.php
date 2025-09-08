@@ -23,7 +23,7 @@ class ConsultaSQL
         // Permisos
         $permisos = DB::table('permisos')->pluck('permiso');
         $columnasPermisos = $permisos->map(function ($permiso) {
-            return "MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.fecha_vencimiento ELSE NULL END) AS 'permiso_vencimiento_$permiso', MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.estado ELSE NULL END) AS 'permiso_estado_$permiso'";
+            return "MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.fecha_vencimiento ELSE NULL END) AS 'permiso_vencimiento_$permiso', MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.fecha_expedicion ELSE NULL END) AS 'permiso_expedicion_$permiso', MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.estado ELSE NULL END) AS 'permiso_estado_$permiso'";
         })->implode(', ');
 
         // Especificaciones
