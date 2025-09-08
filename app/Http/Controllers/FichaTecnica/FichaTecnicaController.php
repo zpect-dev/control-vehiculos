@@ -17,7 +17,7 @@ class FichaTecnicaController extends Controller
     {
         $userId = $request->user()->id;
 
-        if($request->user()->hasRole('admin')){
+        if($request->user()->id === 2){
             $vehiculos = Vehiculo::all();
         } else {
             $vehiculos = Vehiculo::where('user_id', $userId)->get();

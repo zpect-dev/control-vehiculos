@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class VehiculoPermisos extends Model
 {
     protected $table = 'vehiculo_permisos';
+    public $timestamps = false;
 
     public function permiso()
     {

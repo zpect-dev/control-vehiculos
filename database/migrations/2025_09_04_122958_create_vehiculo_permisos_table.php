@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('vehiculo_id');
             $table->foreignId('permiso_id')->constrained('permisos')->onDelete('cascade');
-            $table->integer('estado');
+            $table->boolean('estado');
             $table->string('observaciones')->nullable();
             $table->date('fecha_expedicion');
             $table->date('fecha_vencimiento');

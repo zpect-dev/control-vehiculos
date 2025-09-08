@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class VehiculoAccesorios extends Model
 {
     protected $table = 'vehiculo_accesorios';
+    public $timestamps = false;
 
     public function accesorio()
     {

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('vehiculo_id');
             $table->foreignId('especificacion_id')->constrained('especificaciones')->onDelete('cascade');
             $table->string('estado');
-            $table->string('observaciones')->nullable();
             $table->dateTime('fecha_verificacion')->useCurrent();
 
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onDelete('cascade');
