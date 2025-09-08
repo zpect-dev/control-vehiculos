@@ -19,10 +19,10 @@ class VehiculoFactory extends Factory
     public function definition(): array
     {
         return [
-            'placa' => 'M-' . rand(100000, 999999),
-            'tipo' => rand(0, 1) ? 'CARRO' : 'MOTO',
-            'modelo' => fake()->name(),
-            'user_id' => rand(1, 2),
+            // 'placa' => 'M-' . rand(100000, 999999),
+            // 'tipo' => rand(0, 1) ? 'CARRO' : 'MOTO',
+            // 'modelo' => fake()->name(),
+            // 'user_id' => rand(1, 2),
         ];
     }
 }

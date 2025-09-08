@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use App\Models\Vehiculo;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Services\ConsultaSQL;
 
@@ -14,12 +14,9 @@ class FichaTecnicaController extends Controller
      */
     public function index(Request $request)
     {
-        $consultaSQL = new ConsultaSQL();
         $userId = $request->user()->id;
-        
-        $vehiculos = $consultaSQL->obtenerExpediente($userId, $placa = 'M-109911');
-        //dd($vehiculos);
-        
+        $vehiculos = Vehiculo::where('user_id', $userId)->get();
+
         return Inertia::render('fichaTecnica', [
             'vehiculos' => $vehiculos
         ]);
@@ -44,9 +41,17 @@ class FichaTecnicaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $placa)
     {
-        //
+        $consultaSQL = new ConsultaSQL();
+        $userId = $request->user()->id;
+        
+        $vehiculo = $consultaSQL->obtenerExpediente($userId, $placa);
+        dd($vehiculo);
+
+        return Inertia::render('fichaTecnica', [
+            'vehiculo' => $vehiculo
+        ]);
     }
 
     /**

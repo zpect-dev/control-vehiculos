@@ -11,25 +11,25 @@ class ConsultaSQL
         // Accesorios
         $accesorios = DB::table('accesorios')->pluck('accesorio');
         $columnasAccesorios = $accesorios->map(function ($accesorio) {
-            return "MAX(CASE WHEN a.accesorio = '$accesorio' THEN va.estado ELSE NULL END) AS 'accesorio_$accesorio'";
+            return "MAX(CASE WHEN a.accesorio = '$accesorio' THEN va.estado ELSE NULL END) AS 'accesorio_estado_$accesorio', MAX(CASE WHEN a.accesorio = '$accesorio' THEN va.observaciones ELSE NULL END) AS 'accesorio_observacion_$accesorio'";
         })->implode(', ');
 
         // Piezas
         $piezas = DB::table('piezas')->pluck('pieza');
         $columnasPiezas = $piezas->map(function ($pieza) {
-            return "MAX(CASE WHEN pz.pieza = '$pieza' THEN vp.estado ELSE NULL END) AS 'pieza_$pieza'";
+            return "MAX(CASE WHEN pz.pieza = '$pieza' THEN vp.estado ELSE NULL END) AS 'pieza_estado_$pieza', MAX(CASE WHEN pz.pieza = '$pieza' THEN vp.observaciones ELSE NULL END) AS 'pieza_observacion_$pieza'";
         })->implode(', ');
 
         // Permisos
         $permisos = DB::table('permisos')->pluck('permiso');
         $columnasPermisos = $permisos->map(function ($permiso) {
-            return "MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.fecha_vencimiento ELSE NULL END) AS 'permiso_$permiso'";
+            return "MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.fecha_vencimiento ELSE NULL END) AS 'permiso_vencimiento_$permiso', MAX(CASE WHEN pm.permiso = '$permiso' THEN vpms.estado ELSE NULL END) AS 'permiso_estado_$permiso'";
         })->implode(', ');
 
         // Especificaciones
         $especificaciones = DB::table('especificaciones')->pluck('especificacion');
         $columnasEspecificaciones = $especificaciones->map(function ($especificacion) {
-            return "MAX(CASE WHEN es.especificacion = '$especificacion' THEN ve.estado ELSE NULL END) AS 'especificacion_$especificacion'";
+            return "MAX(CASE WHEN es.especificacion = '$especificacion' THEN ve.estado ELSE NULL END) AS 'especificacion_estado_$especificacion'";
         })->implode(', ');
 
         $todasLasColumnas = collect([
