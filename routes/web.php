@@ -23,11 +23,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Ficha Tecnica
     Route::get('fichaTecnica', [FichaTecnicaController::class, 'index'])->name('fichaTecnica');
     Route::get('fichaTecnica/{placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
+<<<<<<< Updated upstream
 
     Route::get('fichaTecnica/{placa}/accesorios', [AccesorioController::class, 'store'])->name('accesorios.store');
     Route::post('fichaTecnica/{placa}/expedientes', [ExpedienteController::class, 'store'])->name('expedientes.store');
     Route::post('fichaTecnica/{placa}/permisos', [PermisoController::class, 'store'])->name('permisos.store');
     Route::post('fichaTecnica/{placa}/piezas', [PiezaController::class, 'store'])->name('piezas.store');
+=======
+    Route::post('fichaTecnica', [FichaTecnicaController::class, 'store'])->name('fichaTecnica.store');
+>>>>>>> Stashed changes
+
 
     // RevisionFluidos
     Route::get('revisionFluidos', function () {

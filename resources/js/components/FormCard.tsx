@@ -20,7 +20,36 @@ interface FormCardProps {
     children?: React.ReactNode;
 }
 
-export default function FormCard({ title, fields, buttonText }: FormCardProps) {
+export default function FormCard({ title, fields, buttonText, onSubmit }: FormCardProps) {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formData: Record<string, any> = {};
+
+        fields.forEach((field) => {
+            const input = document.getElementById(field.id) as HTMLInputElement;
+            if (input) {
+                formData[field.id] = input.value;
+            }
+
+            const estado = document.getElementById(`${field.id}-estado`) as HTMLSelectElement;
+            if (estado) {
+                formData[field.id] = estado.value;
+            }
+
+            const expedicion = document.getElementById(`${field.id}-expedicion`) as HTMLInputElement;
+            const vencimiento = document.getElementById(`${field.id}-vencimiento`) as HTMLInputElement;
+            if (expedicion && vencimiento) {
+                formData[`${field.id}_expedicion`] = expedicion.value;
+                formData[`${field.id}_vencimiento`] = vencimiento.value;
+            }
+        });
+
+        if (onSubmit) {
+            onSubmit(formData);
+        }
+    };
+
     const renderField = (field: Field) => {
         switch (field.type) {
             case 'date':
@@ -51,7 +80,6 @@ export default function FormCard({ title, fields, buttonText }: FormCardProps) {
             case 'select':
                 return (
                     <div className="flex flex-col gap-3">
-                        {/* Select de estado */}
                         <select
                             id={`${field.id}-estado`}
                             className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
@@ -63,11 +91,10 @@ export default function FormCard({ title, fields, buttonText }: FormCardProps) {
                                 </option>
                             ))}
                         </select>
-                        {/* Input de descripción */}
                         <input
                             id={`${field.id}-descripcion`}
                             placeholder="Descripción del accesorio"
-                            className="focus:rin-[#49af4e] rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                         />
                     </div>
                 );
@@ -77,7 +104,7 @@ export default function FormCard({ title, fields, buttonText }: FormCardProps) {
                         id={field.id}
                         type={field.type}
                         placeholder={field.placeholder}
-                        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
                 );
         }
@@ -86,7 +113,7 @@ export default function FormCard({ title, fields, buttonText }: FormCardProps) {
     return (
         <div className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 px-8 py-6 shadow-lg dark:bg-gray-800">
             <h2 className="text-center text-2xl font-semibold text-gray-800 dark:text-gray-100">{title}</h2>
-            <form className="space-y-8">
+            <form className="space-y-8" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
                     {fields.map((field) => (
                         <div key={field.id} className="flex flex-col gap-2">
