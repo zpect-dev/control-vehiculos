@@ -14,13 +14,6 @@ class Vehiculo extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    protected $fillable = [
-        'placa',
-        'tipo',
-        'modelo',
-        'user_id',
-    ];
-
     public function usuario()
     {
     return $this->belongsTo(User::class, 'user_id');

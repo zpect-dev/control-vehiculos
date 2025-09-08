@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\FichaTecnica;
 
+use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -15,7 +16,12 @@ class FichaTecnicaController extends Controller
     public function index(Request $request)
     {
         $userId = $request->user()->id;
-        $vehiculos = Vehiculo::where('user_id', $userId)->get();
+
+        if($request->user()->hasRole('admin')){
+            $vehiculos = Vehiculo::all();
+        } else {
+            $vehiculos = Vehiculo::where('user_id', $userId)->get();
+        }
 
         return Inertia::render('fichaTecnica', [
             'vehiculos' => $vehiculos
@@ -27,7 +33,7 @@ class FichaTecnicaController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -35,7 +41,7 @@ class FichaTecnicaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -47,6 +53,8 @@ class FichaTecnicaController extends Controller
         $userId = $request->user()->id;
         
         $vehiculo = $consultaSQL->obtenerExpediente($userId, $placa);
+
+        dd($vehiculo);
 
         return Inertia::render('fichaTecnica', [
             'vehiculo' => $vehiculo

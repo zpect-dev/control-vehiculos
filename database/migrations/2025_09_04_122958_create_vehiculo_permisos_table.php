@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('vehiculo_permisos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('vehiculo_id');
             $table->foreignId('permiso_id')->constrained('permisos')->onDelete('cascade');
             $table->integer('estado');
+            $table->string('observaciones')->nullable();
             $table->date('fecha_expedicion');
             $table->date('fecha_vencimiento');
+            $table->dateTime('fecha_verificacion')->useCurrent();
 
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onDelete('cascade');
         });

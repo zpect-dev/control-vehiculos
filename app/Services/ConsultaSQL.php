@@ -78,8 +78,8 @@ class ConsultaSQL
             )
         )
         AND (
-            ve.fecha_registro IS NULL OR ve.fecha_registro = (
-                SELECT MAX(ve2.fecha_registro)
+            ve.fecha_verificacion IS NULL OR ve.fecha_verificacion = (
+                SELECT MAX(ve2.fecha_verificacion)
                 FROM vehiculo_especificaciones ve2
                 WHERE ve2.especificacion_id = ve.especificacion_id AND ve2.vehiculo_id = ve.vehiculo_id
             )

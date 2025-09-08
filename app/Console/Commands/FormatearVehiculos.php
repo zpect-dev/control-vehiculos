@@ -33,9 +33,9 @@ class FormatearVehiculos extends Command
         foreach($vehiculos as $vehiculo){
             $this->info("Vehículo: {$vehiculo->cli_des}");
             DB::table('vehiculos')->insert([
-                'placa' => $vehiculo->co_cli,
-                'tipo' => $vehiculo->tipo,
-                'modelo' => $vehiculo->cli_des
+                'placa' => trim($vehiculo->co_cli),
+                'tipo' => trim($vehiculo->tipo),
+                'modelo' => trim($vehiculo->cli_des)
             ]);
         }
     }

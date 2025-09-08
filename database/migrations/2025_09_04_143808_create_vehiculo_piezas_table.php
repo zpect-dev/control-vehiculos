@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('vehiculo_piezas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('vehiculo_id');
             $table->foreignId('pieza_id')->constrained('piezas')->onDelete('cascade');
             $table->boolean('estado');

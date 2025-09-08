@@ -20,7 +20,5 @@ class DatabaseSeeder extends Seeder
             PiezasSeeder::class,
             AccesoriosSeeder::class,
         ]);
-        User::factory(10)->create();
-        Vehiculo::factory(100)->create();
     }
 }

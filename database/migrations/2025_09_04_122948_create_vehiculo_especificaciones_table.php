@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('vehiculo_especificaciones', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('vehiculo_id');
             $table->foreignId('especificacion_id')->constrained('especificaciones')->onDelete('cascade');
             $table->string('estado');
-            $table->dateTime('fecha_registro')->useCurrent();
+            $table->string('observaciones')->nullable();
+            $table->dateTime('fecha_verificacion')->useCurrent();
 
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onDelete('cascade');
         });
