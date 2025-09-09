@@ -5,14 +5,26 @@ import AppLayout from '@/layouts/app-layout';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { Head, router, usePage } from '@inertiajs/react';
 import { PanelTopOpen } from 'lucide-react';
+import { useState } from 'react';
 
 type FlashProps = {
     success?: string;
     [key: string]: any;
 };
 
-export default function fichaTecnica({ vehiculos }: { vehiculos: any[] }) {
+export default function fichaTecnica({
+    vehiculos,
+    expedientesTecnicos,
+    permisosGuardados,
+}: {
+    vehiculos: any[];
+    modo: string;
+    expedientesTecnicos: Record<string, Record<string, string>>;
+    permisosGuardados: Record<string, Record<string, string>>;
+}) {
     const { flash } = usePage<{ flash: FlashProps }>().props;
+
+    const [permisosLocal, setPermisosLocal] = useState(permisosGuardados);
 
     const expedienteTecnicoFields = [
         { id: '1', label: 'Marca del Aceite', type: 'text', placeholder: 'Ej: Castrol' },
@@ -25,56 +37,118 @@ export default function fichaTecnica({ vehiculos }: { vehiculos: any[] }) {
         { id: '8', label: 'Tipo de Cauchos', type: 'text', placeholder: 'Ej: Medida, Marca' },
     ];
 
-    const handleFormSubmit = (formData: any, formTitle: string, vehiculoId: string) => {
+    const permisologiaFields = [
+        { id: 'titulo', label: 'Título del Vehículo', type: 'text' },
+        { id: 'carnet', label: 'Carnet de Circulación', type: 'text' },
+        { id: 'seguro', label: 'Seguro RCV', type: 'date' },
+        { id: 'roct', label: 'Roct', type: 'date' },
+        { id: 'permisoRotReg', label: 'Permiso de Rotulado Regional', type: 'date' },
+        { id: 'permisoRotNac', label: 'Permiso de Rotulado Nacional', type: 'date' },
+        { id: 'salvoconducto', label: 'Salvoconducto', type: 'date' },
+        { id: 'permisoAliMed', label: 'Permiso de Alimentos y Medicamentos', type: 'date' },
+        { id: 'trimestres', label: 'Trimestres', type: 'date' },
+    ];
+
+    const handleFormSubmit = (formData: any, vehiculoId: string) => {
         formData.vehiculo_id = vehiculoId;
 
-        router.post('/fichaTecnica', formData, {
-            onSuccess: () => {
-                console.log('Formulario guardado con éxito');
-            },
-            onError: (errors) => {
-                console.error('Error al guardar:', errors);
-            },
+        router.post(`/fichaTecnica/${vehiculoId}/expedientes`, formData, {
+            onSuccess: () => console.log('Expediente guardado con éxito'),
+            onError: (errors) => console.error('Error al guardar expediente:', errors),
         });
     };
 
+    const handleFormSubmitPermisologia = (formData: any, vehiculoId: string) => {
+        formData.vehiculo_id = vehiculoId;
+
+        router.post(`/fichaTecnica/${vehiculoId}/permisos`, formData, {
+            onSuccess: () => {
+                console.log('Permisología guardada con éxito');
+                setPermisosLocal((prev) => ({
+                    ...prev,
+                    [vehiculoId]: {
+                        ...prev[vehiculoId],
+                        ...formData,
+                    },
+                }));
+            },
+            onError: (errors) => console.error('Error al guardar permisología:', errors),
+        });
+    };
+
+    const transformarPermisos = (permisos: Record<string, any>) => {
+        const plano: Record<string, string> = {};
+        Object.entries(permisos).forEach(([key, value]) => {
+            if (value?.fecha_expedicion) {
+                plano[`${key}_expedicion`] = value.fecha_expedicion;
+            }
+            if (value?.fecha_vencimiento) {
+                plano[`${key}_vencimiento`] = value.fecha_vencimiento;
+            } else if (typeof value === 'string') {
+                plano[key] = value;
+            }
+        });
+        return plano;
+    };
+
+    const vehiculo = vehiculos[0];
+
     return (
         <AppLayout>
-            <Head title="Ficha Técnica / Registro General del Vehículo" />
+            <Head title={`Ficha Técnica / ${vehiculo.modelo} (${vehiculo.placa})`} />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-10 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Ficha Técnica / Registro General del Vehículo</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Ficha Técnica del Vehículo {vehiculo.modelo} ({vehiculo.placa})
+                    </h1>
                     {flash?.success && <p className="mt-2 font-semibold text-green-600">{flash.success}</p>}
                 </div>
 
-                {vehiculos.map((vehiculo: any, index: number) => (
-                    <Disclosure
-                        key={index}
-                        as="div"
-                        className="mx-auto my-4 w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg dark:bg-gray-800"
-                    >
+                <div className="space-y-6">
+                    {/* Expediente Técnico */}
+                    <Disclosure as="div" className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg dark:bg-gray-800">
                         {({ open }) => (
                             <>
                                 <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
-                                    <span>
-                                        {vehiculo.modelo} — {vehiculo.placa}
-                                    </span>
+                                    <span>Expediente Técnico del Vehículo</span>
+                                    <PanelTopOpen
+                                        className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`}
+                                    />
+                                </DisclosureButton>
+                                <DisclosurePanel className="px-6 py-4">
+                                    <FormCard
+                                        fields={expedienteTecnicoFields}
+                                        formType="expediente"
+                                        onSubmit={(data: any) => handleFormSubmit(data, vehiculo.placa)}
+                                        expediente={expedientesTecnicos[vehiculo.placa] || {}}
+                                    />
+                                </DisclosurePanel>
+                            </>
+                        )}
+                    </Disclosure>
+
+                    {/* Permisología */}
+                    <Disclosure as="div" className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg dark:bg-gray-800">
+                        {({ open }) => (
+                            <>
+                                <DisclosureButton className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white">
+                                    <span>Permisología del Vehículo</span>
                                     <PanelTopOpen
                                         className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`}
                                     />
                                 </DisclosureButton>
                                 <DisclosurePanel className="px-6 pt-2 pb-6">
                                     <FormCard
-                                        fields={expedienteTecnicoFields}
-                                        buttonText="Guardar Expediente"
-                                        onSubmit={(data: any) => handleFormSubmit(data, 'Expediente Técnico del Vehículo', vehiculo.placa)}
-                                        title=""
+                                        fields={permisologiaFields}
+                                        formType="permisologia"
+                                        onSubmit={(data: any) => handleFormSubmitPermisologia(data, vehiculo.placa)}
+                                        expediente={transformarPermisos(permisosLocal[vehiculo.placa] || {})}
                                     />
                                 </DisclosurePanel>
                             </>
                         )}
                     </Disclosure>
-                ))}
+                </div>
             </div>
         </AppLayout>
     );

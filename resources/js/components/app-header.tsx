@@ -8,16 +8,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { fichaTecnica, revisionFluidos, revisionSemanal } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { CalendarRange, Car, Droplets, Menu } from 'lucide-react';
-
-const mainNavItems: NavItem[] = [
-    { title: 'Ficha Técnica', href: fichaTecnica(), icon: Car },
-    { title: 'Revisión de Fluidos', href: revisionFluidos(), icon: Droplets },
-    { title: 'Revisión Semanal', href: revisionSemanal(), icon: CalendarRange },
-];
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -27,6 +20,20 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
+
+    const currentUrl = page.url;
+    const isDashboard = page.component === 'Dashboard';
+
+    const matchFichaTecnica = currentUrl.match(/^\/fichaTecnica\/([^/]+)/);
+    const placaActual = matchFichaTecnica ? matchFichaTecnica[1] : null;
+
+    const vehiculoNavItems: NavItem[] = placaActual
+        ? [
+              { title: 'Ficha Técnica', href: `/fichaTecnica/${placaActual}`, icon: Car },
+              { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
+              { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
+          ]
+        : [];
 
     return (
         <>
@@ -48,23 +55,24 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 <div className="flex h-full flex-1 flex-col space-y-4 p-4">
                                     <div className="flex h-full flex-col justify-between text-sm">
                                         <div className="flex flex-col space-y-2">
-                                            {mainNavItems.map((item) => (
-                                                <Link
-                                                    key={item.title}
-                                                    href={item.href}
-                                                    className="flex items-center space-x-2 rounded-md p-2 font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                                >
-                                                    {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                                    <span>{item.title}</span>
-                                                </Link>
-                                            ))}
+                                            {!isDashboard &&
+                                                vehiculoNavItems.map((item) => (
+                                                    <Link
+                                                        key={item.title}
+                                                        href={item.href}
+                                                        className="flex items-center space-x-2 rounded-md p-2 font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                    >
+                                                        {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                ))}
                                         </div>
                                     </div>
                                 </div>
                             </SheetContent>
                         </Sheet>
                         <div className="flex items-center">
-                            <Link href={fichaTecnica()} prefetch className="flex items-center">
+                            <Link href="/dashboard" prefetch className="flex items-center">
                                 <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                             </Link>
                         </div>
@@ -73,34 +81,36 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     {/* Desktop Menu */}
                     <div className="hidden flex-1 items-center justify-between lg:flex">
                         <div className="flex items-center">
-                            <Link href={fichaTecnica()} prefetch className="flex items-center">
+                            <Link href="/dashboard" prefetch className="flex items-center">
                                 <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                             </Link>
                         </div>
 
-                        <div className="flex flex-1 justify-center">
-                            <NavigationMenu>
-                                <NavigationMenuList className="flex items-center space-x-2">
-                                    {mainNavItems.map((item, index) => (
-                                        <NavigationMenuItem key={index}>
-                                            <Link
-                                                href={item.href}
-                                                className={cn(
-                                                    navigationMenuTriggerStyle(),
-                                                    'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:hover:bg-[#3d9641] dark:hover:bg-gray-800',
-                                                    page.url === (typeof item.href === 'string' ? item.href : item.href.url)
-                                                        ? 'bg-[#49af4e] font-semibold text-white dark:bg-gray-700 dark:text-gray-50'
-                                                        : 'text-gray-600 dark:text-gray-400',
-                                                )}
-                                            >
-                                                {item.icon && <Icon iconNode={item.icon} className="mr-2 h-5 w-5" />}
-                                                {item.title}
-                                            </Link>
-                                        </NavigationMenuItem>
-                                    ))}
-                                </NavigationMenuList>
-                            </NavigationMenu>
-                        </div>
+                        {!isDashboard && (
+                            <div className="flex flex-1 justify-center">
+                                <NavigationMenu>
+                                    <NavigationMenuList className="flex items-center space-x-2">
+                                        {vehiculoNavItems.map((item, index) => (
+                                            <NavigationMenuItem key={index}>
+                                                <Link
+                                                    href={typeof item.href === 'string' ? item.href : item.href.url}
+                                                    className={cn(
+                                                        navigationMenuTriggerStyle(),
+                                                        'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:hover:bg-[#3d9641] dark:hover:bg-gray-800',
+                                                        page.url === (typeof item.href === 'string' ? item.href : item.href.url)
+                                                            ? 'bg-[#49af4e] font-semibold text-white dark:bg-gray-700 dark:text-gray-50'
+                                                            : 'text-gray-600 dark:text-gray-400',
+                                                    )}
+                                                >
+                                                    {item.icon && <Icon iconNode={item.icon} className="mr-2 h-5 w-5" />}
+                                                    {item.title}
+                                                </Link>
+                                            </NavigationMenuItem>
+                                        ))}
+                                    </NavigationMenuList>
+                                </NavigationMenu>
+                            </div>
+                        )}
 
                         <div className="flex items-center">
                             <DropdownMenu>
@@ -123,7 +133,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                 </div>
             </div>
 
-            {breadcrumbs.length > 1 && (
+            {!isDashboard && breadcrumbs.length > 1 && (
                 <div className="flex w-full border-b border-sidebar-border/70">
                     <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
                         <Breadcrumbs breadcrumbs={breadcrumbs} />

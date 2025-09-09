@@ -5,7 +5,7 @@ namespace App\Http\Controllers\FichaTecnica;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class AccesorioController extends Controller
+class AccesoriosController extends Controller
 {
     /**
      * Store a newly created resource in storage.

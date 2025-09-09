@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function revisionFluidos({ vehiculo }: { vehiculo: any }) {
+export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
     console.log(vehiculo);
     const [weeklyVideo, setWeeklyVideo] = useState<File | null>(null);
 
@@ -15,10 +15,8 @@ export default function revisionFluidos({ vehiculo }: { vehiculo: any }) {
             return fileName;
         }
 
-        // Encuentra el índice de la extensión para mantenerla
         const extensionIndex = fileName.lastIndexOf('.');
         if (extensionIndex === -1 || fileName.length - extensionIndex > 10) {
-            // No hay extensión o es muy larga, simplemente acorta el nombre
             return `${fileName.substring(0, maxLength - 3)}...`;
         }
 
@@ -69,7 +67,6 @@ export default function revisionFluidos({ vehiculo }: { vehiculo: any }) {
                                 </p>
                                 <p>
                                     <span className="font-semibold">Conductor:</span> {vehiculo.usuario?.name ?? 'Sin asignar'}
-
                                 </p>
                             </div>
                         </div>

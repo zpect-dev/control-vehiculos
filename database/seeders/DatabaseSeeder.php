@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             PermisosSeeder::class,
             PiezasSeeder::class,
             AccesoriosSeeder::class,
+            AdminRoleSeeder::class,
         ]);
     }
 }
