@@ -38,15 +38,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('fichaTecnica/{placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
 
     // Revisión de Fluidos
-    // Route::get('fichaTecnica/{placa}/revisionFluidos', function ($placa) {
-    //     return Inertia::render('revisionFluidos', ['placa' => $placa]);
-    // })->name('revisionFluidos.show');
-
     Route::get('fichaTecnica/{placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
     Route::post('fichaTecnica/{placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
 
     // Revisión Semanal
     Route::get('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
+    Route::post('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
 });
 
 // Configuración y autenticación

@@ -57,13 +57,13 @@ export default function revisionFluidos({ vehiculoId }) {
         const arrayRevisiones = [];
 
         fluidosPorRevisar.forEach((fluido) => {
-            const asdasd = revisiones[diaActual][fluido.id];
+            const datos = revisiones[diaActual][fluido.id];
             const revision = {
                 tipo: fluido.id,
                 vehiculo_id: vehiculoId,
-                nivel_fluido: asdasd.nivel,
-                revisado: asdasd.realizado,
-                imagen: asdasd.foto,
+                nivel_fluido: datos.nivel,
+                revisado: datos.realizado,
+                imagen: datos.foto,
             };
 
             arrayRevisiones.push(revision);

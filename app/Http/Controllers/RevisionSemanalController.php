@@ -9,15 +9,14 @@ use Illuminate\Http\Request;
 
 class RevisionSemanalController extends Controller
 {
-    public function index()
+    public function index(string $placa)
     {
-        $vehiculo = Vehiculo::with('usuario')->where('user_id', Auth::id())->first();
-
+        $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->first();
         if (!$vehiculo) {
-            return Inertia::render('revisionSemanal', [
-                'vehiculo' => null,
-                'mensaje' => 'No tienes un vehículo asignado.',
-            ]);
+            return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
+        }
+        if ($vehiculo->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
         }
 
         return Inertia::render('revisionSemanal', [
@@ -25,16 +24,23 @@ class RevisionSemanalController extends Controller
         ]);
     }
 
-    public function show(Request $request, string $placa)
+    public function store(Request $request, string $placa)
     {
         $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->first();
-
-        if (!$vehiculo) {
-            return Inertia::render('revisionSemanal', [
-                'vehiculo' => null,
-                'mensaje' => "No se encontró el vehículo con placa {$placa}.",
-            ]);
+        if(!$vehiculo){
+            return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
+        if ($vehiculo->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
+        }
+        if(!$request->hasFile('video')){
+            return back()->with('mensaje', 'Debe subir un video a la plataforma');
+        }
+        $validatedData = $request->validate([
+            'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm'
+        ]);
+
+        
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,

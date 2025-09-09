@@ -5,7 +5,7 @@ import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
-    console.log(vehiculo);
+    console.log(vehiculo.placa);
     const [weeklyVideo, setWeeklyVideo] = useState<File | null>(null);
 
     const getShortenedFileName = (fileName: string) => {
@@ -32,13 +32,17 @@ export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
 
     const handleFormSubmit = (e: any) => {
         e.preventDefault();
-        const formData = new FormData();
+
+        let revision = {};
 
         if (weeklyVideo) {
-            formData.append('weekly_video', weeklyVideo);
+            revision = {
+                video: weeklyVideo,
+                //observaciones: falta agregar el input
+            };
         }
 
-        router.post('/ruta-de-tu-backend/revisiones-fluidos', formData, {
+        router.post(`/fichaTecnica/${vehiculo.placa}/revisionSemanal`, revision, {
             onSuccess: () => console.log('Revisiones registradas con éxito.'),
             onError: (errors) => console.error('Error al registrar las revisiones:', errors),
         });
@@ -94,7 +98,7 @@ export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
                         </div>
                     </div>
                 </div>
-                <form onSubmit={handleFormSubmit} className="space-y-6">
+                <form onSubmit={handleFormSubmit} className="space-y-6" encType="multipart/form-data">
                     <div className="flex justify-end pt-6">
                         <button
                             type="submit"

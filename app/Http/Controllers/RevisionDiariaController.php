@@ -10,11 +10,20 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Auth;
 
 class RevisionDiariaController extends Controller
 {
     public function index(string $placa)
     {
+        $vehiculo = Vehiculo::where('placa', $placa)->first();
+        if(!$vehiculo){
+            return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
+        }
+        if ($vehiculo->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
+        }
+
         return Inertia::render('revisionFluidos', [
             'vehiculoId' => $placa
         ]);
@@ -23,6 +32,17 @@ class RevisionDiariaController extends Controller
     public function store(Request $request, string $placa)
     {
         $manager = new ImageManager(new Driver());
+        $vehiculo = Vehiculo::where('placa', $placa)->first();
+
+        if(!$vehiculo){
+            return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
+        }
+        if ($vehiculo->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
+        }
+        if (!$request->hasFile('*.imagen')) {
+            return redirect()->back()->with(['mensaje' => 'Debe subir las imagenes a la plataforma']);
+        }
 
         $validatedData = $request->validate([
             '*.tipo' => 'required',
@@ -32,12 +52,8 @@ class RevisionDiariaController extends Controller
             '*.imagen' => 'required|image|max:5120',
         ]);
 
-        $vehiculo = Vehiculo::where('placa', $placa)->first();
 
         foreach($validatedData as $revision){
-            if (!$request->hasFile('*.imagen')) {
-                return redirect()->back()->withErrors(['image' => 'No se pudo subir la imagen.']);
-            }
             $image = $revision['imagen'];
             
             $nameImage = Str::uuid() . "." . $image->extension();
@@ -45,7 +61,7 @@ class RevisionDiariaController extends Controller
             $serverImage = $manager->read($image);
             $serverImage->cover(1000, 1000);
             
-            $targetPath = 'uploads';
+            $targetPath = 'uploads/fotos-diarias';
             
             if (!Storage::disk('public')->exists($targetPath)) {
                 Storage::disk('public')->makeDirectory($targetPath);
