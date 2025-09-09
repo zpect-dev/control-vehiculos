@@ -11,6 +11,7 @@ use App\Http\Controllers\FichaTecnica\ExpedienteTecnicoController;
 use App\Http\Controllers\FichaTecnica\PermisologiaController;
 use App\Http\Controllers\FichaTecnica\AccesoriosController;
 use App\Http\Controllers\FichaTecnica\PiezasController;
+use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
 
 // Ruta raíz: redirige al dashboard si está autenticado
@@ -37,12 +38,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('fichaTecnica/{placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
 
     // Revisión de Fluidos
-    Route::get('fichaTecnica/{placa}/revisionFluidos', function ($placa) {
-        return Inertia::render('revisionFluidos', ['placa' => $placa]);
-    })->name('revisionFluidos.show');
+    // Route::get('fichaTecnica/{placa}/revisionFluidos', function ($placa) {
+    //     return Inertia::render('revisionFluidos', ['placa' => $placa]);
+    // })->name('revisionFluidos.show');
+
+    Route::get('fichaTecnica/{placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
+    Route::post('fichaTecnica/{placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
 
     // Revisión Semanal
-    Route::get('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'show'])->name('revisionSemanal.show');
+    Route::get('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
 });
 
 // Configuración y autenticación

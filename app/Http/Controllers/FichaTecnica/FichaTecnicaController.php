@@ -56,12 +56,12 @@ class FichaTecnicaController extends Controller
                 $campo = $config['campo'];
                 $tipo = $config['tipo'];
 
-if ($tipo === 'text') {
-    $permisosPorVehiculo[$vehiculo->placa][$campo] = $permiso->valor_texto;
-} else {
-    $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
-    $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
-}
+                if ($tipo === 'text') {
+                    $permisosPorVehiculo[$vehiculo->placa][$campo] = $permiso->valor_texto;
+                } else {
+                    $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
+                    $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
+                }
 
             }
         }
@@ -112,12 +112,12 @@ if ($tipo === 'text') {
             $campo = $config['campo'];
             $tipo = $config['tipo'];
 
-if ($tipo === 'text') {
-    $permisosPorVehiculo[$placa][$campo] = $permiso->valor_texto;
-} else {
-    $permisosPorVehiculo[$placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
-    $permisosPorVehiculo[$placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
-}
+            if ($tipo === 'text') {
+                $permisosPorVehiculo[$placa][$campo] = $permiso->valor_texto;
+            } else {
+                $permisosPorVehiculo[$placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
+                $permisosPorVehiculo[$placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
+            }
 
         }
 
