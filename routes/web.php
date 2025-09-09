@@ -34,7 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Formularios asociados a ficha técnica
     Route::post('fichaTecnica/{placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store');
     Route::post('fichaTecnica/{placa}/permisos', [PermisologiaController::class, 'store'])->name('permisos.store');
-    Route::get('fichaTecnica/{placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
+    Route::post('fichaTecnica/{placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
     Route::post('fichaTecnica/{placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
 
     // Revisión de Fluidos

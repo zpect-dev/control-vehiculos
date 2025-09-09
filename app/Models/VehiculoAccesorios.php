@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class VehiculoAccesorios extends Model
 {
-    protected $table = 'vehiculo_accesorios';
+
     public $timestamps = false;
 
-    public function accesorio()
+    protected $fillable = ['vehiculo_id', 'accesorio_id', 'estado', 'user_id'];
+
+    public function vehiculo()
     {
-        return $this->belongsTo(Accesorio::class, 'accesorio_id');
+        return $this->belongsTo(Vehiculo::class, 'vehiculo_id', 'placa');
     }
 }
+

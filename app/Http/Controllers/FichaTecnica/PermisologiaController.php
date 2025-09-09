@@ -30,7 +30,7 @@ class PermisologiaController extends Controller
 
             if ($tipo === 'text') {
                 $valor = $request->input($campo);
-                if ($valor) {
+                if ($valor !== null && $valor !== '') {
                     VehiculoPermisos::updateOrCreate(
                         [
                             'user_id' => $request->user()->id,

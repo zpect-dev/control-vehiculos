@@ -1,55 +1,19 @@
-import { useEffect, useState } from 'react';
-
-interface FieldOption {
-    value: string;
-    label: string;
-}
-
-interface Field {
-    id: string;
-    label: string;
-    type: string;
-    placeholder?: string;
-    options?: FieldOption[];
-}
+import { DateField } from '@/components/form-fields/DateField';
+import { SelectField } from '@/components/form-fields/SelectField';
+import { TextField } from '@/components/form-fields/TextField';
+import { Field, useFormLogic } from '@/hooks/useFormLogic';
 
 interface FormCardProps {
     title?: string;
     fields: Field[];
     buttonText?: string;
-    formType?: 'expediente' | 'permisologia';
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas';
     onSubmit?: (formData: Record<string, string>) => void;
-    children?: React.ReactNode;
     expediente?: Record<string, string>;
 }
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
-    const [formValues, setFormValues] = useState<Record<string, string>>(() => expediente || {});
-
-    const [hasFechasInvalidas, setHasFechasInvalidas] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-
-    useEffect(() => {
-        console.log('Expediente recibido en FormCard:', expediente);
-        setFormValues(expediente);
-        setIsEditing(Object.keys(expediente).length > 0);
-    }, [expediente]);
-
-    useEffect(() => {
-        const invalid = fields.some((field) => {
-            if (field.type === 'date') {
-                const exp = formValues[`${field.id}_expedicion`];
-                const ven = formValues[`${field.id}_vencimiento`];
-                return exp && ven && new Date(ven) < new Date(exp);
-            }
-            return false;
-        });
-        setHasFechasInvalidas(invalid);
-    }, [formValues, fields]);
-
-    const handleChange = (id: string, value: string) => {
-        setFormValues((prev) => ({ ...prev, [id]: value }));
-    };
+    const { formValues, isEditing, hasFechasInvalidas, handleChange } = useFormLogic(expediente, fields);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -57,91 +21,31 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
             alert('Hay fechas inválidas. Corrige antes de guardar.');
             return;
         }
-        if (onSubmit) {
-            onSubmit(formValues);
-        }
+        onSubmit?.(formValues);
     };
 
     const renderField = (field: Field) => {
-        switch (field.type) {
-            case 'date': {
-                const exp = formValues[`${field.id}_expedicion`] || '';
-                const ven = formValues[`${field.id}_vencimiento`] || '';
-                const fechaInvalida = exp && ven && new Date(ven) < new Date(exp);
+        const value = formValues[field.id] || '';
 
-                return (
-                    <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor={`${field.id}-expedicion`} className="text-xs text-gray-500 dark:text-gray-400">
-                                Fecha de Expedición
-                            </label>
-                            <input
-                                id={`${field.id}-expedicion`}
-                                type="date"
-                                value={exp}
-                                onChange={(e) => handleChange(`${field.id}_expedicion`, e.target.value)}
-                                className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor={`${field.id}-vencimiento`} className="text-xs text-gray-500 dark:text-gray-400">
-                                Fecha de Vencimiento
-                            </label>
-                            <input
-                                id={`${field.id}-vencimiento`}
-                                type="date"
-                                value={ven}
-                                onChange={(e) => handleChange(`${field.id}_vencimiento`, e.target.value)}
-                                className={`rounded-md border px-3 py-2 text-sm shadow-sm transition focus:outline-none ${
-                                    fechaInvalida
-                                        ? 'border-red-500 focus:ring-2 focus:ring-red-500'
-                                        : 'border-gray-300 focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e]'
-                                } dark:border-gray-600 dark:bg-gray-700 dark:text-white`}
-                            />
-                            {fechaInvalida && (
-                                <p className="mt-1 text-xs text-red-500">La fecha de vencimiento no puede ser anterior a la de expedición.</p>
-                            )}
-                        </div>
-                    </div>
-                );
-            }
-            case 'select':
-                return (
-                    <div className="flex flex-col gap-3">
-                        <select
-                            id={`${field.id}-estado`}
-                            value={formValues[field.id] || ''}
-                            onChange={(e) => handleChange(field.id, e.target.value)}
-                            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        >
-                            <option value="">Seleccionar estado</option>
-                            {field.options?.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                        <input
-                            id={`${field.id}-descripcion`}
-                            placeholder="Descripción del accesorio"
-                            value={formValues[`${field.id}_descripcion`] || ''}
-                            onChange={(e) => handleChange(`${field.id}_descripcion`, e.target.value)}
-                            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        />
-                    </div>
-                );
-            default:
-                return (
-                    <input
-                        id={field.id}
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={formValues[field.id] || ''}
-                        onChange={(e) => handleChange(field.id, e.target.value)}
-                        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                );
+        if (field.type === 'date') {
+            return (
+                <DateField
+                    id={field.id}
+                    label={field.label}
+                    expedicion={formValues[`${field.id}_expedicion`] || ''}
+                    vencimiento={formValues[`${field.id}_vencimiento`] || ''}
+                    onChange={handleChange}
+                />
+            );
         }
+
+        if (field.type === 'select') {
+            return <SelectField id={field.id} label={field.label} value={value} options={field.options} onChange={handleChange} />;
+        }
+
+        return (
+            <TextField id={field.id} label={field.label} value={value} placeholder={field.placeholder} type={field.type} onChange={handleChange} />
+        );
     };
 
     return (
@@ -150,12 +54,7 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
             <form className="space-y-8" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
                     {fields.map((field) => (
-                        <div key={field.id} className="flex flex-col gap-2">
-                            <label htmlFor={field.id} className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                                {field.label}
-                            </label>
-                            {renderField(field)}
-                        </div>
+                        <div key={field.id}>{renderField(field)}</div>
                     ))}
                 </div>
                 <div className="flex justify-end">
@@ -170,12 +69,8 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                     >
                         {buttonText ||
                             (isEditing
-                                ? formType === 'permisologia'
-                                    ? 'Actualizar Permisología'
-                                    : 'Actualizar Expediente'
-                                : formType === 'permisologia'
-                                  ? 'Guardar Permisología'
-                                  : 'Guardar Expediente')}
+                                ? `Actualizar ${formType.charAt(0).toUpperCase() + formType.slice(1)}`
+                                : `Guardar ${formType.charAt(0).toUpperCase() + formType.slice(1)}`)}
                     </button>
                 </div>
             </form>
