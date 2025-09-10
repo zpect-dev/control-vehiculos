@@ -29,6 +29,11 @@ class RevisionDiariaController extends Controller
         ]);
     }
 
+    public function show(Request $request, string $placa)
+    {
+
+    }
+
     public function store(Request $request, string $placa)
     {
         $manager = new ImageManager(new Driver());
@@ -74,7 +79,7 @@ class RevisionDiariaController extends Controller
                 'user_id' => $vehiculo->user_id,
                 'nivel_fluido' => $revision['nivel_fluido'],
                 'imagen' => $nameImage,
-                'revision' => false,
+                'revision' => true,
                 'tipo' => $revision['tipo'],
             ]);
         }
