@@ -17,19 +17,21 @@ export default function fichaTecnica({
     expedientesTecnicos,
     permisosGuardados,
     accesoriosGuardados = {},
+    piezasGuardadas = {},
 }: {
     vehiculos: any[];
     modo: string;
     expedientesTecnicos: Record<string, Record<string, string>>;
     permisosGuardados: Record<string, Record<string, string>>;
     accesoriosGuardados?: Record<string, Record<string, string>>;
+    piezasGuardadas?: Record<string, Record<string, string>>;
 }) {
     const { flash } = usePage<{ flash: FlashProps }>().props;
     const vehiculo = vehiculos[0];
     const placa = vehiculo?.placa || '';
 
     const [permisosLocal, setPermisosLocal] = useState(permisosGuardados);
-    const [accesoriosLocal, setAccesoriosLocal] = useState(accesoriosGuardados);
+    const [, setAccesoriosLocal] = useState(accesoriosGuardados);
 
     const transformarPermisos = (permisos: Record<string, any>) => {
         const plano: Record<string, string> = {};
@@ -94,7 +96,7 @@ export default function fichaTecnica({
                         title="Accesorios del Vehículo"
                         fields={accesoriosFields}
                         formType="accesorios"
-                        expediente={accesoriosLocal[placa] || {}}
+                        expediente={accesoriosGuardados[placa]}
                         onSubmit={(data) => handleFormSubmit('accesorios', data, placa)}
                     />
 
@@ -102,7 +104,7 @@ export default function fichaTecnica({
                         title="Piezas Revisadas del Vehículo"
                         fields={piezasRevisadasFields}
                         formType="piezas"
-                        expediente={transformarPermisos(permisosLocal[placa] || {})}
+                        expediente={piezasGuardadas[placa]}
                         onSubmit={(data) => handleFormSubmit('piezas', data, placa)}
                     />
                 </div>

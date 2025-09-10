@@ -25,7 +25,7 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
     };
 
     const renderField = (field: Field) => {
-        const value = formValues[field.id] || '';
+        const value = formValues[field.id] !== undefined ? String(formValues[field.id]) : '';
 
         if (field.type === 'date') {
             return (

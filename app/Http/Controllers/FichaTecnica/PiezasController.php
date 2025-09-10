@@ -2,16 +2,31 @@
 
 namespace App\Http\Controllers\FichaTecnica;
 
-use App\Http\Controllers\Controller;
+use App\Models\VehiculoPieza;
+use App\Models\VehiculoPiezas;
 use Illuminate\Http\Request;
 
-class PiezasController extends Controller
+class PiezasController
 {
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request, string $placa)
     {
-        return response()->json(['message' => 'Piezas almacenadas correctamente para el vehiculo con placa: ' . $placa]);
+        $data = $request->except('vehiculo_id');
+
+        foreach ($data as $pieza_id => $estado) {
+            if ($estado !== null && $estado !== '') {
+                VehiculoPiezas::updateOrCreate(
+                    [
+                        'vehiculo_id' => $placa,
+                        'pieza_id' => $pieza_id,
+                    ],
+                    [
+                        'estado' => $estado,
+                        'user_id' => $request->user()->id,
+                    ]
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Piezas actualizadas correctamente.');
     }
 }

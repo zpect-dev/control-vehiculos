@@ -4,8 +4,11 @@ namespace App\Http\Controllers\FichaTecnica;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
+use App\Models\VehiculoAccesorios;
+use App\Models\VehiculoPieza;
 use App\Models\VehiculoEspecificaciones;
 use App\Models\VehiculoPermisos;
+use App\Models\VehiculoPiezas;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -34,6 +37,11 @@ class FichaTecnicaController extends Controller
             $permisos = VehiculoPermisos::where('vehiculo_id', $placa)->get();
             $permisosPorVehiculo[$placa] = [];
 
+            // Piezas
+            $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
+            $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
+
+
             foreach ($permisos as $permiso) {
                 $config = $this->mapaPermisos()[$permiso->permiso_id] ?? null;
                 if (!$config) continue;
@@ -54,6 +62,7 @@ class FichaTecnicaController extends Controller
             'vehiculos' => $vehiculos,
             'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,
             'permisosGuardados' => $permisosPorVehiculo,
+            'piezasGuardadas' => $piezasPorVehiculo,
             'modo' => $modo,
             'flash' => [
                 'success' => session('success'),
@@ -70,6 +79,13 @@ class FichaTecnicaController extends Controller
         $expedientesTecnicosPorVehiculo = [
             $placa => $expediente->pluck('estado', 'especificacion_id')->toArray()
         ];
+
+        $accesorios = VehiculoAccesorios::where('vehiculo_id', $placa)->get();
+        $accesoriosPorVehiculo[$placa] = $accesorios->pluck('estado', 'accesorio_id')->toArray();
+
+        $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
+        $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
+
 
         $permisos = VehiculoPermisos::where('vehiculo_id', $placa)->get();
         $permisosPorVehiculo = [$placa => []];
@@ -93,6 +109,8 @@ class FichaTecnicaController extends Controller
             'vehiculos' => [$vehiculo],
             'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,
             'permisosGuardados' => $permisosPorVehiculo,
+            'accesoriosGuardados' => $accesoriosPorVehiculo,
+            'piezasGuardadas' => $piezasPorVehiculo,
             'modo' => $modo,
             'flash' => [
                 'success' => session('success'),
@@ -155,6 +173,29 @@ class FichaTecnicaController extends Controller
 
         return redirect()->back()->with('success', 'Accesorios actualizados correctamente.');
     }
+
+    public function storePiezas(Request $request, string $placa)
+    {
+        $data = $request->except('vehiculo_id');
+
+        foreach ($data as $pieza_id => $estado) {
+            if ($estado !== null && $estado !== '') {
+                VehiculoPiezas::updateOrCreate(
+                    [
+                        'vehiculo_id' => $placa,
+                        'pieza_id' => $pieza_id,
+                    ],
+                    [
+                        'estado' => $estado,
+                        'user_id' => $request->user()->id,
+                    ]
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Piezas actualizadas correctamente.');
+    }
+
 
     private function mapaPermisos(): array
     {

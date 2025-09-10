@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
@@ -38,7 +38,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     return (
         <>
             <div className="border-b border-sidebar-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
+                <div className="mx-auto flex h-16 items-center justify-between px-4 md:max-w-7xl">
                     {/* Mobile Menu */}
                     <div className="flex items-center lg:hidden">
                         <Sheet>
@@ -47,47 +47,68 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <Menu className="h-5 w-5" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar">
-                                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                                <SheetHeader className="flex justify-start text-left">
-                                    <h2 className="font-semibold">Control de Vehículos</h2>
+
+                            <SheetContent side="left" className="flex h-full w-64 flex-col justify-between bg-sidebar">
+                                <SheetHeader className="flex justify-start p-4 text-left">
+                                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Control de Vehículos</h2>
                                 </SheetHeader>
-                                <div className="flex h-full flex-1 flex-col space-y-4 p-4">
-                                    <div className="flex h-full flex-col justify-between text-sm">
+
+                                {/* Navegación */}
+                                <div className="flex-1 overflow-y-auto px-4 pb-4">
+                                    {!isDashboard && vehiculoNavItems.length > 0 && (
                                         <div className="flex flex-col space-y-2">
-                                            {!isDashboard &&
-                                                vehiculoNavItems.map((item) => (
-                                                    <Link
-                                                        key={item.title}
-                                                        href={item.href}
-                                                        className="flex items-center space-x-2 rounded-md p-2 font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                                    >
-                                                        {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                                        <span>{item.title}</span>
-                                                    </Link>
-                                                ))}
+                                            {vehiculoNavItems.map((item) => (
+                                                <Link
+                                                    key={item.title}
+                                                    href={item.href}
+                                                    className="flex items-center space-x-2 rounded-md p-2 text-sm font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                >
+                                                    {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
+                                                    <span>{item.title}</span>
+                                                </Link>
+                                            ))}
                                         </div>
-                                    </div>
+                                    )}
+                                </div>
+
+                                {/* Menú de usuario */}
+                                <div className="border-t border-gray-300 p-4 dark:border-gray-700">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                className="flex w-full items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium"
+                                            >
+                                                <Avatar className="size-6 overflow-hidden rounded-full">
+                                                    <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                                                    <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                        {getInitials(auth.user.name)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span className="text-gray-800 dark:text-white">{auth.user.name}</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-full" align="start">
+                                            <UserMenuContent user={auth.user} />
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </SheetContent>
                         </Sheet>
-                        <div className="flex items-center">
-                            <Link href="/dashboard" prefetch className="flex items-center">
-                                <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
-                            </Link>
-                        </div>
+
+                        <Link href="/dashboard" prefetch className="flex items-center">
+                            <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                        </Link>
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden flex-1 items-center justify-between lg:flex">
-                        <div className="flex items-center">
-                            <Link href="/dashboard" prefetch className="flex items-center">
-                                <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
-                            </Link>
-                        </div>
+                    <div className="hidden w-full items-center justify-between lg:flex">
+                        <Link href="/dashboard" prefetch className="flex items-center">
+                            <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                        </Link>
 
-                        {!isDashboard && (
-                            <div className="flex flex-1 justify-center">
+                        <div className="flex flex-1 justify-center">
+                            {!isDashboard && (
                                 <NavigationMenu>
                                     <NavigationMenuList className="flex items-center space-x-2">
                                         {vehiculoNavItems.map((item, index) => (
@@ -96,7 +117,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     href={typeof item.href === 'string' ? item.href : item.href.url}
                                                     className={cn(
                                                         navigationMenuTriggerStyle(),
-                                                        'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:hover:bg-[#3d9641] dark:hover:bg-gray-800',
+                                                        'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:bg-[#3d9641] dark:hover:bg-gray-800',
                                                         page.url === (typeof item.href === 'string' ? item.href : item.href.url)
                                                             ? 'bg-[#49af4e] font-semibold text-white dark:bg-gray-700 dark:text-gray-50'
                                                             : 'text-gray-600 dark:text-gray-400',
@@ -109,8 +130,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                         ))}
                                     </NavigationMenuList>
                                 </NavigationMenu>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         <div className="flex items-center">
                             <DropdownMenu>
