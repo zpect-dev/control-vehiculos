@@ -6,14 +6,15 @@ import { Head, router } from '@inertiajs/react';
 import { PanelTopOpen } from 'lucide-react';
 import { useState } from 'react';
 
-export default function revisionFluidos({ vehiculoId }) {
+export default function revisionFluidos({ vehiculoId, revisionDiaria = null, imageUrl = null }) {
     const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
+    const isFormAlreadySubmitted = revisionDiaria && revisionDiaria.length === 5;
     const getDayIndex = () => {
         const day = new Date().getDay();
         return (day + 6) % 7;
     };
 
+    let i = 0;
     const diaActual = diasSemana[getDayIndex()];
 
     const fluidosPorRevisar = [
@@ -24,9 +25,45 @@ export default function revisionFluidos({ vehiculoId }) {
         { id: 'frenos', nombre: 'Liga de Frenos' },
     ];
 
-    const [revisiones, setRevisiones] = useState(
-        diasSemana.reduce((diasAcc: any, dia) => {
-            diasAcc[dia] = fluidosPorRevisar.reduce((acc: any, fluido) => {
+    const [revisiones, setRevisiones] = useState(() => {
+        if (revisionDiaria) {
+            const dataFromProps = fluidosPorRevisar.reduce((acc, fluido) => {
+                const foundRevision = revisionDiaria.find((rev) => rev.tipo === fluido.id);
+
+                acc[fluido.id] = foundRevision
+                    ? {
+                          nivel: foundRevision.nivel_fluido,
+                          foto: foundRevision.imagen,
+                          realizado: foundRevision.revision,
+                      }
+                    : {
+                          nivel: '',
+                          foto: null,
+                          realizado: false,
+                      };
+
+                return acc;
+            }, {});
+
+            const initialState = diasSemana.reduce((diasAcc, dia) => {
+                diasAcc[dia] = fluidosPorRevisar.reduce((acc, fluido) => {
+                    acc[fluido.id] = {
+                        nivel: '',
+                        foto: null,
+                        realizado: false,
+                    };
+                    return acc;
+                }, {});
+                return diasAcc;
+            }, {});
+
+            initialState[diaActual] = dataFromProps;
+
+            return initialState;
+        }
+
+        return diasSemana.reduce((diasAcc, dia) => {
+            diasAcc[dia] = fluidosPorRevisar.reduce((acc, fluido) => {
                 acc[fluido.id] = {
                     nivel: '',
                     foto: null,
@@ -35,8 +72,8 @@ export default function revisionFluidos({ vehiculoId }) {
                 return acc;
             }, {});
             return diasAcc;
-        }, {}),
-    );
+        }, {});
+    });
 
     const handleInputChange = (dia: string, fluidoId: string, campo: string, valor: any) => {
         setRevisiones((prev: any) => ({
@@ -104,6 +141,7 @@ export default function revisionFluidos({ vehiculoId }) {
                                                     <select
                                                         value={revision.nivel}
                                                         onChange={(e) => handleInputChange(dia, fluido.id, 'nivel', e.target.value)}
+                                                        disabled={isFormAlreadySubmitted}
                                                         className="rounded-md border px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                                     >
                                                         <option value="" selected disabled>
@@ -112,12 +150,31 @@ export default function revisionFluidos({ vehiculoId }) {
                                                         <option value="1">Normal</option>
                                                         <option value="0">Bajo</option>
                                                     </select>
-                                                    <input
-                                                        type="file"
-                                                        onChange={(e) => handleInputChange(dia, fluido.id, 'foto', e.target.files?.[0] || null)}
-                                                        className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[4] focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                                    />
-                                                    <div className="flex items-center gap-2">
+                                                    {isFormAlreadySubmitted ? (
+                                                        imageUrl.map((url, index) => {
+                                                            const revisionForImage = revisionDiaria[index];
+                                                            if (revisionForImage && revisionForImage.tipo === fluido.id) {
+                                                                return (
+                                                                    <div key={url} className="flex justify-center">
+                                                                        <img
+                                                                            src={url}
+                                                                            alt={`Imagen de ${fluido.nombre}`}
+                                                                            className="h-48 w-48 rounded-lg object-cover"
+                                                                        />
+                                                                    </div>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })
+                                                    ) : (
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={(e) => handleInputChange(dia, fluido.id, 'foto', e.target.files?.[0] || null)}
+                                                            className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[4] focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                                        />
+                                                    )}
+                                                    {/* <div className="flex items-center gap-2">
                                                         <input
                                                             type="checkbox"
                                                             checked={revision.realizado}
@@ -125,17 +182,17 @@ export default function revisionFluidos({ vehiculoId }) {
                                                             className="h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-[#49af4e]"
                                                         />
                                                         <span className="text-sm text-gray-700 dark:text-gray-300">Revisión realizada</span>
-                                                    </div>
-                                                    {revision.nivel === '0' && (
+                                                    </div> */}
+                                                    {revision.nivel == '0' && (
                                                         <div className="mt-2 rounded-md border border-yellow-400 bg-yellow-100 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-200 dark:text-yellow-900">
                                                             Nivel bajo detectado. Verifica si requiere atención.
                                                         </div>
                                                     )}
-                                                    {!revision.realizado && (
+                                                    {/* {!revision.realizado && (
                                                         <div className="mt-2 rounded-md border border-red-500 bg-red-100 px-3 py-2 text-sm text-red-800 dark:bg-red-200 dark:text-red-900">
                                                             No se ha marcado como revisado.
                                                         </div>
-                                                    )}
+                                                    )} */}
                                                 </div>
                                             );
                                         })}
@@ -162,8 +219,9 @@ export default function revisionFluidos({ vehiculoId }) {
                         <button
                             type="submit"
                             className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
+                            disabled={isFormAlreadySubmitted}
                         >
-                            Guardar Revisiones
+                            {isFormAlreadySubmitted ? 'Revision guardada' : 'Guardar revision'}
                         </button>
                     </div>
                 </form>

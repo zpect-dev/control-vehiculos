@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RevisionesSemanales;
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Vehiculo;
 use Illuminate\Http\Request;
+use App\Models\RevisionesSemanales;
 use Illuminate\Support\Facades\Auth;
 
 class RevisionSemanalController extends Controller
@@ -20,14 +21,12 @@ class RevisionSemanalController extends Controller
             abort(403, 'No autorizado');
         }
 
+        $semanaSiguiente = new Carbon('next monday');
+        dd($semanaSiguiente);
+
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
         ]);
-    }
-
-    public function show(Request $request, string $placa)
-    {
-
     }
 
     public function store(Request $request, string $placa)
@@ -59,6 +58,9 @@ class RevisionSemanalController extends Controller
             'revisado' => false
         ]);
 
-        return response()->json(['message' => 'Revision realizada correctamente para el vehiculo con placa: ' . $placa]);
+        return back()->with([
+            'vehiculoId' => $placa,
+            'flash' => 'Revision semanal cargada correctamente'
+        ]);
     }
 }
