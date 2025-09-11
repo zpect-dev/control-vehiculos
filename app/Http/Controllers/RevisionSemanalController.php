@@ -17,11 +17,7 @@ class RevisionSemanalController extends Controller
         if (!$vehiculo) {
             return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
-<<<<<<< HEAD
         if ($vehiculo->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
-=======
-        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
->>>>>>> a3785076cc2bdd97d7a5454f1f6004afab6ef0e8
             abort(403, 'No autorizado');
         }
 
@@ -42,10 +38,10 @@ class RevisionSemanalController extends Controller
         $finalSemana = $inicioSemana->addDays($semanaMap['friday']);
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $placa)
-                                            ->whereBetween('fecha_creacion', [$inicioSemana, $fechaActual])
-                                            ->first();
+            ->whereBetween('fecha_creacion', [$inicioSemana, $fechaActual])
+            ->first();
 
-        if($revisionSemanal){
+        if ($revisionSemanal) {
             $revisionSemanal->video = asset('storage/uploads/videos-semanales/' . $revisionSemanal->video);
 
             return Inertia::render('revisionSemanal', [
