@@ -26,20 +26,20 @@ class RevisionDiariaController extends Controller
         }
 
         $semanaMap = [
-            'monday' => 1,
-            'tuesday' => 2,
-            'wednesday' => 3,
-            'thursday' => 4,
-            'friday' => 5,
-            'saturday' => 6,
-            'sunday' => 7
+            'monday' => 0,
+            'tuesday' => 1,
+            'wednesday' => 2,
+            'thursday' => 3,
+            'friday' => 4,
+            'saturday' => 5,
+            'sunday' => 6
         ];
 
-        $fechaActual = Carbon::today()->setTime(23, 59)->toImmutable();
+        $fechaActual = Carbon::today()->toImmutable();
         $diaActual = strtolower($fechaActual->isoFormat('dddd'));
 
-        $inicioSemana = $fechaActual->subDays($semanaMap[$diaActual]);
-        $finalSemana = $inicioSemana->addDays($semanaMap['sunday']);
+        $inicioSemana = $fechaActual->subDays($semanaMap[$diaActual])->setTime(00, 00);
+        $finalSemana = $inicioSemana->addDays($semanaMap['friday'])->setTime(23, 59);
 
         $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $placa)
                                             ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
