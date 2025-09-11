@@ -16,15 +16,19 @@ use Illuminate\Validation\ValidationException;
 
 class RevisionDiariaController extends Controller
 {
-    public function index(string $placa)
+    public function index(Request $request, string $placa)
     {
         $vehiculo = Vehiculo::where('placa', $placa)->first();
 
         if (!$vehiculo) {
             return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
+<<<<<<< HEAD
 
         if ($vehiculo->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+=======
+        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
+>>>>>>> a3785076cc2bdd97d7a5454f1f6004afab6ef0e8
             abort(403, 'No autorizado');
         }
 

@@ -36,9 +36,13 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
         revisionDiaria: RevisionFluido[];
     }>().props;
 
+<<<<<<< HEAD
     const esAdmin = modo === 'admin';
     const diaActual = diasSemana[(new Date().getDay() + 6) % 7];
     const diasVisibles = esAdmin ? diasSemana : [diaActual];
+=======
+    const diaActual = diasSemana[getDayIndex()];
+>>>>>>> a3785076cc2bdd97d7a5454f1f6004afab6ef0e8
 
     const [revisiones] = useState(() => {
         const mapa = diasSemana.reduce((diasAcc: any, dia) => {

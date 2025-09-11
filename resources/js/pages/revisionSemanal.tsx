@@ -4,9 +4,9 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
-    console.log(vehiculo.placa);
+export default function revisionSemanal({ vehiculo, revisionSemanal = null, inicio, final }) {
     const [weeklyVideo, setWeeklyVideo] = useState<File | null>(null);
+    const isFormAlreadySubmitted = revisionSemanal ? true : false;
 
     const getShortenedFileName = (fileName: string) => {
         if (!fileName) return '';
@@ -52,12 +52,20 @@ export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
         <AppLayout>
             <Head title="Revisión Semanal de Fluidos" />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
-                <div className="mb-10 text-center">
+                <div className="mb-5 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Revisión Semanal de Vehículos</h1>
                 </div>
 
                 {/* Card de Detalles del Vehículo y Carga de Video */}
                 <div className="mx-auto mb-10 max-w-5xl">
+                    <div className="mb-2 flex justify-end gap-4 text-gray-700">
+                        <p className="p-0">
+                            <span className="font-semibold">Desde:</span> {inicio}
+                        </p>
+                        <p className="p-0">
+                            <span className="font-semibold">Hasta:</span> {final}
+                        </p>
+                    </div>
                     <div className="flex flex-col gap-6 rounded-xl bg-gray-100 p-6 shadow-lg md:flex-row dark:bg-gray-800">
                         {/* Tarjeta de Detalles del Vehículo */}
                         <div className="flex-1 rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
@@ -76,38 +84,50 @@ export default function revisionSemanal({ vehiculo }: { vehiculo: any }) {
                         </div>
 
                         {/* Sección para Cargar Video */}
-                        <div className="flex-1 rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
-                            <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal (Video)</h3>
-                            <div className="flex flex-col items-start space-y-4">
-                                <label htmlFor="weekly-video" className="font-semibold text-gray-700 dark:text-gray-300">
-                                    Sube tu video de la revisión semanal
-                                </label>
-                                <input
-                                    type="file"
-                                    id="weekly-video"
-                                    accept="video/*"
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-600 dark:text-white"
-                                    onChange={handleVideoUpload}
-                                />
-                                {weeklyVideo && (
-                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                        Video seleccionado: {getShortenedFileName(weeklyVideo.name)}
-                                    </p>
-                                )}
+                        {isFormAlreadySubmitted ? (
+                            <div className="flex-1 rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
+                                <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal (Video)</h3>
+                                <div className="flex flex-col items-start space-y-4">
+                                    <video preload="auto" controls width="640" height="480" src={revisionSemanal.video}></video>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex-1 rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
+                                <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal (Video)</h3>
+                                <div className="flex flex-col items-start space-y-4">
+                                    <label htmlFor="weekly-video" className="font-semibold text-gray-700 dark:text-gray-300">
+                                        Sube tu video de la revisión semanal
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="weekly-video"
+                                        accept="video/*"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-600 dark:text-white"
+                                        onChange={handleVideoUpload}
+                                    />
+                                    {weeklyVideo && (
+                                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                            Video seleccionado: {getShortenedFileName(weeklyVideo.name)}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <form onSubmit={handleFormSubmit} className="space-y-6" encType="multipart/form-data">
-                    <div className="flex justify-end pt-6">
-                        <button
-                            type="submit"
-                            className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
-                        >
-                            Guardar Revision
-                        </button>
-                    </div>
-                </form>
+                {!isFormAlreadySubmitted && (
+                    <form onSubmit={handleFormSubmit} className="space-y-6" encType="multipart/form-data">
+                        <div className="flex justify-end pt-6">
+                            <button
+                                type="submit"
+                                className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
+                                disabled={isFormAlreadySubmitted}
+                            >
+                                Guardar Revision
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
         </AppLayout>
     );
