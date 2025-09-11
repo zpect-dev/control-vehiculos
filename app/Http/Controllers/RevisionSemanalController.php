@@ -17,7 +17,8 @@ class RevisionSemanalController extends Controller
         if (!$vehiculo) {
             return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
-        if ($vehiculo->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+
+        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
@@ -62,19 +63,23 @@ class RevisionSemanalController extends Controller
     public function store(Request $request, string $placa)
     {
         $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->first();
-        if (!$vehiculo) {
+        if(!$vehiculo){
             return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
-        if ($vehiculo->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+        if ($vehiculo->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
-        if (!$request->hasFile('video')) {
+
+        if(!$request->hasFile('video')){
             return back()->with('mensaje', 'Debe subir un video a la plataforma');
         }
         $validatedData = $request->validate([
             'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm'
         ]);
 
+        $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
+        $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
+        $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
 
         RevisionesSemanales::create([
             'vehiculo_id' => $placa,

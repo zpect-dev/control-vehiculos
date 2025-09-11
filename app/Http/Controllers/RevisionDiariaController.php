@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -19,35 +18,55 @@ class RevisionDiariaController extends Controller
     public function index(Request $request, string $placa)
     {
         $vehiculo = Vehiculo::where('placa', $placa)->first();
-
-        if (!$vehiculo) {
-            return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
+        if(!$vehiculo){
+            return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
         }
-
-        if ($vehiculo->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
-        $fechaActual = Carbon::now();
-        $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $placa)->whereDate('fecha_creacion', $fechaActual)->get();
+        $semanaMap = [
+            'monday' => 0,
+            'tuesday' => 1,
+            'wednesday' => 2,
+            'thursday' => 3,
+            'friday' => 4,
+            'saturday' => 5,
+            'sunday' => 6
+        ];
 
+        $fechaActual = Carbon::today()->setTime(23, 59)->toImmutable();
+        $diaActual = strtolower($fechaActual->isoFormat('dddd'));
+
+        $inicioSemana = $fechaActual->subDays($semanaMap[$diaActual]);
+
+        $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $placa)
+                                            ->whereBetween('fecha_creacion', [$inicioSemana, $fechaActual])
+                                            ->get();
+
+        $revisionesDiarias = [];
         $modo = Auth::user()->hasRole('admin') ? 'admin' : 'normal';
 
-        if (!$revisionDiaria->isEmpty()) {
-            $imageUrls = $revisionDiaria->map(function ($revision) {
-                return asset('storage/uploads/fotos-diarias/' . $revision->imagen);
-            })->all();
+        foreach ($revisionDiaria as $revision) {
+            $dia = strtolower(Carbon::parse($revision->fecha_creacion)->isoFormat('dddd'));
+
+            if (!isset($revisionesDiarias[$dia])) {
+                $revisionesDiarias[$dia] = [];
+            }
+            $revisionesDiarias[$dia][] = $revision;
+        }
+
+        if(!$revisionDiaria->isEmpty()){
             return Inertia::render('revisionFluidos', [
                 'vehiculoId' => $placa,
-                'revisionDiaria' => $revisionDiaria,
-                'imageUrl' => $imageUrls,
-                'modo' => $modo,
+                'revisionDiaria' => $revisionesDiarias,
+                'modo' => $modo
             ]);
         }
 
         return Inertia::render('revisionFluidos', [
             'vehiculoId' => $placa,
-            'modo' => $modo,
+            'modo' => $modo
         ]);
     }
 

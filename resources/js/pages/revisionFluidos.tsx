@@ -7,20 +7,18 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
+// Se corrige la interfaz para reflejar la estructura de los datos del servidor
 interface RevisionFluidosProps {
     vehiculoId: number | string;
 }
 
 interface RevisionFluido {
     id: number;
-    vehiculo_id: string;
-    user_id: number;
-    nivel_fluido: number;
-    imagen: string;
-    fecha_creacion: string;
-    revisado: number;
-    fecha_revision: string | null;
     tipo: string;
+    nivel_fluido: string | number;
+    imagen: string | null;
+    revisado: boolean;
+    fecha_creacion: string;
 }
 
 type FlashProps = {
@@ -28,12 +26,15 @@ type FlashProps = {
     [key: string]: any;
 };
 
+// Se corrige el tipado para que revisionDiaria sea un objeto
 export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
-    const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const diasSemana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const diasSemanaTexto = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
     const { flash, modo, revisionDiaria } = usePage<{
         flash: FlashProps;
         modo: string;
-        revisionDiaria: RevisionFluido[];
+        revisionDiaria?: Record<string, RevisionFluido[]>;
     }>().props;
 
     const esAdmin = modo === 'admin';
@@ -49,18 +50,19 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
             return diasAcc;
         }, {});
 
-        if (Array.isArray(revisionDiaria)) {
-            revisionDiaria.forEach((rev) => {
-                const fecha = new Date(rev.fecha_creacion);
-                const diaTexto = diasSemana[(fecha.getDay() + 6) % 7];
-
-                if (mapa[diaTexto] && mapa[diaTexto][rev.tipo]) {
-                    mapa[diaTexto][rev.tipo] = {
-                        nivel: String(rev.nivel_fluido),
-                        foto: rev.imagen ? `/storage/uploads/fotos-diarias/${rev.imagen}` : null,
-                        realizado: true,
-                    };
-                }
+        if (revisionDiaria) {
+            Object.entries(revisionDiaria).forEach(([diaTexto, revisionesDelDia]) => {
+                const diaKey = diaTexto.toLowerCase();
+                if (!mapa[diaKey]) return;
+                revisionesDelDia.forEach((rev) => {
+                    if (mapa[diaKey][rev.tipo]) {
+                        mapa[diaKey][rev.tipo] = {
+                            nivel: String(rev.nivel_fluido ?? ''),
+                            foto: rev.imagen,
+                            realizado: !!rev.revisado,
+                        };
+                    }
+                });
             });
         }
 
@@ -118,23 +120,25 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-10 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        {esAdmin ? 'Revisión Semanal de Fluidos' : `Revisión de Fluidos - ${diaActual}`}
+                        {esAdmin ? 'Revisión Semanal de Fluidos' : `Revisión de Fluidos - ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
                     </h1>
                     <FlashMessage mensaje={flash?.success} />
                 </div>
 
                 {diasVisibles.map((dia) => {
                     const expediente = Object.fromEntries(
-                        fluidosPorRevisarFields.flatMap((fluido) => [
-                            [fluido.id, revisiones[dia][fluido.id].nivel],
-                            [`${fluido.id}_foto`, revisiones[dia][fluido.id].foto],
-                        ]),
+                        fluidosPorRevisarFields.flatMap((fluido) => {
+                            const registro = revisiones[dia][fluido.id];
+                            return [
+                                [fluido.id, registro.nivel],
+                                [`${fluido.id}_foto`, registro.foto ? `/storage/uploads/fotos-diarias/${registro.foto}` : null],
+                            ];
+                        }),
                     );
-
                     return (
                         <div key={dia} className="py-2">
                             <FichaSeccionFluidos
-                                title={`Revisión de Fluidos - ${dia}`}
+                                title={`Revisión de Fluidos - ${diasSemanaTexto[diasSemana.indexOf(dia)]}`}
                                 fields={fluidosFields}
                                 expediente={expediente}
                                 onSubmit={(formData) => handleSubmitFluidos(dia, formData)}
