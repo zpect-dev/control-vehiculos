@@ -39,7 +39,7 @@ class RevisionSemanalController extends Controller
         $finalSemana = $inicioSemana->addDays($semanaMap['friday'])->setTime(23, 59);
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $placa)
-            ->whereBetween('fecha_creacion', [$inicioSemana, $fechaActual])
+            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
             ->first();
 
         if ($revisionSemanal) {
