@@ -15,13 +15,13 @@ use Illuminate\Support\Facades\Auth;
 
 class RevisionDiariaController extends Controller
 {
-    public function index(string $placa)
+    public function index(Request $request, string $placa)
     {
         $vehiculo = Vehiculo::where('placa', $placa)->first();
         if(!$vehiculo){
             return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
         }
-        if ($vehiculo->user_id !== Auth::id()) {
+        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
