@@ -11,17 +11,17 @@ import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: 'Perfil',
         href: edit(),
         icon: null,
     },
     {
-        title: 'Password',
+        title: 'Contraseña',
         href: editPassword(),
         icon: null,
     },
     {
-        title: 'Appearance',
+        title: 'Apariencia',
         href: appearance(),
         icon: null,
     },
@@ -37,7 +37,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     return (
         <div className="px-4 py-6">
-            <Heading title="Settings" description="Manage your profile and account settings" />
+            <Heading title="Configuraciones" description="Administra tus configuraciones" />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
@@ -45,7 +45,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                         {sidebarNavItems.map((item, index) => (
                             <Button
                                 key={`${typeof item.href === 'string' ? item.href : item.href.url}-${index}`}
-                                size="sm"
+                                size="lg"
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {

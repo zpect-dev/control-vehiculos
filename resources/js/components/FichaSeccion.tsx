@@ -7,8 +7,8 @@ interface FichaSeccionProps {
     title: string;
     fields: Field[];
     formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
-    expediente: Record<string, string>;
-    onSubmit: (data: Record<string, string>) => void;
+    expediente: Record<string, string | boolean | File | null>;
+    onSubmit: (data: Record<string, string | boolean | File | null>) => void;
 }
 
 export default function FichaSeccion({ title, fields, formType, expediente, onSubmit }: FichaSeccionProps) {
