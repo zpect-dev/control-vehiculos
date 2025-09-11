@@ -16,6 +16,7 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
@@ -79,6 +80,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "composer/installers": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\FichaTecnica;
 
+use App\Helpers\NotificacionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
 use App\Models\VehiculoAccesorios;
-use App\Models\VehiculoPieza;
 use App\Models\VehiculoEspecificaciones;
 use App\Models\VehiculoPermisos;
 use App\Models\VehiculoPiezas;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,14 +18,16 @@ class FichaTecnicaController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $modo = $user->hasRole('admin') ? 'admin' : 'usuario';
+        $isAdmin = $user->hasRole('admin');
 
-        $vehiculos = $modo === 'admin'
+        $vehiculos = $isAdmin
             ? Vehiculo::with('usuario')->get()
             : Vehiculo::with('usuario')->where('user_id', $user->id)->get();
 
         $expedientesTecnicosPorVehiculo = [];
         $permisosPorVehiculo = [];
+        $accesoriosPorVehiculo = [];
+        $piezasPorVehiculo = [];
 
         foreach ($vehiculos as $vehiculo) {
             $placa = $vehiculo->placa;
@@ -36,19 +39,11 @@ class FichaTecnicaController extends Controller
             // Permisología
             $permisos = VehiculoPermisos::where('vehiculo_id', $placa)->get();
             $permisosPorVehiculo[$placa] = [];
-
-            // Piezas
-            $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
-            $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
-
-
             foreach ($permisos as $permiso) {
                 $config = $this->mapaPermisos()[$permiso->permiso_id] ?? null;
                 if (!$config) continue;
-
                 $campo = $config['campo'];
                 $tipo = $config['tipo'];
-
                 if ($tipo === 'text') {
                     $permisosPorVehiculo[$placa][$campo] = $permiso->valor_texto;
                 } else {
@@ -56,14 +51,27 @@ class FichaTecnicaController extends Controller
                     $permisosPorVehiculo[$placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
                 }
             }
+
+            // Accesorios
+            $accesorios = VehiculoAccesorios::where('vehiculo_id', $placa)->get();
+            $accesoriosPorVehiculo[$placa] = $accesorios->pluck('estado', 'accesorio_id')->toArray();
+
+            // Piezas
+            $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
+            $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
         }
+
+        $users = $isAdmin ? User::select('id', 'name')->get() : [];
 
         return Inertia::render('fichaTecnica', [
             'vehiculos' => $vehiculos,
             'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,
             'permisosGuardados' => $permisosPorVehiculo,
+            'accesoriosGuardados' => $accesoriosPorVehiculo,
             'piezasGuardadas' => $piezasPorVehiculo,
-            'modo' => $modo,
+            'isAdmin' => $isAdmin,
+            'users' => $users,
+            'modo' => $isAdmin ? 'admin' : 'usuario',
             'flash' => [
                 'success' => session('success'),
             ],
@@ -72,8 +80,10 @@ class FichaTecnicaController extends Controller
 
     public function show(Request $request, string $placa)
     {
+        $user = $request->user();
+        $isAdmin = $user->hasRole('admin');
+
         $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->firstOrFail();
-        $modo = $request->user()->hasRole('admin') ? 'admin' : 'usuario';
 
         $expediente = VehiculoEspecificaciones::where('vehiculo_id', $placa)->get();
         $expedientesTecnicosPorVehiculo = [
@@ -86,17 +96,13 @@ class FichaTecnicaController extends Controller
         $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
         $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
 
-
         $permisos = VehiculoPermisos::where('vehiculo_id', $placa)->get();
         $permisosPorVehiculo = [$placa => []];
-
         foreach ($permisos as $permiso) {
             $config = $this->mapaPermisos()[$permiso->permiso_id] ?? null;
             if (!$config) continue;
-
             $campo = $config['campo'];
             $tipo = $config['tipo'];
-
             if ($tipo === 'text') {
                 $permisosPorVehiculo[$placa][$campo] = $permiso->valor_texto;
             } else {
@@ -105,79 +111,94 @@ class FichaTecnicaController extends Controller
             }
         }
 
+        $users = $isAdmin ? User::select('id', 'name')->get() : [];
+
         return Inertia::render('fichaTecnica', [
             'vehiculos' => [$vehiculo],
             'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,
             'permisosGuardados' => $permisosPorVehiculo,
             'accesoriosGuardados' => $accesoriosPorVehiculo,
             'piezasGuardadas' => $piezasPorVehiculo,
-            'modo' => $modo,
+            'isAdmin' => $isAdmin,
+            'users' => $users,
+            'modo' => $isAdmin ? 'admin' : 'usuario',
             'flash' => [
                 'success' => session('success'),
             ],
         ]);
     }
 
+    public function assignUser(Request $request, string $placa)
+    {
+        if (!$request->user()->hasRole('admin')) {
+            return response()->json(['message' => 'Acceso denegado.'], 403);
+        }
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
+        $vehiculo->user_id = $request->user_id;
+        $vehiculo->save();
+
+        $nuevoUsuario = User::find($request->user_id)?->name ?? 'Usuario desconocido';
+        $adminName = $request->user()->name;
+
+        NotificacionHelper::emitirAsignacionUsuario($placa, $adminName, $nuevoUsuario);
+
+        return redirect()->back()->with('success', 'Usuario asignado correctamente.');
+    }
+
     public function storeExpediente(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');
-
         foreach ($data as $especificacion_id => $estado) {
             VehiculoEspecificaciones::updateOrCreate(
                 ['vehiculo_id' => $placa, 'especificacion_id' => $especificacion_id],
                 ['estado' => $estado]
             );
         }
-
         return redirect()->back()->with('success', 'Expediente técnico actualizado correctamente.');
     }
 
     public function storePermisos(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');
-
         foreach ($this->mapaPermisos() as $permiso_id => $config) {
             $campo = $config['campo'];
             $tipo = $config['tipo'];
-
             $registro = VehiculoPermisos::firstOrNew([
                 'vehiculo_id' => $placa,
                 'permiso_id' => $permiso_id,
             ]);
-
             if ($tipo === 'text') {
                 $registro->valor_texto = array_key_exists($campo, $data) ? $data[$campo] : null;
             } else {
                 $registro->fecha_expedicion = $data["{$campo}_expedicion"] ?? null;
                 $registro->fecha_vencimiento = $data["{$campo}_vencimiento"] ?? null;
             }
-
             $registro->save();
         }
-
         return redirect()->back()->with('success', 'Permisología actualizada correctamente.');
     }
 
     public function storeAccesorios(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');
-
         $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
-
         foreach ($data as $accesorio_id => $estado) {
             $vehiculo->accesorios()->updateOrCreate(
                 ['accesorio_id' => $accesorio_id],
                 ['estado' => $estado]
             );
         }
-
         return redirect()->back()->with('success', 'Accesorios actualizados correctamente.');
     }
 
     public function storePiezas(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');
-
         foreach ($data as $pieza_id => $estado) {
             if ($estado !== null && $estado !== '') {
                 VehiculoPiezas::updateOrCreate(
@@ -192,10 +213,8 @@ class FichaTecnicaController extends Controller
                 );
             }
         }
-
         return redirect()->back()->with('success', 'Piezas actualizadas correctamente.');
     }
-
 
     private function mapaPermisos(): array
     {

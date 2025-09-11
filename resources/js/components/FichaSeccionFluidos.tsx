@@ -3,15 +3,14 @@ import { Field } from '@/hooks/useFormLogic';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { PanelTopOpen } from 'lucide-react';
 
-interface FichaSeccionProps {
+interface FichaSeccionFluidosProps {
     title: string;
     fields: Field[];
-    formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
-    expediente: Record<string, string>;
-    onSubmit: (data: Record<string, string>) => void;
+    expediente: Record<string, string | boolean | File | null>;
+    onSubmit: (formData: Record<string, string | boolean | File | null>) => void;
 }
 
-export default function FichaSeccion({ title, fields, formType, expediente, onSubmit }: FichaSeccionProps) {
+export default function FichaSeccionFluidos({ title, fields, expediente, onSubmit }: FichaSeccionFluidosProps) {
     return (
         <Disclosure as="div" className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg dark:bg-gray-800">
             {({ open }) => (
@@ -20,8 +19,8 @@ export default function FichaSeccion({ title, fields, formType, expediente, onSu
                         <span>{title}</span>
                         <PanelTopOpen className={`h-5 w-5 transform transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`} />
                     </DisclosureButton>
-                    <DisclosurePanel className="px-6 pt-2 pb-6">
-                        <FormCard fields={fields} formType={formType} expediente={expediente} onSubmit={onSubmit} />
+                    <DisclosurePanel className="space-y-6 px-6 pt-2 pb-6">
+                        <FormCard fields={fields} formType="revisionFluidos" expediente={expediente} onSubmit={onSubmit} />
                     </DisclosurePanel>
                 </>
             )}

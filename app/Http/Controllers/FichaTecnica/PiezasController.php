@@ -2,28 +2,33 @@
 
 namespace App\Http\Controllers\FichaTecnica;
 
-use App\Models\VehiculoPieza;
 use App\Models\VehiculoPiezas;
 use Illuminate\Http\Request;
+use App\Helpers\NotificacionHelper;
 
 class PiezasController
 {
     public function store(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');
+        $userName = $request->user()->name;
 
         foreach ($data as $pieza_id => $estado) {
             if ($estado !== null && $estado !== '') {
                 VehiculoPiezas::updateOrCreate(
-                    [
-                        'vehiculo_id' => $placa,
-                        'pieza_id' => $pieza_id,
-                    ],
-                    [
-                        'estado' => $estado,
-                        'user_id' => $request->user()->id,
-                    ]
+                    ['vehiculo_id' => $placa, 'pieza_id' => $pieza_id],
+                    ['estado' => $estado, 'user_id' => $request->user()->id]
                 );
+
+                if (in_array((int) $estado, [1, 2])) {
+                    NotificacionHelper::emitirCambioCritico(
+                        $pieza_id,
+                        (int) $estado,
+                        'piezas',
+                        $placa,
+                        $userName
+                    );
+                }
             }
         }
 

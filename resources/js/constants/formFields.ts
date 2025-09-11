@@ -1,5 +1,7 @@
+import { Field } from '@/hooks/useFormLogic';
+
 // Campos para el formulario de Expediente
-export const expedienteTecnicoFields = [
+export const expedienteTecnicoFields: Field[] = [
     { id: '1', label: 'Marca del Aceite', type: 'text', placeholder: 'Ej: Castrol' },
     { id: '2', label: 'Marca de Valvulina', type: 'text', placeholder: 'Ej: Mobil' },
     { id: '3', label: 'Marca del Refrigerante', type: 'text', placeholder: 'Ej: Motul' },
@@ -9,11 +11,10 @@ export const expedienteTecnicoFields = [
     { id: '7', label: 'Sistema de Enfriamiento', type: 'text', placeholder: 'Ej: Aire, Liquido' },
     { id: '8', label: 'Sistema de Inyección', type: 'text', placeholder: 'Ej: Gasolina, Eléctrico, Diésel' },
     { id: '9', label: 'Tipo de Cauchos', type: 'text', placeholder: 'Ej: Medida, Marca' },
-    { id: '10', label: 'Kilometraje', type: 'text', placeholder: 'Ej: 14.500' },
 ];
 
 // Campos para el formulario de Permisologia
-export const permisologiaFields = [
+export const permisologiaFields: Field[] = [
     { id: 'titulo', label: 'Título del Vehículo', type: 'text' },
     { id: 'carnet', label: 'Carnet de Circulación', type: 'text' },
     { id: 'seguro', label: 'Seguro RCV', type: 'date' },
@@ -22,11 +23,10 @@ export const permisologiaFields = [
     { id: 'permisoRotNac', label: 'Permiso de Rotulado Nacional', type: 'date' },
     { id: 'salvoconducto', label: 'Salvoconducto', type: 'date' },
     { id: 'permisoAliMed', label: 'Permiso de Alimentos y Medicamentos', type: 'date' },
-    { id: 'trimestres', label: 'Trimestres', type: 'date' },
 ];
 
 // Campos para el formulario de Accesorios
-export const accesoriosFields = [
+export const accesoriosFields: Field[] = [
     {
         id: '1',
         label: 'Caja de Herramienta',
@@ -110,7 +110,7 @@ export const accesoriosFields = [
 ];
 
 // Campos para el formulario de Piezas Revisadas
-export const piezasRevisadasFields = [
+export const piezasRevisadasFields: Field[] = [
     {
         id: '1',
         label: 'Aire Acondicionado',
@@ -519,6 +519,60 @@ export const piezasRevisadasFields = [
             { value: '0', label: 'Bueno' },
             { value: '1', label: 'Malo' },
             { value: '2', label: 'No posee' },
+        ],
+    },
+];
+
+// Campos para Fluidos para Revisar y revisionFluidos
+export const fluidosPorRevisarFields: Field[] = [
+    {
+        id: 'aceite',
+        label: 'Aceite de Motor',
+        type: 'select',
+        options: [
+            { value: '', label: 'Selecciona nivel' },
+            { value: '1', label: 'Normal' },
+            { value: '0', label: 'Bajo' },
+        ],
+    },
+    {
+        id: 'caja',
+        label: 'Aceite de Caja',
+        type: 'select',
+        options: [
+            { value: '', label: 'Selecciona nivel' },
+            { value: '1', label: 'Normal' },
+            { value: '0', label: 'Bajo' },
+        ],
+    },
+    {
+        id: 'refrigerante',
+        label: 'Refrigerante o Agua',
+        type: 'select',
+        options: [
+            { value: '', label: 'Selecciona nivel' },
+            { value: '1', label: 'Normal' },
+            { value: '0', label: 'Bajo' },
+        ],
+    },
+    {
+        id: 'direccion',
+        label: 'Líquido de Dirección',
+        type: 'select',
+        options: [
+            { value: '', label: 'Selecciona nivel' },
+            { value: '1', label: 'Normal' },
+            { value: '0', label: 'Bajo' },
+        ],
+    },
+    {
+        id: 'frenos',
+        label: 'Liga de Frenos',
+        type: 'select',
+        options: [
+            { value: '', label: 'Selecciona nivel' },
+            { value: '1', label: 'Normal' },
+            { value: '0', label: 'Bajo' },
         ],
     },
 ];

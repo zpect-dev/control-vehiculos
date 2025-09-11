@@ -12,90 +12,88 @@ use Inertia\Inertia;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class RevisionDiariaController extends Controller
 {
     public function index(string $placa)
     {
         $vehiculo = Vehiculo::where('placa', $placa)->first();
-        if(!$vehiculo){
-            return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
+
+        if (!$vehiculo) {
+            return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
-        if ($vehiculo->user_id !== Auth::id()) {
+
+        if ($vehiculo->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
         $fechaActual = Carbon::now();
         $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $placa)->whereDate('fecha_creacion', $fechaActual)->get();
-        
-        if(!$revisionDiaria->isEmpty()){
+
+        $modo = Auth::user()->hasRole('admin') ? 'admin' : 'normal';
+
+        if (!$revisionDiaria->isEmpty()) {
             $imageUrls = $revisionDiaria->map(function ($revision) {
                 return asset('storage/uploads/fotos-diarias/' . $revision->imagen);
             })->all();
             return Inertia::render('revisionFluidos', [
                 'vehiculoId' => $placa,
                 'revisionDiaria' => $revisionDiaria,
-                'imageUrl' => $imageUrls
+                'imageUrl' => $imageUrls,
+                'modo' => $modo,
             ]);
         }
 
         return Inertia::render('revisionFluidos', [
             'vehiculoId' => $placa,
+            'modo' => $modo,
         ]);
     }
 
     public function store(Request $request, string $placa)
     {
-        $manager = new ImageManager(new Driver());
-        $vehiculo = Vehiculo::where('placa', $placa)->first();
-
-        if(!$vehiculo){
-            return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
+        try {
+            $validatedData = $request->validate([
+                'fluidos' => 'required|array',
+                'fluidos.*.tipo' => 'required|string',
+                'fluidos.*.vehiculo_id' => 'required|string|max:255',
+                'fluidos.*.dia' => 'required|string',
+                'fluidos.*.nivel_fluido' => 'required|string',
+                'fluidos.*.revisado' => 'required|string',
+                'fluidos.*.imagen' => 'nullable|file|max:5120',
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors());
         }
-        if ($vehiculo->user_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-        if (!$request->hasFile('*.imagen')) {
-            return redirect()->back()->with(['mensaje' => 'Debe subir las imagenes a la plataforma']);
-        }
 
-        $validatedData = $request->validate([
-            '*.tipo' => 'required',
-            '*.vehiculo_id' => 'required|max:255',
-            '*.nivel_fluido' => 'required',
-            '*.revisado' => 'required',
-            '*.imagen' => 'required|image|max:5120',
-        ]);
+        $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
+        $userId = Auth::user()->id;
 
+        foreach ($validatedData['fluidos'] as $index => $revision) {
+            $nameImage = null;
 
-        foreach($validatedData as $revision){
-            $image = $revision['imagen'];
-            
-            $nameImage = Str::uuid() . "." . $image->extension();
-            
-            $serverImage = $manager->read($image);
-            $serverImage->cover(1000, 1000);
-            
-            $targetPath = 'uploads/fotos-diarias';
-            
-            if (!Storage::disk('public')->exists($targetPath)) {
-                Storage::disk('public')->makeDirectory($targetPath);
+            $imageKey = "fluidos.{$index}.imagen";
+            if ($request->hasFile($imageKey)) {
+                $image = $request->file($imageKey);
+                $nameImage = Str::uuid() . '.' . $image->extension();
+
+                $serverImage = ImageManager::gd()->read($image);
+                $serverImage->cover(1000, 1000);
+                $targetPath = 'uploads/fotos-diarias';
+                Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
             }
-            
-            $serverImage->save(storage_path('app/public/' . $targetPath . '/' . $nameImage));
 
             RevisionesDiarias::create([
                 'vehiculo_id' => $placa,
-                'user_id' => $vehiculo->user_id,
+                'user_id' => $userId,
                 'nivel_fluido' => $revision['nivel_fluido'],
                 'imagen' => $nameImage,
-                'revisado' => true,
+                'revisado' => (bool)$revision['revisado'],
                 'tipo' => $revision['tipo'],
             ]);
         }
-        return back()->with([
-            'vehiculoId' => $placa,
-            'flash' => 'Revision de fluidos cargado correctamente'
-        ]);
+
+        return redirect()->back()->with('success', 'Revisión diaria registrada correctamente.');
     }
 }

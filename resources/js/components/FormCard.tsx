@@ -2,14 +2,16 @@ import { DateField } from '@/components/form-fields/DateField';
 import { SelectField } from '@/components/form-fields/SelectField';
 import { TextField } from '@/components/form-fields/TextField';
 import { Field, useFormLogic } from '@/hooks/useFormLogic';
+import { CheckField } from './form-fields/CheckField';
+import { FileField } from './form-fields/FileField';
 
 interface FormCardProps {
     title?: string;
     fields: Field[];
     buttonText?: string;
-    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas';
-    onSubmit?: (formData: Record<string, string>) => void;
-    expediente?: Record<string, string>;
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
+    onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
+    expediente?: Record<string | number, string | boolean | File | null>;
 }
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
@@ -21,30 +23,68 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
             alert('Hay fechas inválidas. Corrige antes de guardar.');
             return;
         }
-        onSubmit?.(formValues);
+
+        const plainData: Record<string, string | boolean | File | null> = {};
+
+        fields.forEach((field) => {
+            const value = formValues[field.id];
+            plainData[field.id] = value;
+        });
+
+        onSubmit?.(plainData);
     };
 
     const renderField = (field: Field) => {
-        const value = formValues[field.id] !== undefined ? String(formValues[field.id]) : '';
+        const value = formValues[field.id];
 
         if (field.type === 'date') {
             return (
                 <DateField
                     id={field.id}
                     label={field.label}
-                    expedicion={formValues[`${field.id}_expedicion`] || ''}
-                    vencimiento={formValues[`${field.id}_vencimiento`] || ''}
+                    expedicion={typeof formValues[`${field.id}_expedicion`] === 'string' ? formValues[`${field.id}_expedicion`] : ''}
+                    vencimiento={typeof formValues[`${field.id}_vencimiento`] === 'string' ? formValues[`${field.id}_vencimiento`] : ''}
                     onChange={handleChange}
                 />
             );
         }
-
         if (field.type === 'select') {
-            return <SelectField id={field.id} label={field.label} value={value} options={field.options} onChange={handleChange} />;
+            return (
+                <SelectField
+                    id={field.id}
+                    label={field.label}
+                    value={typeof value === 'string' ? value : ''}
+                    options={field.options}
+                    onChange={handleChange}
+                />
+            );
+        }
+        if (field.type === 'file') {
+            const fileValue = formValues[field.id];
+            const safeValue = typeof fileValue === 'string' || fileValue instanceof File || fileValue === null ? fileValue : undefined;
+
+            return <FileField id={field.id} label={field.label} value={safeValue} onChange={(id, file) => handleChange(id, file)} />;
         }
 
+        if (field.type === 'checkbox') {
+            return (
+                <CheckField
+                    id={field.id}
+                    label={field.label}
+                    checked={formValues[field.id] === true}
+                    onChange={(id, checked) => handleChange(id, checked)}
+                />
+            );
+        }
         return (
-            <TextField id={field.id} label={field.label} value={value} placeholder={field.placeholder} type={field.type} onChange={handleChange} />
+            <TextField
+                id={field.id}
+                label={field.label}
+                value={typeof value === 'string' ? value : ''}
+                placeholder={field.placeholder}
+                type={field.type}
+                onChange={handleChange}
+            />
         );
     };
 

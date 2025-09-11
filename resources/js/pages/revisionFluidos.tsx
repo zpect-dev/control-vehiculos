@@ -1,230 +1,147 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import FichaSeccionFluidos from '@/components/FichaSeccionFluidos';
+import FlashMessage from '@/components/FlashMessage';
+import { fluidosPorRevisarFields } from '@/constants/formFields';
 import AppLayout from '@/layouts/app-layout';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
-import { Head, router } from '@inertiajs/react';
-import { PanelTopOpen } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function revisionFluidos({ vehiculoId, revisionDiaria = null, imageUrl = null }) {
+interface RevisionFluidosProps {
+    vehiculoId: number | string;
+}
+
+interface RevisionFluido {
+    id: number;
+    vehiculo_id: string;
+    user_id: number;
+    nivel_fluido: number;
+    imagen: string;
+    fecha_creacion: string;
+    revisado: number;
+    fecha_revision: string | null;
+    tipo: string;
+}
+
+type FlashProps = {
+    success?: string;
+    [key: string]: any;
+};
+
+export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    const isFormAlreadySubmitted = revisionDiaria && revisionDiaria.length === 5;
-    const getDayIndex = () => {
-        const day = new Date().getDay();
-        return (day + 6) % 7;
-    };
+    const { flash, modo, revisionDiaria } = usePage<{
+        flash: FlashProps;
+        modo: string;
+        revisionDiaria: RevisionFluido[];
+    }>().props;
 
-    let i = 0;
-    const diaActual = diasSemana[getDayIndex()];
+    const esAdmin = modo === 'admin';
+    const diaActual = diasSemana[(new Date().getDay() + 6) % 7];
+    const diasVisibles = esAdmin ? diasSemana : [diaActual];
 
-    const fluidosPorRevisar = [
-        { id: 'aceite', nombre: 'Aceite de Motor' },
-        { id: 'caja', nombre: 'Aceite de Caja' },
-        { id: 'refrigerante', nombre: 'Refrigerante o Agua' },
-        { id: 'direccion', nombre: 'Líquido de Dirección' },
-        { id: 'frenos', nombre: 'Liga de Frenos' },
-    ];
-
-    const [revisiones, setRevisiones] = useState(() => {
-        if (revisionDiaria) {
-            const dataFromProps = fluidosPorRevisar.reduce((acc, fluido) => {
-                const foundRevision = revisionDiaria.find((rev) => rev.tipo === fluido.id);
-
-                acc[fluido.id] = foundRevision
-                    ? {
-                          nivel: foundRevision.nivel_fluido,
-                          foto: foundRevision.imagen,
-                          realizado: foundRevision.revision,
-                      }
-                    : {
-                          nivel: '',
-                          foto: null,
-                          realizado: false,
-                      };
-
-                return acc;
-            }, {});
-
-            const initialState = diasSemana.reduce((diasAcc, dia) => {
-                diasAcc[dia] = fluidosPorRevisar.reduce((acc, fluido) => {
-                    acc[fluido.id] = {
-                        nivel: '',
-                        foto: null,
-                        realizado: false,
-                    };
-                    return acc;
-                }, {});
-                return diasAcc;
-            }, {});
-
-            initialState[diaActual] = dataFromProps;
-
-            return initialState;
-        }
-
-        return diasSemana.reduce((diasAcc, dia) => {
-            diasAcc[dia] = fluidosPorRevisar.reduce((acc, fluido) => {
-                acc[fluido.id] = {
-                    nivel: '',
-                    foto: null,
-                    realizado: false,
-                };
+    const [revisiones] = useState(() => {
+        const mapa = diasSemana.reduce((diasAcc: any, dia) => {
+            diasAcc[dia] = fluidosPorRevisarFields.reduce((acc: any, fluido) => {
+                acc[fluido.id] = { nivel: '', foto: null, realizado: false };
                 return acc;
             }, {});
             return diasAcc;
         }, {});
+
+        if (Array.isArray(revisionDiaria)) {
+            revisionDiaria.forEach((rev) => {
+                const fecha = new Date(rev.fecha_creacion);
+                const diaTexto = diasSemana[(fecha.getDay() + 6) % 7];
+
+                if (mapa[diaTexto] && mapa[diaTexto][rev.tipo]) {
+                    mapa[diaTexto][rev.tipo] = {
+                        nivel: String(rev.nivel_fluido),
+                        foto: rev.imagen ? `/storage/uploads/fotos-diarias/${rev.imagen}` : null,
+                        realizado: true,
+                    };
+                }
+            });
+        }
+
+        return mapa;
     });
 
-    const handleInputChange = (dia: string, fluidoId: string, campo: string, valor: any) => {
-        setRevisiones((prev: any) => ({
-            ...prev,
-            [dia]: {
-                ...prev[dia],
-                [fluidoId]: {
-                    ...prev[dia][fluidoId],
-                    [campo]: valor,
-                },
-            },
-        }));
+    const fluidosFields = fluidosPorRevisarFields.flatMap((fluido) => [
+        {
+            id: fluido.id,
+            label: fluido.label,
+            type: 'select' as const,
+            options: [
+                { value: '1', label: 'Normal' },
+                { value: '0', label: 'Bajo' },
+            ],
+        },
+        {
+            id: `${fluido.id}_foto`,
+            label: `Foto de ${fluido.label}`,
+            type: 'file' as const,
+        },
+    ]);
+
+    const handleSubmitFluidos = (dia: string, formData: Record<string | number, string | boolean | File | null>) => {
+        const form = new FormData();
+
+        fluidosPorRevisarFields.forEach((fluido, index) => {
+            form.append(`fluidos[${index}][tipo]`, fluido.id);
+            form.append(`fluidos[${index}][vehiculo_id]`, vehiculoId.toString());
+            form.append(`fluidos[${index}][dia]`, dia);
+
+            const nivel = formData[fluido.id];
+            const imagen = formData[`${fluido.id}_foto`];
+            const revisado = !!nivel || !!imagen ? '1' : '0';
+
+            if (nivel) {
+                form.append(`fluidos[${index}][nivel_fluido]`, nivel as string);
+            }
+
+            form.append(`fluidos[${index}][revisado]`, revisado);
+
+            if (imagen instanceof File) {
+                form.append(`fluidos[${index}][imagen]`, imagen);
+            }
+        });
+
+        router.post(`/fichaTecnica/${vehiculoId}/revisionFluidos`, form, {
+            forceFormData: true,
+        });
     };
-
-    const handleFormSubmit = (e: any) => {
-        e.preventDefault();
-
-        const arrayRevisiones = [];
-
-        fluidosPorRevisar.forEach((fluido) => {
-            const datos = revisiones[diaActual][fluido.id];
-            const revision = {
-                tipo: fluido.id,
-                vehiculo_id: vehiculoId,
-                nivel_fluido: datos.nivel,
-                revisado: datos.realizado,
-                imagen: datos.foto,
-            };
-
-            arrayRevisiones.push(revision);
-        });
-
-        router.post(`/fichaTecnica/${vehiculoId}/revisionFluidos`, arrayRevisiones, {
-            onSuccess: () => console.log('Revisiones registradas con éxito.'),
-            onError: (errors) => console.error('Error al registrar las revisiones:', errors),
-        });
-    };
-
-    const renderCamposPorDia = () =>
-        diasSemana.map((dia) => {
-            const isToday = dia === diaActual;
-            const cardClasses = `mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 shadow-lg dark:bg-gray-800 transition-opacity ${!isToday ? 'opacity-50' : ''}`;
-
-            return (
-                <Disclosure key={dia} as="div" className={cardClasses}>
-                    {({ open }) => (
-                        <>
-                            <DisclosureButton
-                                className="flex w-full items-center justify-between px-6 py-4 text-left text-xl font-bold text-gray-800 dark:text-white"
-                                disabled={!isToday}
-                            >
-                                <span>{dia}</span>
-                                <PanelTopOpen
-                                    className={`h-5 w-5 transform transition-transform duration-200 ${open && isToday ? 'rotate-180' : 'rotate-0'}`}
-                                />
-                            </DisclosureButton>
-                            {isToday && (
-                                <DisclosurePanel className="px-6 pt-2 pb-6">
-                                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                        {fluidosPorRevisar.map((fluido) => {
-                                            const revision = revisiones[dia][fluido.id];
-                                            return (
-                                                <div key={fluido.id} className="flex flex-col gap-3">
-                                                    <label className="text-sm font-semibold text-muted-foreground">{fluido.nombre}</label>
-                                                    <select
-                                                        value={revision.nivel}
-                                                        onChange={(e) => handleInputChange(dia, fluido.id, 'nivel', e.target.value)}
-                                                        disabled={isFormAlreadySubmitted}
-                                                        className="rounded-md border px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                                    >
-                                                        <option value="" selected disabled>
-                                                            Selecciona nivel
-                                                        </option>
-                                                        <option value="1">Normal</option>
-                                                        <option value="0">Bajo</option>
-                                                    </select>
-                                                    {isFormAlreadySubmitted ? (
-                                                        imageUrl.map((url, index) => {
-                                                            const revisionForImage = revisionDiaria[index];
-                                                            if (revisionForImage && revisionForImage.tipo === fluido.id) {
-                                                                return (
-                                                                    <div key={url} className="flex justify-center">
-                                                                        <img
-                                                                            src={url}
-                                                                            alt={`Imagen de ${fluido.nombre}`}
-                                                                            className="h-48 w-48 rounded-lg object-cover"
-                                                                        />
-                                                                    </div>
-                                                                );
-                                                            }
-                                                            return null;
-                                                        })
-                                                    ) : (
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            onChange={(e) => handleInputChange(dia, fluido.id, 'foto', e.target.files?.[0] || null)}
-                                                            className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[4] focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                                        />
-                                                    )}
-                                                    {/* <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={revision.realizado}
-                                                            onChange={(e) => handleInputChange(dia, fluido.id, 'realizado', e.target.checked)}
-                                                            className="h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-[#49af4e]"
-                                                        />
-                                                        <span className="text-sm text-gray-700 dark:text-gray-300">Revisión realizada</span>
-                                                    </div> */}
-                                                    {revision.nivel == '0' && (
-                                                        <div className="mt-2 rounded-md border border-yellow-400 bg-yellow-100 px-3 py-2 text-sm text-yellow-800 dark:bg-yellow-200 dark:text-yellow-900">
-                                                            Nivel bajo detectado. Verifica si requiere atención.
-                                                        </div>
-                                                    )}
-                                                    {/* {!revision.realizado && (
-                                                        <div className="mt-2 rounded-md border border-red-500 bg-red-100 px-3 py-2 text-sm text-red-800 dark:bg-red-200 dark:text-red-900">
-                                                            No se ha marcado como revisado.
-                                                        </div>
-                                                    )} */}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </DisclosurePanel>
-                            )}
-                        </>
-                    )}
-                </Disclosure>
-            );
-        });
 
     return (
         <AppLayout>
             <Head title="Revisión Semanal de Fluidos" />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-10 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Revisión Diaria de Fluidos</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        {esAdmin ? 'Revisión Semanal de Fluidos' : `Revisión de Fluidos - ${diaActual}`}
+                    </h1>
+                    <FlashMessage mensaje={flash?.success} />
                 </div>
 
-                <form onSubmit={handleFormSubmit} className="space-y-6" encType="multipart/form-data">
-                    {renderCamposPorDia()}
-                    <div className="flex justify-end pt-6">
-                        <button
-                            type="submit"
-                            className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
-                            disabled={isFormAlreadySubmitted}
-                        >
-                            {isFormAlreadySubmitted ? 'Revision guardada' : 'Guardar revision'}
-                        </button>
-                    </div>
-                </form>
+                {diasVisibles.map((dia) => {
+                    const expediente = Object.fromEntries(
+                        fluidosPorRevisarFields.flatMap((fluido) => [
+                            [fluido.id, revisiones[dia][fluido.id].nivel],
+                            [`${fluido.id}_foto`, revisiones[dia][fluido.id].foto],
+                        ]),
+                    );
+
+                    return (
+                        <div key={dia} className="py-2">
+                            <FichaSeccionFluidos
+                                title={`Revisión de Fluidos - ${dia}`}
+                                fields={fluidosFields}
+                                expediente={expediente}
+                                onSubmit={(formData) => handleSubmitFluidos(dia, formData)}
+                            />
+                        </div>
+                    );
+                })}
             </div>
         </AppLayout>
     );

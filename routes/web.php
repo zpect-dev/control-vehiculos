@@ -44,6 +44,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Revisión Semanal
     Route::get('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
     Route::post('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
+
+    // Nueva ruta para la asignación de usuario
+    Route::post('fichaTecnica/{placa}/assign-user', [FichaTecnicaController::class, 'assignUser'])->name('fichaTecnica.assignUser');
 });
 
 // Configuración y autenticación

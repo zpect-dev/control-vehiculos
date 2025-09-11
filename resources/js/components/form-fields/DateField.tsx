@@ -1,15 +1,18 @@
 interface DateFieldProps {
     id: string;
     label: string;
-    expedicion: string;
-    vencimiento: string;
+    expedicion: string | boolean | File | null;
+    vencimiento: string | boolean | File | null;
     onChange: (id: string, value: string) => void;
 }
 
 export function DateField({ id, label, expedicion, vencimiento, onChange }: DateFieldProps) {
-    const fechaInvalida = expedicion && vencimiento && new Date(vencimiento) < new Date(expedicion);
+    const exp = typeof expedicion === 'string' ? expedicion : '';
+    const ven = typeof vencimiento === 'string' ? vencimiento : '';
 
-    const formatDate = (iso: string | undefined): string => {
+    const fechaInvalida = exp && ven && new Date(ven) < new Date(exp);
+
+    const formatDate = (iso: string): string => {
         if (!iso) return '';
         return iso.split('T')[0];
     };
@@ -24,7 +27,7 @@ export function DateField({ id, label, expedicion, vencimiento, onChange }: Date
                 <input
                     id={`${id}-expedicion`}
                     type="date"
-                    value={formatDate(expedicion)}
+                    value={formatDate(exp)}
                     onChange={(e) => onChange(`${id}_expedicion`, e.target.value)}
                     className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
@@ -36,7 +39,7 @@ export function DateField({ id, label, expedicion, vencimiento, onChange }: Date
                 <input
                     id={`${id}-vencimiento`}
                     type="date"
-                    value={formatDate(vencimiento)}
+                    value={formatDate(ven)}
                     onChange={(e) => onChange(`${id}_vencimiento`, e.target.value)}
                     className={`rounded-md border px-3 py-2 text-sm shadow-sm transition focus:outline-none ${
                         fechaInvalida

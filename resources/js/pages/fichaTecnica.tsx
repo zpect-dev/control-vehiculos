@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import AsignacionUser from '@/components/AsignacionUser';
 import FichaSeccion from '@/components/FichaSeccion';
 import FlashMessage from '@/components/FlashMessage';
 import { accesoriosFields, expedienteTecnicoFields, permisologiaFields, piezasRevisadasFields } from '@/constants/formFields';
@@ -18,6 +19,8 @@ export default function fichaTecnica({
     permisosGuardados,
     accesoriosGuardados = {},
     piezasGuardadas = {},
+    users,
+    isAdmin,
 }: {
     vehiculos: any[];
     modo: string;
@@ -25,6 +28,8 @@ export default function fichaTecnica({
     permisosGuardados: Record<string, Record<string, string>>;
     accesoriosGuardados?: Record<string, Record<string, string>>;
     piezasGuardadas?: Record<string, Record<string, string>>;
+    users: any[];
+    isAdmin: boolean;
 }) {
     const { flash } = usePage<{ flash: FlashProps }>().props;
     const vehiculo = vehiculos[0];
@@ -72,6 +77,7 @@ export default function fichaTecnica({
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-10 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Ficha Técnica del Vehículo</h1>
+                    <AsignacionUser vehiculo={vehiculo} users={users} isAdmin={isAdmin} />
                     <FlashMessage mensaje={flash?.success} />
                 </div>
 
