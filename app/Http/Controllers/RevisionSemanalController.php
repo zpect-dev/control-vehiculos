@@ -11,21 +11,51 @@ use Illuminate\Support\Facades\Auth;
 
 class RevisionSemanalController extends Controller
 {
-    public function index(string $placa)
+    public function index(Request $request, string $placa)
     {
         $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->first();
         if (!$vehiculo) {
             return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
         }
-        if ($vehiculo->user_id !== Auth::id()) {
+        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
-        $semanaSiguiente = new Carbon('next monday');
-        dd($semanaSiguiente);
+        $semanaMap = [
+            'Monday' => 0,
+            'Tuesday' => 1,
+            'Wednesday' => 2,
+            'Thursday' => 3,
+            'Friday' => 4,
+            'Saturday' => 5,
+            'Sunday' => 6
+        ];
+
+        $fechaActual = Carbon::today()->setTime(23, 59)->toImmutable();
+        $diaActual = $fechaActual->isoFormat('dddd');
+
+        $inicioSemana = $fechaActual->subDays($semanaMap[$diaActual]);
+        $finalSemana = $inicioSemana->addDays($semanaMap['Friday']);
+
+        $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $placa)
+                                            ->whereBetween('fecha_creacion', [$inicioSemana, $fechaActual])
+                                            ->first();
+
+        if($revisionSemanal){
+            $revisionSemanal->video = asset('storage/uploads/videos-semanales/' . $revisionSemanal->video);
+
+            return Inertia::render('revisionSemanal', [
+                'vehiculo' => $vehiculo,
+                'revisionSemanal' => $revisionSemanal,
+                'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
+                'final' => $finalSemana->isoFormat('D-M-YYYY')
+            ]);
+        }
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
+            'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
+            'final' => $finalSemana->isoFormat('D-M-YYYY')
         ]);
     }
 
@@ -59,7 +89,7 @@ class RevisionSemanalController extends Controller
         ]);
 
         return back()->with([
-            'vehiculoId' => $placa,
+            'vehiculo' => $vehiculo,
             'flash' => 'Revision semanal cargada correctamente'
         ]);
     }

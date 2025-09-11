@@ -14,7 +14,6 @@ export default function revisionFluidos({ vehiculoId, revisionDiaria = null, ima
         return (day + 6) % 7;
     };
 
-    let i = 0;
     const diaActual = diasSemana[getDayIndex()];
 
     const fluidosPorRevisar = [
