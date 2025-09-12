@@ -10,6 +10,7 @@ import { useState } from 'react';
 // Se corrige la interfaz para reflejar la estructura de los datos del servidor
 interface RevisionFluidosProps {
     vehiculoId: number | string;
+    vehiculo: any; // Se agrega la prop vehiculo
 }
 
 interface RevisionFluido {
@@ -41,6 +42,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const esAdmin = modo === 'admin';
     const diaActual = diasSemana[(new Date().getDay() + 6) % 7];
     const diasVisibles = esAdmin ? diasSemana : [diaActual];
+    const [validationError, setValidationError] = useState<string | null>(null);
 
     const [revisiones] = useState(() => {
         const mapa = diasSemana.reduce((diasAcc: any, dia) => {
@@ -88,6 +90,21 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     ]);
 
     const handleSubmitFluidos = (dia: string, formData: Record<string | number, string | boolean | File | null>) => {
+        setValidationError(null); // Clear previous errors
+
+        // Validación para asegurarse de que todos los fluidos con nivel también tienen una imagen
+        const missingImage = fluidosPorRevisarFields.find((fluido) => {
+            const nivel = formData[fluido.id];
+            const imagen = formData[`${fluido.id}_foto`];
+            // Si el nivel está seleccionado, pero no hay imagen, consideramos que falta
+            return nivel && !imagen;
+        });
+
+        if (missingImage) {
+            setValidationError(`Por favor, sube la imagen para el nivel de ${missingImage.label}.`);
+            return;
+        }
+
         const form = new FormData();
 
         fluidosPorRevisarFields.forEach((fluido, index) => {
@@ -112,6 +129,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
 
         router.post(`/fichaTecnica/${vehiculoId}/revisionFluidos`, form, {
             forceFormData: true,
+            onSuccess: () => setValidationError(null),
         });
     };
 
@@ -125,7 +143,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
                             ? `Revisión Semanal de Fluidos - ${vehiculo?.modelo}`
                             : `Revisión de Fluidos - ${vehiculo?.modelo} - ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
                     </h1>
-                    <FlashMessage mensaje={flash?.success} />
+                    <FlashMessage mensaje={flash?.success || validationError} isError={!!validationError} />
                 </div>
 
                 {diasVisibles.map((dia) => {
