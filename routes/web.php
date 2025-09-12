@@ -29,24 +29,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Ficha Técnica
     Route::get('fichaTecnica', [FichaTecnicaController::class, 'index'])->name('fichaTecnica');
-    Route::get('fichaTecnica/{placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
+    Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
 
     // Formularios asociados a ficha técnica
-    Route::post('fichaTecnica/{placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store');
-    Route::post('fichaTecnica/{placa}/permisos', [PermisologiaController::class, 'store'])->name('permisos.store');
-    Route::post('fichaTecnica/{placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
-    Route::post('fichaTecnica/{placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/permisos', [PermisologiaController::class, 'store'])->name('permisos.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
 
     // Revisión de Fluidos
-    Route::get('fichaTecnica/{placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
-    Route::post('fichaTecnica/{placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
+    Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
+    Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
 
     // Revisión Semanal
-    Route::get('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
-    Route::post('fichaTecnica/{placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
+    Route::get('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
+    Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
 
     // Nueva ruta para la asignación de usuario
-    Route::post('fichaTecnica/{placa}/assign-user', [FichaTecnicaController::class, 'assignUser'])->name('fichaTecnica.assignUser');
+    Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [FichaTecnicaController::class, 'assignUser'])->name('fichaTecnica.assignUser');
 });
 
 // Configuración y autenticación

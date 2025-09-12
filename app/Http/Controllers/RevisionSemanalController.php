@@ -11,65 +11,36 @@ use Illuminate\Support\Facades\Auth;
 
 class RevisionSemanalController extends Controller
 {
-    public function index(Request $request, string $placa)
+    public function index(Request $request, Vehiculo $vehiculo)
     {
-        $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->first();
-        if (!$vehiculo) {
-            return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
-        }
-
         if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
-        $semanaMap = [
-            'monday' => 0,
-            'tuesday' => 1,
-            'Wednesday' => 2,
-            'thursday' => 3,
-            'friday' => 4,
-            'saturday' => 5,
-            'sunday' => 6
-        ];
+        $vehiculo->load('usuario');
 
-        $fechaActual = Carbon::today()->toImmutable();
-        $diaActual = strtolower($fechaActual->isoFormat('dddd'));
+        $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
+        $finalSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toImmutable();
 
-        $inicioSemana = $fechaActual->subDays($semanaMap[$diaActual])->setTime(00, 00);
-        $finalSemana = $inicioSemana->addDays($semanaMap['friday'])->setTime(23, 59);
-
-        $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $placa)
-            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
-            ->first();
+        $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
+                                            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
+                                            ->first();
 
         if ($revisionSemanal) {
             $revisionSemanal->video = asset('storage/uploads/videos-semanales/' . $revisionSemanal->video);
-
-            return Inertia::render('revisionSemanal', [
-                'vehiculo' => $vehiculo,
-                'revisionSemanal' => $revisionSemanal,
-                'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
-                'final' => $finalSemana->isoFormat('D-M-YYYY')
-            ]);
         }
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
+            'revisionSemanal' => $revisionSemanal,
             'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
-            'final' => $finalSemana->isoFormat('D-M-YYYY')
+            'final' => $finalSemana->isoFormat('D-M-YYYY'),
+            'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal'
         ]);
     }
 
-    public function store(Request $request, string $placa)
+    public function store(Request $request, Vehiculo $vehiculo)
     {
-        $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->first();
-        if(!$vehiculo){
-            return redirect()->route('dashboard')->with('mensaje', 'Placa no encontrada');
-        }
-        if ($vehiculo->user_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         if(!$request->hasFile('video')){
             return back()->with('mensaje', 'Debe subir un video a la plataforma');
         }
@@ -82,8 +53,8 @@ class RevisionSemanalController extends Controller
         $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
 
         RevisionesSemanales::create([
-            'vehiculo_id' => $placa,
-            'user_id' => $vehiculo->user_id,
+            'vehiculo_id' => $vehiculo->placa,
+            'user_id' => Auth::id(),
             'observaciones' => '',
             'video' => $videoName,
             'revisado' => false

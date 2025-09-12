@@ -11,85 +11,52 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class RevisionDiariaController extends Controller
 {
-    public function index(Request $request, string $placa)
+    public function index(Request $request, Vehiculo $vehiculo)
     {
-        $vehiculo = Vehiculo::where('placa', $placa)->first();
-        if(!$vehiculo){
-            return redirect()->route('dashboard')->with('mensaje', 'Placa no entontrada');
-        }
         if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
-        $semanaMap = [
-            'monday' => 0,
-            'tuesday' => 1,
-            'wednesday' => 2,
-            'thursday' => 3,
-            'friday' => 4,
-            'saturday' => 5,
-            'sunday' => 6
-        ];
+        $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
+        $finalSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toImmutable();
 
-        $fechaActual = Carbon::today()->toImmutable();
-        $diaActual = strtolower($fechaActual->isoFormat('dddd'));
-
-        $inicioSemana = $fechaActual->subDays($semanaMap[$diaActual])->setTime(00, 00);
-        $finalSemana = $inicioSemana->addDays($semanaMap['friday'])->setTime(23, 59);
-
-        $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $placa)
+        $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
                                             ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
                                             ->get();
 
         $revisionesDiarias = [];
-        $modo = Auth::user()->hasRole('admin') ? 'admin' : 'normal';
-
         foreach ($revisionDiaria as $revision) {
             $dia = strtolower(Carbon::parse($revision->fecha_creacion)->isoFormat('dddd'));
 
             if (!isset($revisionesDiarias[$dia])) {
                 $revisionesDiarias[$dia] = [];
             }
+
             $revision->imagen = asset('storage/uploads/fotos-diarias/' . $revision->imagen);
             $revisionesDiarias[$dia][] = $revision;
         }
 
-        if(!$revisionDiaria->isEmpty()){
-            return Inertia::render('revisionFluidos', [
-                'vehiculoId' => $placa,
-                'revisionDiaria' => $revisionesDiarias,
-                'modo' => $modo
-            ]);
-        }
-
         return Inertia::render('revisionFluidos', [
-            'vehiculoId' => $placa,
-            'modo' => $modo
+            'vehiculoId' => $vehiculo->placa,
+            'revisionDiaria' => $revisionesDiarias,
+            'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal'
         ]);
     }
 
-    public function store(Request $request, string $placa)
+    public function store(Request $request, Vehiculo $vehiculo)
     {
-        try {
-            $validatedData = $request->validate([
-                'fluidos' => 'required|array',
-                'fluidos.*.tipo' => 'required|string',
-                'fluidos.*.vehiculo_id' => 'required|string|max:255',
-                'fluidos.*.dia' => 'required|string',
-                'fluidos.*.nivel_fluido' => 'required|string',
-                'fluidos.*.revisado' => 'required|string',
-                'fluidos.*.imagen' => 'nullable|file|max:5120',
-            ]);
-        } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
-        }
-
-        $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
-        $userId = Auth::user()->id;
+        $validatedData = $request->validate([
+            'fluidos' => 'required|array',
+            'fluidos.*.tipo' => 'required|string',
+            'fluidos.*.vehiculo_id' => 'required|string|max:255',
+            'fluidos.*.dia' => 'required|string',
+            'fluidos.*.nivel_fluido' => 'required|string',
+            'fluidos.*.revisado' => 'required|string',
+            'fluidos.*.imagen' => 'nullable|file|max:5120',
+        ]);
 
         foreach ($validatedData['fluidos'] as $index => $revision) {
             $nameImage = null;
@@ -105,16 +72,17 @@ class RevisionDiariaController extends Controller
                 Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
             }
 
-            RevisionesDiarias::create([
-                'vehiculo_id' => $placa,
-                'user_id' => $userId,
+            $datos[] = [
+                'vehiculo_id' => $vehiculo->placa,
+                'user_id' => Auth::id(),
                 'nivel_fluido' => $revision['nivel_fluido'],
                 'imagen' => $nameImage,
                 'revisado' => (bool)$revision['revisado'],
                 'tipo' => $revision['tipo'],
-            ]);
+            ];
         }
 
+        RevisionesDiarias::insert($datos);
         return redirect()->back()->with('success', 'Revisión diaria registrada correctamente.');
     }
 }
