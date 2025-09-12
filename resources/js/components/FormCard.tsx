@@ -25,10 +25,8 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
         }
 
         const plainData: Record<string, string | boolean | File | null> = {};
-
         fields.forEach((field) => {
-            const value = formValues[field.id];
-            plainData[field.id] = value;
+            plainData[field.id] = formValues[field.id];
         });
 
         onSubmit?.(plainData);
@@ -37,55 +35,51 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
     const renderField = (field: Field) => {
         const value = formValues[field.id];
 
-        if (field.type === 'date') {
-            return (
-                <DateField
-                    id={field.id}
-                    label={field.label}
-                    expedicion={typeof formValues[`${field.id}_expedicion`] === 'string' ? formValues[`${field.id}_expedicion`] : ''}
-                    vencimiento={typeof formValues[`${field.id}_vencimiento`] === 'string' ? formValues[`${field.id}_vencimiento`] : ''}
-                    onChange={handleChange}
-                />
-            );
-        }
-        if (field.type === 'select') {
-            return (
-                <SelectField
-                    id={field.id}
-                    label={field.label}
-                    value={typeof value === 'string' ? value : ''}
-                    options={field.options}
-                    onChange={handleChange}
-                />
-            );
-        }
-        if (field.type === 'file') {
-            const fileValue = formValues[field.id];
-            const safeValue = typeof fileValue === 'string' || fileValue instanceof File || fileValue === null ? fileValue : undefined;
+        switch (field.type) {
+            case 'date':
+                return (
+                    <DateField
+                        id={field.id}
+                        label={field.label}
+                        expedicion={typeof formValues[`${field.id}_expedicion`] === 'string' ? formValues[`${field.id}_expedicion`] : ''}
+                        vencimiento={typeof formValues[`${field.id}_vencimiento`] === 'string' ? formValues[`${field.id}_vencimiento`] : ''}
+                        onChange={handleChange}
+                    />
+                );
 
-            return <FileField id={field.id} label={field.label} value={safeValue} onChange={(id, file) => handleChange(id, file)} />;
-        }
+            case 'select':
+                return (
+                    <SelectField
+                        id={field.id}
+                        label={field.label}
+                        value={typeof value === 'string' ? value : ''}
+                        options={field.options}
+                        onChange={handleChange}
+                    />
+                );
 
-        if (field.type === 'checkbox') {
-            return (
-                <CheckField
-                    id={field.id}
-                    label={field.label}
-                    checked={formValues[field.id] === true}
-                    onChange={(id, checked) => handleChange(id, checked)}
-                />
-            );
+            case 'file': {
+                const safeFile = typeof value === 'string' || value instanceof File || value === null ? value : undefined;
+                return <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />;
+            }
+
+            case 'checkbox':
+                return (
+                    <CheckField id={field.id} label={field.label} checked={value === true} onChange={(id, checked) => handleChange(id, checked)} />
+                );
+
+            default:
+                return (
+                    <TextField
+                        id={field.id}
+                        label={field.label}
+                        value={typeof value === 'string' ? value : ''}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        onChange={handleChange}
+                    />
+                );
         }
-        return (
-            <TextField
-                id={field.id}
-                label={field.label}
-                value={typeof value === 'string' ? value : ''}
-                placeholder={field.placeholder}
-                type={field.type}
-                onChange={handleChange}
-            />
-        );
     };
 
     return (

@@ -14,12 +14,11 @@ class EventoCambioInputs implements ShouldBroadcast
 
     public string $field;
     public string|int $value;
-    public ?string $formType;
     public string $placa;
     public string $userName;
+    public ?string $formType;
 
-
-    public function __construct(string $field, string|int $value, ?string $formType = null, string $placa, string $userName)
+    public function __construct(string $field, string|int $value, string $placa, string $userName, ?string $formType = null)
     {
         $this->field = $field;
         $this->value = $value;

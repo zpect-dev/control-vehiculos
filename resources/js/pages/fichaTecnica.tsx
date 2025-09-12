@@ -48,7 +48,28 @@ export default function fichaTecnica({
         return plano;
     };
 
-    const handleFormSubmit = (tipo: 'expedientes' | 'permisos' | 'accesorios' | 'piezas', formData: Record<string, string>, vehiculoId: string) => {
+    const sanitizeFormData = (data: Record<string, string | boolean | File | null>): Record<string, string> => {
+        const sanitized: Record<string, string> = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (typeof value === 'string') {
+                sanitized[key] = value;
+            } else if (typeof value === 'boolean') {
+                sanitized[key] = value ? 'true' : 'false';
+            } else if (value instanceof File) {
+                sanitized[key] = value.name;
+            } else {
+                sanitized[key] = '';
+            }
+        }
+        return sanitized;
+    };
+
+    const handleFormSubmit = (
+        tipo: 'expedientes' | 'permisos' | 'accesorios' | 'piezas',
+        rawData: Record<string, string | boolean | File | null>,
+        vehiculoId: string,
+    ) => {
+        const formData = sanitizeFormData(rawData);
         formData.vehiculo_id = vehiculoId;
 
         router.post(`/fichaTecnica/${vehiculoId}/${tipo}`, formData, {

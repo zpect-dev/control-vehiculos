@@ -32,10 +32,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
 
     // Formularios asociados a ficha técnica
-    Route::post('fichaTecnica/{vehiculo:placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store');
-    Route::post('fichaTecnica/{vehiculo:placa}/permisos', [PermisologiaController::class, 'store'])->name('permisos.store');
-    Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
-    Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
+    Route::post('fichaTecnica/{placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store');
+    Route::post('fichaTecnica/{placa}/permisologia', [PermisologiaController::class, 'store'])->name('permisos.store');
+    Route::post('fichaTecnica/{placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
+    Route::post('fichaTecnica/{placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
 
     // Revisión de Fluidos
     Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');

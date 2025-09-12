@@ -30,7 +30,7 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
     const [hasFechasInvalidas, setHasFechasInvalidas] = useState(false);
 
     useEffect(() => {
-        const isValid = initialData && typeof initialData === 'object' && !Array.isArray(initialData); // La lógica aquí ya no es necesaria con el cambio de useState inicial.
+        const isValid = initialData && typeof initialData === 'object' && !Array.isArray(initialData);
         setIsEditing(isValid && Object.keys(initialData).length > 0);
     }, [initialData]);
     useEffect(() => {
