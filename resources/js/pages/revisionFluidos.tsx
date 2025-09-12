@@ -31,10 +31,11 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const diasSemana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     const diasSemanaTexto = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-    const { flash, modo, revisionDiaria } = usePage<{
+    const { flash, modo, revisionDiaria, vehiculo } = usePage<{
         flash: FlashProps;
         modo: string;
         revisionDiaria?: Record<string, RevisionFluido[]>;
+        vehiculo: any; // Se agrega la prop vehiculo
     }>().props;
 
     const esAdmin = modo === 'admin';
@@ -120,7 +121,9 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-10 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        {esAdmin ? 'Revisión Semanal de Fluidos' : `Revisión de Fluidos - ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
+                        {esAdmin
+                            ? `Revisión Semanal de Fluidos - ${vehiculo?.modelo}`
+                            : `Revisión de Fluidos - ${vehiculo?.modelo} - ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
                     </h1>
                     <FlashMessage mensaje={flash?.success} />
                 </div>

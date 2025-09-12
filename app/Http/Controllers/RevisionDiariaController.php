@@ -41,6 +41,7 @@ class RevisionDiariaController extends Controller
 
         return Inertia::render('revisionFluidos', [
             'vehiculoId' => $vehiculo->placa,
+            'vehiculo' => $vehiculo,
             'revisionDiaria' => $revisionesDiarias,
             'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal'
         ]);

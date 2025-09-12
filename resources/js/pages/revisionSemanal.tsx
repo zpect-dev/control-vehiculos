@@ -36,24 +36,28 @@ export default function revisionSemanal({ vehiculo, revisionSemanal = null, inic
         let revision = {};
 
         if (weeklyVideo) {
-            revision = {
-                video: weeklyVideo,
-                //observaciones: falta agregar el input
-            };
-        }
+            const formData = new FormData();
+            formData.append('video', weeklyVideo);
 
-        router.post(`/fichaTecnica/${vehiculo.placa}/revisionSemanal`, revision, {
-            onSuccess: () => console.log('Revisiones registradas con éxito.'),
-            onError: (errors) => console.error('Error al registrar las revisiones:', errors),
-        });
+            // You can add other form fields here if needed
+            // formData.append('observaciones', '...');
+
+            router.post(`/fichaTecnica/${vehiculo.placa}/revisionSemanal`, formData, {
+                onSuccess: () => console.log('Revisiones registradas con éxito.'),
+                onError: (errors) => console.error('Error al registrar las revisiones:', errors),
+                forceFormData: true,
+            });
+        }
     };
 
     return (
         <AppLayout>
-            <Head title="Revisión Semanal de Fluidos" />
+            <Head title={`Revisión Semanal de Vehículos - ${vehiculo?.modelo}`} />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-5 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Revisión Semanal de Vehículos</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Revisión Semanal de Vehículos - {vehiculo?.modelo}
+                    </h1>
                 </div>
 
                 {/* Card de Detalles del Vehículo y Carga de Video */}

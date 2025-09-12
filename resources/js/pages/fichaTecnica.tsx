@@ -97,7 +97,7 @@ export default function fichaTecnica({
             <Head title={`Ficha Técnica / ${vehiculo.modelo} (${vehiculo.placa})`} />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-10 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Ficha Técnica del Vehículo</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Ficha Técnica del Vehículo {vehiculo.modelo}</h1>
                     <AsignacionUser vehiculo={vehiculo} users={users} isAdmin={isAdmin} />
                     <FlashMessage mensaje={flash?.success} />
                 </div>
