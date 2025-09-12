@@ -7,7 +7,7 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('app:detectar-chequeos-omitidos')->dailyAt('09:00');
+        $schedule->command('app:detectar-chequeos-omitidos')->dailyAt('17:00');
     }
 
     protected function commands()

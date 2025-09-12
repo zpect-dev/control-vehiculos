@@ -48,14 +48,12 @@ class PermisologiaController extends Controller
             } else {
                 $expedicion = $request->input("{$campo}_expedicion");
                 $vencimiento = $request->input("{$campo}_vencimiento");
-
                 if ($expedicion && $vencimiento && $vencimiento < $expedicion) {
                     continue;
                 }
 
                 if ($expedicion || $vencimiento) {
                     $estado = $vencimiento ? now()->lt($vencimiento) : true;
-
                     VehiculoPermisos::updateOrCreate(
                         [
                             'user_id' => $request->user()->id,

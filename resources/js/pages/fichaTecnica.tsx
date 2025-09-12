@@ -65,7 +65,7 @@ export default function fichaTecnica({
     };
 
     const handleFormSubmit = (
-        tipo: 'expedientes' | 'permisos' | 'accesorios' | 'piezas',
+        tipo: 'expedientes' | 'permisologia' | 'accesorios' | 'piezas',
         rawData: Record<string, string | boolean | File | null>,
         vehiculoId: string,
     ) => {
@@ -75,7 +75,7 @@ export default function fichaTecnica({
         router.post(`/fichaTecnica/${vehiculoId}/${tipo}`, formData, {
             onSuccess: () => {
                 console.log(`${tipo} guardado con éxito`);
-                if (tipo === 'permisos') {
+                if (tipo === 'permisologia') {
                     setPermisosLocal((prev) => ({
                         ...prev,
                         [vehiculoId]: { ...prev[vehiculoId], ...formData },
@@ -116,7 +116,7 @@ export default function fichaTecnica({
                         fields={permisologiaFields}
                         formType="permisologia"
                         expediente={transformarPermisos(permisosLocal[placa] || {})}
-                        onSubmit={(data) => handleFormSubmit('permisos', data, placa)}
+                        onSubmit={(data) => handleFormSubmit('permisologia', data, placa)}
                     />
 
                     <FichaSeccion

@@ -16,20 +16,14 @@ interface FormCardProps {
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, handleChange } = useFormLogic(expediente, fields);
-
+console.log(expediente)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (hasFechasInvalidas) {
             alert('Hay fechas inválidas. Corrige antes de guardar.');
             return;
         }
-
-        const plainData: Record<string, string | boolean | File | null> = {};
-        fields.forEach((field) => {
-            plainData[field.id] = formValues[field.id];
-        });
-
-        onSubmit?.(plainData);
+        onSubmit?.(formValues);
     };
 
     const renderField = (field: Field) => {
@@ -52,7 +46,7 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                     <SelectField
                         id={field.id}
                         label={field.label}
-                        value={typeof value === 'string' ? value : ''}
+                        value={value}
                         options={field.options}
                         onChange={handleChange}
                     />
