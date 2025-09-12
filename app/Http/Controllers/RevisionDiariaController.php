@@ -54,6 +54,7 @@ class RevisionDiariaController extends Controller
             if (!isset($revisionesDiarias[$dia])) {
                 $revisionesDiarias[$dia] = [];
             }
+            $revision->imagen = asset('storage/uploads/fotos-diarias/' . $revision->imagen);
             $revisionesDiarias[$dia][] = $revision;
         }
 

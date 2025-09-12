@@ -131,7 +131,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
                             const registro = revisiones[dia][fluido.id];
                             return [
                                 [fluido.id, registro.nivel],
-                                [`${fluido.id}_foto`, registro.foto ? `/storage/uploads/fotos-diarias/${registro.foto}` : null],
+                                [`${fluido.id}_foto`, registro.foto ? registro.foto : null],
                             ];
                         }),
                     );
