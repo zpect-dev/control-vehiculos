@@ -37,7 +37,9 @@ class RevisionDiariaController extends Controller
                 $revisionesDiarias[$dia] = [];
             }
 
-            $revision->imagen = '/storage/uploads/fotos-diarias/' . $revision->imagen;
+            if ($revision->imagen) {
+                $revision->imagen = '/storage/uploads/fotos-diarias/' . ltrim($revision->imagen, '/');
+            }
             $revisionesDiarias[$dia][] = $revision;
         }
 
