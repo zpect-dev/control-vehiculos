@@ -26,8 +26,8 @@ class RevisionSemanalController extends Controller
                                             ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
                                             ->first();
 
-        if ($revisionSemanal) {
-            $revisionSemanal->video = asset('storage/uploads/videos-semanales/' . $revisionSemanal->video);
+        if ($revisionSemanal->video) {
+            $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
         }
 
         return Inertia::render('revisionSemanal', [
