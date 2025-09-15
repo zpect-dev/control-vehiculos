@@ -38,15 +38,15 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Correo electrónico</Label>
+                                <Label htmlFor="email">Cedula de Identidad</Label>
                                 <Input
                                     id="email"
-                                    type="email"
+                                    type="text"
                                     required
                                     tabIndex={2}
                                     autoComplete="email"
-                                    name='email'
-                                    placeholder="nombre@ejemplo.com"
+                                    name="email"
+                                    placeholder="12345678"
                                     className="rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e]"
                                 />
                                 <InputError message={errors.email} />
@@ -60,7 +60,7 @@ export default function Register() {
                                     required
                                     tabIndex={3}
                                     autoComplete="new-password"
-                                    name='password'
+                                    name="password"
                                     placeholder="Contraseña"
                                     className="rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e]"
                                 />
@@ -95,7 +95,7 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             ¿Ya tienes una cuenta?{' '}
-                            <TextLink href={login()} tabIndex={6} className='text-blue-600 hover:underline'>
+                            <TextLink href={login()} tabIndex={6} className="text-blue-600 hover:underline">
                                 Inicia Sesión
                             </TextLink>
                         </div>

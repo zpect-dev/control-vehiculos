@@ -14,7 +14,7 @@ class AdminRoleSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
 
         // Buscar el usuario por ID, correo o cualquier criterio
-        $adminUser = User::where('email', 'admin@gmail.com')->first();
+        $adminUser = User::where('email', '29960819')->first();
 
         if ($adminUser) {
             $adminUser->assignRole($adminRole);

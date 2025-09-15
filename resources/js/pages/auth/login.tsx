@@ -26,17 +26,17 @@ export default function Login({ status }: LoginProps) {
                         <div className="grid gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email" className="font-semibold text-gray-700 dark:text-gray-300">
-                                    Correo electrónico
+                                    Cedula de Identidad
                                 </Label>
                                 <Input
                                     id="email"
-                                    type="email"
+                                    type="text"
                                     name="email"
                                     required
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="nombre@ejemplo.com"
+                                    placeholder="12345678"
                                     className="rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e]"
                                 />
                                 <InputError message={errors.email} />
