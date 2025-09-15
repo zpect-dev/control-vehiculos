@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\FichaTecnica;
 
+use App\Events\EventoPermisoPorVencer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\VehiculoPermisos;
+use Carbon\Carbon;
 
 class PermisologiaController extends Controller
 {
     public function store(Request $request, string $placa)
     {
         $vehiculoId = $placa;
+        $usuario = $request->user()->name;
 
         $mapaPermisos = [
             'titulo' => ['id' => 1, 'tipo' => 'text'],
@@ -48,12 +51,14 @@ class PermisologiaController extends Controller
             } else {
                 $expedicion = $request->input("{$campo}_expedicion");
                 $vencimiento = $request->input("{$campo}_vencimiento");
+
                 if ($expedicion && $vencimiento && $vencimiento < $expedicion) {
                     continue;
                 }
 
                 if ($expedicion || $vencimiento) {
                     $estado = $vencimiento ? now()->lt($vencimiento) : true;
+
                     VehiculoPermisos::updateOrCreate(
                         [
                             'user_id' => $request->user()->id,
@@ -67,6 +72,38 @@ class PermisologiaController extends Controller
                             'valor_texto' => null,
                         ]
                     );
+
+                    // Emitir alerta si el permiso vence en 15 días o menos
+                    if ($vencimiento) {
+                        $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
+
+
+                        $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+
+                        // Clave de sesión para evitar duplicados por sesión
+                        $clave = "permiso_alertado_{$vehiculoId}_{$campo}_{$vencimientoCarbon->toDateString()}";
+                        if (!session()->has($clave)) {
+                            session()->put($clave, true);
+
+                            if ($diasRestantes < 0) {
+                                // Vencido
+                                broadcast(new EventoPermisoPorVencer(
+                                    $vehiculoId,
+                                    $usuario,
+                                    ucfirst($campo),
+                                    $vencimientoCarbon->toDateString()
+                                ))->toOthers();
+                            } elseif ($diasRestantes <= 15) {
+                                // Por vencer
+                                broadcast(new EventoPermisoPorVencer(
+                                    $vehiculoId,
+                                    $usuario,
+                                    ucfirst($campo),
+                                    $vencimientoCarbon->toDateString()
+                                ))->toOthers();
+                            }
+                        }
+                    }
                 }
             }
         }

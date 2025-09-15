@@ -6,6 +6,11 @@ use App\Models\Vehiculo;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Carbon\Carbon;
+use App\Events\VideoSemanalOmitido;
+use App\Events\ChequeoOmitido;
+use App\Models\RevisionesSemanales;
+use App\Models\RevisionesDiarias;
 
 class DashboardController extends Controller
 {
@@ -24,6 +29,53 @@ class DashboardController extends Controller
             ->orderByDesc('created_at')
             ->get()
             : [];
+
+        $hoy = Carbon::now();
+        $horaActual = $hoy->format('H:i');
+        $fechaHoy = $hoy->toDateString();
+
+        // Verificación de video semanal omitido (sábado después de 10am)
+        if ($modo === 'admin' && $hoy->isSaturday() && $horaActual >= '10:00') {
+            $inicioSemana = $hoy->copy()->startOfWeek(Carbon::MONDAY)->toDateString();
+            $finalSemana = $hoy->copy()->endOfWeek(Carbon::FRIDAY)->toDateString();
+
+            foreach ($vehiculos as $vehiculo) {
+                $revision = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
+                    ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
+                    ->first();
+
+                $clave = "video_alertado_{$vehiculo->placa}_{$inicioSemana}";
+                if (!session()->has($clave) && !$revision?->video) {
+                    session()->put($clave, true);
+
+                    broadcast(new VideoSemanalOmitido(
+                        $vehiculo->placa,
+                        $vehiculo->usuario->name ?? 'Desconocido',
+                        "Semana del {$inicioSemana} al {$finalSemana}"
+                    ))->toOthers();
+                }
+            }
+        }
+
+        // Verificación de revisión diaria omitida (todos los días después de 9am)
+        if ($modo === 'admin' && $horaActual >= '09:00') {
+            foreach ($vehiculos as $vehiculo) {
+                $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
+                    ->whereDate('fecha_creacion', $fechaHoy)
+                    ->exists();
+
+                $clave = "chequeo_alertado_{$vehiculo->placa}_{$fechaHoy}";
+                if (!session()->has($clave) && !$revisadoHoy) {
+                    session()->put($clave, true);
+
+                    broadcast(new ChequeoOmitido(
+                        $vehiculo->placa,
+                        $vehiculo->usuario->name ?? 'Desconocido',
+                        $fechaHoy
+                    ))->toOthers();
+                }
+            }
+        }
 
         return Inertia::render('dashboard', [
             'vehiculos' => $vehiculos,

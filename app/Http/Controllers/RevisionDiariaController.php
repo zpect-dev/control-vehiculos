@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EventoNivelBajo;
 use App\Models\RevisionesDiarias;
 use App\Models\Vehiculo;
 use Carbon\Carbon;
@@ -16,7 +17,8 @@ class RevisionDiariaController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo)
     {
-        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
+        // Validación de acceso con casting seguro
+        if ((int) $vehiculo->user_id !== (int) Auth::id() && !$request->user()->hasRole('admin')) {
             abort(403, 'No autorizado');
         }
 
@@ -24,8 +26,8 @@ class RevisionDiariaController extends Controller
         $finalSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toImmutable();
 
         $revisionDiaria = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
-                                            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
-                                            ->get();
+            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
+            ->get();
 
         $revisionesDiarias = [];
         foreach ($revisionDiaria as $revision) {
@@ -35,7 +37,7 @@ class RevisionDiariaController extends Controller
                 $revisionesDiarias[$dia] = [];
             }
 
-            $revision->imagen = asset('storage/uploads/fotos-diarias/' . $revision->imagen);
+            $revision->imagen = '/storage/uploads/fotos-diarias/' . $revision->imagen;
             $revisionesDiarias[$dia][] = $revision;
         }
 
@@ -59,6 +61,8 @@ class RevisionDiariaController extends Controller
             'fluidos.*.imagen' => 'nullable|file|max:5120',
         ]);
 
+        $datos = [];
+
         foreach ($validatedData['fluidos'] as $index => $revision) {
             $nameImage = null;
 
@@ -73,13 +77,26 @@ class RevisionDiariaController extends Controller
                 Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
             }
 
+            $nivel = $revision['nivel_fluido'];
+            $tipo = $revision['tipo'];
+
+            if ($nivel === '0') {
+                broadcast(new EventoNivelBajo(
+                    $vehiculo->placa,
+                    Auth::user()->name,
+                    $tipo,
+                    'Revisión de Fluidos',
+                    'BAJO'
+                ))->toOthers();
+            }
+
             $datos[] = [
                 'vehiculo_id' => $vehiculo->placa,
                 'user_id' => Auth::id(),
-                'nivel_fluido' => $revision['nivel_fluido'],
+                'nivel_fluido' => $nivel,
                 'imagen' => $nameImage,
                 'revisado' => (bool)$revision['revisado'],
-                'tipo' => $revision['tipo'],
+                'tipo' => $tipo,
             ];
         }
 

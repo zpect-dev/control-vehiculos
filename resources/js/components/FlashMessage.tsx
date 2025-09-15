@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
 interface FlashMessageProps {
-    mensaje?: string;
+    mensaje?: string | null;
     duracion?: number;
+    isError?: boolean;
 }
 
 export default function FlashMessage({ mensaje, duracion = 4000 }: FlashMessageProps) {

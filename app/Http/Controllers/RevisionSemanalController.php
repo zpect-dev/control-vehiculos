@@ -23,11 +23,11 @@ class RevisionSemanalController extends Controller
         $finalSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toImmutable();
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
-                                            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
-                                            ->first();
+            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
+            ->first();
 
         if ($revisionSemanal) {
-            $revisionSemanal->video = asset('storage/uploads/videos-semanales/' . $revisionSemanal->video);
+            $revisionSemanal->video = '/storage/uploads/videos-semanales/' . $revisionSemanal->video;
         }
 
         return Inertia::render('revisionSemanal', [
@@ -41,7 +41,7 @@ class RevisionSemanalController extends Controller
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        if(!$request->hasFile('video')){
+        if (!$request->hasFile('video')) {
             return back()->with('mensaje', 'Debe subir un video a la plataforma');
         }
         $validatedData = $request->validate([

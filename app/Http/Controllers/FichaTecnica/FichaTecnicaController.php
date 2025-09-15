@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\FichaTecnica;
 
+use App\Events\EventoPermisoPorVencer;
 use App\Helpers\NotificacionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
@@ -10,6 +11,7 @@ use App\Models\VehiculoEspecificaciones;
 use App\Models\VehiculoPermisos;
 use App\Models\VehiculoPiezas;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -165,21 +167,60 @@ class FichaTecnicaController extends Controller
     public function storePermisos(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');
+        $usuario = $request->user()->name;
+
         foreach ($this->mapaPermisos() as $permiso_id => $config) {
             $campo = $config['campo'];
             $tipo = $config['tipo'];
+
             $registro = VehiculoPermisos::firstOrNew([
                 'vehiculo_id' => $placa,
                 'permiso_id' => $permiso_id,
             ]);
+
             if ($tipo === 'text') {
                 $registro->valor_texto = array_key_exists($campo, $data) ? $data[$campo] : null;
             } else {
-                $registro->fecha_expedicion = $data["{$campo}_expedicion"] ?? null;
-                $registro->fecha_vencimiento = $data["{$campo}_vencimiento"] ?? null;
+                $expedicion = $data["{$campo}_expedicion"] ?? null;
+                $vencimiento = $data["{$campo}_vencimiento"] ?? null;
+
+                $registro->fecha_expedicion = $expedicion;
+                $registro->fecha_vencimiento = $vencimiento;
+
+                // Emitir alerta si el permiso vence en 15 días o menos
+                if ($vencimiento) {
+                    $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
+                    $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+
+                    // Clave de sesión para evitar notificaciones duplicadas
+                    $clave = "permiso_alertado_{$placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
+                    if (!session()->has($clave)) {
+                        session()->put($clave, true);
+
+                        if ($diasRestantes < 0) {
+                            // Vencido
+                            broadcast(new EventoPermisoPorVencer(
+                                $placa,
+                                $usuario,
+                                ucfirst($campo),
+                                $vencimientoCarbon->toDateString()
+                            ))->toOthers();
+                        } elseif ($diasRestantes <= 15) {
+                            // Por vencer
+                            broadcast(new EventoPermisoPorVencer(
+                                $placa,
+                                $usuario,
+                                ucfirst($campo),
+                                $vencimientoCarbon->toDateString()
+                            ))->toOthers();
+                        }
+                    }
+                }
             }
+
             $registro->save();
         }
+
         return redirect()->back()->with('success', 'Permisología actualizada correctamente.');
     }
 
