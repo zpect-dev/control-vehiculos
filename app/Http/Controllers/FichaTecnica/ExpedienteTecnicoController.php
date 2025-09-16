@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\FichaTecnica;
 
 use App\Http\Controllers\Controller;
+use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use App\Models\VehiculoEspecificaciones;
 
 class ExpedienteTecnicoController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, Vehiculo $vehiculo)
     {
-        $vehiculoId = $request->input('vehiculo_id');
         $campos = $request->except('vehiculo_id');
 
         foreach ($campos as $especificacionId => $valor) {
             VehiculoEspecificaciones::updateOrCreate(
                 [
                     'user_id' => $request->user()->id,
-                    'vehiculo_id' => $vehiculoId,
+                    'vehiculo_id' => $vehiculo->placa,
                     'especificacion_id' => $especificacionId,
                 ],
                 [

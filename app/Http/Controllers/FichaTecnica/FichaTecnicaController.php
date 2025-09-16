@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\FichaTecnica;
 
 use App\Events\EventoPermisoPorVencer;
-use App\Helpers\NotificacionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
 use App\Models\VehiculoAccesorios;

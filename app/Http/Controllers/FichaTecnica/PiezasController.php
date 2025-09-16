@@ -5,10 +5,11 @@ namespace App\Http\Controllers\FichaTecnica;
 use App\Models\VehiculoPiezas;
 use Illuminate\Http\Request;
 use App\Helpers\NotificacionHelper;
+use App\Models\Vehiculo;
 
 class PiezasController
 {
-    public function store(Request $request, string $placa)
+    public function store(Request $request, Vehiculo $vehiculo)
     {
         $data = $request->except('vehiculo_id');
         $userName = $request->user()->name;
@@ -16,7 +17,7 @@ class PiezasController
         foreach ($data as $pieza_id => $estado) {
             if ($estado !== null && $estado !== '') {
                 VehiculoPiezas::updateOrCreate(
-                    ['vehiculo_id' => $placa, 'pieza_id' => $pieza_id],
+                    ['vehiculo_id' => $vehiculo->placa, 'pieza_id' => $pieza_id],
                     ['estado' => $estado, 'user_id' => $request->user()->id]
                 );
 
@@ -25,7 +26,7 @@ class PiezasController
                         $pieza_id,
                         (int) $estado,
                         'piezas',
-                        $placa,
+                        $vehiculo->placa,
                         $userName
                     );
                 }

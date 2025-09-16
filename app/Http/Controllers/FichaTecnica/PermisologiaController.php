@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\FichaTecnica;
 
-use App\Events\EventoPermisoPorVencer;
 use App\Helpers\NotificacionHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use App\Models\VehiculoPermisos;
 use Carbon\Carbon;
 
 class PermisologiaController extends Controller
 {
-    public function store(Request $request, string $placa)
+    public function store(Request $request, Vehiculo $vehiculo)
     {
-        $vehiculoId = $placa;
         $usuario = $request->user()->name;
 
         $mapaPermisos = [
@@ -38,7 +37,7 @@ class PermisologiaController extends Controller
                     VehiculoPermisos::updateOrCreate(
                         [
                             'user_id' => $request->user()->id,
-                            'vehiculo_id' => $vehiculoId,
+                            'vehiculo_id' => $vehiculo->placa,
                             'permiso_id' => $permisoId,
                         ],
                         [
@@ -63,7 +62,7 @@ class PermisologiaController extends Controller
                     VehiculoPermisos::updateOrCreate(
                         [
                             'user_id' => $request->user()->id,
-                            'vehiculo_id' => $vehiculoId,
+                            'vehiculo_id' => $vehiculo->placa,
                             'permiso_id' => $permisoId,
                         ],
                         [
@@ -82,13 +81,13 @@ class PermisologiaController extends Controller
                         $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
 
                         // Clave de sesión para evitar duplicados por sesión
-                        $clave = "permiso_alertado_{$vehiculoId}_{$campo}_{$vencimientoCarbon->toDateString()}";
+                        $clave = "permiso_alertado_{$vehiculo->placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
                         if (!session()->has($clave)) {
                             session()->put($clave, true);
 
                             if ($diasRestantes <= 15) {
                                 NotificacionHelper::emitirPermisoPorVencer(
-                                    $vehiculoId,
+                                    $vehiculo->placa,
                                     $usuario,
                                     ucfirst($campo),
                                     $vencimientoCarbon->toDateString()
@@ -101,7 +100,7 @@ class PermisologiaController extends Controller
         }
 
         // Construir respuesta con datos actualizados
-        $permisosActualizados = VehiculoPermisos::where('vehiculo_id', $vehiculoId)
+        $permisosActualizados = VehiculoPermisos::where('vehiculo_id', $vehiculo->placa)
             ->get()
             ->groupBy('permiso_id')
             ->map(function ($items) {
@@ -114,9 +113,9 @@ class PermisologiaController extends Controller
                 ];
             });
 
-        return redirect()->route('fichaTecnica.show', $vehiculoId)->with([
+        return redirect()->route('fichaTecnica.show', $vehiculo->placa)->with([
             'success' => 'Permisología guardada correctamente.',
-            'permisosGuardados' => [$vehiculoId => $permisosActualizados],
+            'permisosGuardados' => [$vehiculo->placa => $permisosActualizados],
         ]);
     }
 }

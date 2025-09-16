@@ -10,9 +10,8 @@ use App\Helpers\NotificacionHelper;
 
 class AccesoriosController extends Controller
 {
-    public function store(Request $request, string $placa)
+    public function store(Request $request, Vehiculo $vehiculo)
     {
-        $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
         $data = $request->except('vehiculo_id');
         $userName = $request->user()->name;
 
@@ -21,7 +20,7 @@ class AccesoriosController extends Controller
 
             VehiculoAccesorios::updateOrCreate(
                 [
-                    'vehiculo_id' => $placa,
+                    'vehiculo_id' => $vehiculo->placa,
                     'accesorio_id' => $accesorioId,
                 ],
                 [
@@ -35,12 +34,12 @@ class AccesoriosController extends Controller
                     $accesorioId,
                     (int) $estado,
                     'accesorios',
-                    $placa,
+                    $vehiculo->placa,
                     $userName
                 );
             }
         }
 
-        return redirect()->back()->with('success', 'Accesorios actualizados correctamente.');
+        return back()->with('success', 'Accesorios actualizados correctamente.');
     }
 }
