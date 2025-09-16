@@ -66,7 +66,7 @@ class AsignacionesController extends Controller
         
         NotificacionHelper::emitirAsignacionUsuario($vehiculo->placa, $admin->name, $nuevoUsuario->name);
 
-        back()->with('success', 'Usuario asignado correctamente.');
+        return back()->with('success', 'Usuario asignado correctamente.');
     }
 
     /**
@@ -74,6 +74,6 @@ class AsignacionesController extends Controller
      */
     public function show(HistorialAsignaciones $registro)
     {
-        //
+        
     }
 }
