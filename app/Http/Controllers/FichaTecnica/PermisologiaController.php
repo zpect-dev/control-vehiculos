@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\FichaTecnica;
 
 use App\Events\EventoPermisoPorVencer;
+use App\Helpers\NotificacionHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\VehiculoPermisos;
@@ -85,22 +86,13 @@ class PermisologiaController extends Controller
                         if (!session()->has($clave)) {
                             session()->put($clave, true);
 
-                            if ($diasRestantes < 0) {
-                                // Vencido
-                                broadcast(new EventoPermisoPorVencer(
+                            if ($diasRestantes <= 15) {
+                                NotificacionHelper::emitirPermisoPorVencer(
                                     $vehiculoId,
                                     $usuario,
                                     ucfirst($campo),
                                     $vencimientoCarbon->toDateString()
-                                ))->toOthers();
-                            } elseif ($diasRestantes <= 15) {
-                                // Por vencer
-                                broadcast(new EventoPermisoPorVencer(
-                                    $vehiculoId,
-                                    $usuario,
-                                    ucfirst($campo),
-                                    $vencimientoCarbon->toDateString()
-                                ))->toOthers();
+                                );
                             }
                         }
                     }

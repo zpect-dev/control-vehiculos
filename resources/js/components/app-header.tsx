@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { CalendarRange, Car, Droplets, Menu } from 'lucide-react';
+import { Bell, CalendarRange, Car, Droplets, Menu } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -95,10 +95,14 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </div>
                             </SheetContent>
                         </Sheet>
-
-                        <Link href="/dashboard" prefetch className="flex items-center">
-                            <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
-                        </Link>
+                        <div className="flex items-center justify-between">
+                            <Link href="/dashboard" prefetch className="flex w-full items-center gap-2 space-x-22">
+                                <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                                <Link href="/notificaciones" prefetch className="flex items-center justify-end">
+                                    <Bell />
+                                </Link>
+                            </Link>
+                        </div>
                     </div>
 
                     {/* Desktop Menu */}
@@ -133,7 +137,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             )}
                         </div>
 
-                        <div className="flex items-center">
+                        <div className="flex items-center space-x-5">
+                            <Link href="/notificaciones" prefetch className="flex items-center justify-start">
+                                <Bell />
+                            </Link>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="size-10 rounded-full p-1">

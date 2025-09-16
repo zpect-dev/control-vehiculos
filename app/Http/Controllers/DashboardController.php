@@ -7,10 +7,9 @@ use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
-use App\Events\VideoSemanalOmitido;
-use App\Events\ChequeoOmitido;
 use App\Models\RevisionesSemanales;
 use App\Models\RevisionesDiarias;
+use App\Helpers\NotificacionHelper;
 
 class DashboardController extends Controller
 {
@@ -48,11 +47,11 @@ class DashboardController extends Controller
                 if (!session()->has($clave) && !$revision?->video) {
                     session()->put($clave, true);
 
-                    broadcast(new VideoSemanalOmitido(
+                    NotificacionHelper::emitirVideoSemanalOmitido(
                         $vehiculo->placa,
                         $vehiculo->usuario->name ?? 'Desconocido',
                         "Semana del {$inicioSemana} al {$finalSemana}"
-                    ))->toOthers();
+                    );
                 }
             }
         }
@@ -68,11 +67,11 @@ class DashboardController extends Controller
                 if (!session()->has($clave) && !$revisadoHoy) {
                     session()->put($clave, true);
 
-                    broadcast(new ChequeoOmitido(
+                    NotificacionHelper::emitirChequeoOmitido(
                         $vehiculo->placa,
                         $vehiculo->usuario->name ?? 'Desconocido',
                         $fechaHoy
-                    ))->toOthers();
+                    );
                 }
             }
         }

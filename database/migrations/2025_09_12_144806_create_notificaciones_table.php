@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('titulo');
             $table->text('descripcion');
+            $table->unsignedBigInteger('usuario_id');
             $table->string('tipo');
-            $table->foreignId('usuario_id')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('solo_admin')->default(false);
             $table->boolean('leida')->default(false);
             $table->timestamps();
+            
+            $table->foreign('usuario_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\EventoNivelBajo;
+use App\Helpers\NotificacionHelper;
 use App\Models\RevisionesDiarias;
 use App\Models\Vehiculo;
 use App\Services\Multimedia;
@@ -74,13 +75,12 @@ class RevisionDiariaController extends Controller
             $tipo = $revision['tipo'];
 
             if ($nivel === '0') {
-                broadcast(new EventoNivelBajo(
+                NotificacionHelper::emitirNivelBajo(
                     $vehiculo->placa,
                     Auth::user()->name,
                     $tipo,
-                    'Revisión de Fluidos',
-                    'BAJO'
-                ))->toOthers();
+                    'Revisión de Fluidos'
+                );
             }
 
             $datos[] = [

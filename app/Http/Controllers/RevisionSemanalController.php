@@ -26,7 +26,7 @@ class RevisionSemanalController extends Controller
             ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
             ->first();
 
-        if ($revisionSemanal->video) {
+        if ($revisionSemanal) {
             $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
         }
 
