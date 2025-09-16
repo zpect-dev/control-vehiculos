@@ -17,69 +17,6 @@ use Inertia\Inertia;
 
 class FichaTecnicaController extends Controller
 {
-    public function index(Request $request)
-    {
-        $user = $request->user();
-        $isAdmin = $user->hasRole('admin');
-
-        $vehiculos = $isAdmin
-            ? Vehiculo::with('usuario')->get()
-            : Vehiculo::with('usuario')->where('user_id', $user->id)->get();
-
-        $expedientesTecnicosPorVehiculo = [];
-        $permisosPorVehiculo = [];
-        $accesoriosPorVehiculo = [];
-        $piezasPorVehiculo = [];
-
-        foreach ($vehiculos as $vehiculo) {
-            $placa = $vehiculo->placa;
-
-            // Expediente Técnico
-            $expediente = VehiculoEspecificaciones::where('vehiculo_id', $placa)->get();
-            $expedientesTecnicosPorVehiculo[$placa] = $expediente->pluck('estado', 'especificacion_id')->toArray();
-
-            // Permisología
-            $permisos = VehiculoPermisos::where('vehiculo_id', $placa)->get();
-            $permisosPorVehiculo[$placa] = [];
-            foreach ($permisos as $permiso) {
-                $config = $this->mapaPermisos()[$permiso->permiso_id] ?? null;
-                if (!$config) continue;
-                $campo = $config['campo'];
-                $tipo = $config['tipo'];
-                if ($tipo === 'text') {
-                    $permisosPorVehiculo[$placa][$campo] = $permiso->valor_texto;
-                } else {
-                    $permisosPorVehiculo[$placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
-                    $permisosPorVehiculo[$placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
-                }
-            }
-
-            // Accesorios
-            $accesorios = VehiculoAccesorios::where('vehiculo_id', $placa)->get();
-            $accesoriosPorVehiculo[$placa] = $accesorios->pluck('estado', 'accesorio_id')->toArray();
-
-            // Piezas
-            $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
-            $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
-        }
-
-        $users = $isAdmin ? User::select('id', 'name')->get() : [];
-
-        return Inertia::render('fichaTecnica', [
-            'vehiculos' => $vehiculos,
-            'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,
-            'permisosGuardados' => $permisosPorVehiculo,
-            'accesoriosGuardados' => $accesoriosPorVehiculo,
-            'piezasGuardadas' => $piezasPorVehiculo,
-            'isAdmin' => $isAdmin,
-            'users' => $users,
-            'modo' => $isAdmin ? 'admin' : 'usuario',
-            'flash' => [
-                'success' => session('success'),
-            ],
-        ]);
-    }
-
     public function show(Request $request, string $placa)
     {
         $user = $request->user();

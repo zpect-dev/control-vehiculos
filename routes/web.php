@@ -29,7 +29,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Ficha Técnica
-    Route::get('fichaTecnica', [FichaTecnicaController::class, 'index'])->name('fichaTecnica');
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
 
     // Formularios asociados a ficha técnica
