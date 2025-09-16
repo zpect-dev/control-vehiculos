@@ -33,6 +33,6 @@ class PiezasController
             }
         }
 
-        return redirect()->back()->with('success', 'Piezas actualizadas correctamente.');
+        return back()->with('success', 'Piezas actualizadas correctamente.');
     }
 }

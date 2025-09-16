@@ -27,6 +27,6 @@ class ExpedienteTecnicoController extends Controller
             );
         }
 
-        return redirect()->back()->with('success', 'Expediente técnico guardado correctamente.');
+        return back()->with('success', 'Expediente técnico guardado correctamente.');
     }
 }

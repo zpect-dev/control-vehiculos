@@ -113,7 +113,7 @@ class PermisologiaController extends Controller
                 ];
             });
 
-        return redirect()->route('fichaTecnica.show', $vehiculo->placa)->with([
+        return back()->with([
             'success' => 'Permisología guardada correctamente.',
             'permisosGuardados' => [$vehiculo->placa => $permisosActualizados],
         ]);

@@ -75,7 +75,7 @@ class FichaTecnicaController extends Controller
                 ['estado' => $estado]
             );
         }
-        return redirect()->back()->with('success', 'Expediente técnico actualizado correctamente.');
+        return back()->with('success', 'Expediente técnico actualizado correctamente.');
     }
 
     public function storePermisos(Request $request, string $placa)
@@ -135,7 +135,7 @@ class FichaTecnicaController extends Controller
             $registro->save();
         }
 
-        return redirect()->back()->with('success', 'Permisología actualizada correctamente.');
+        return back()->with('success', 'Permisología actualizada correctamente.');
     }
 
     public function storeAccesorios(Request $request, string $placa)
@@ -148,7 +148,7 @@ class FichaTecnicaController extends Controller
                 ['estado' => $estado]
             );
         }
-        return redirect()->back()->with('success', 'Accesorios actualizados correctamente.');
+        return back()->with('success', 'Accesorios actualizados correctamente.');
     }
 
     public function storePiezas(Request $request, string $placa)
@@ -168,7 +168,7 @@ class FichaTecnicaController extends Controller
                 );
             }
         }
-        return redirect()->back()->with('success', 'Piezas actualizadas correctamente.');
+        return back()->with('success', 'Piezas actualizadas correctamente.');
     }
 
     private function mapaPermisos(): array
