@@ -13,10 +13,6 @@ use App\Services\Multimedia;
 class AsignacionesController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo){
-        if($vehiculo->user_id !== Auth::user()->id){
-            return redirect('dashboard');
-        }
-
         $historial = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->paginate(10);
 
         return view('nombre_vista', [
