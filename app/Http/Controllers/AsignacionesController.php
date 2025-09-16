@@ -13,7 +13,7 @@ use App\Services\Multimedia;
 class AsignacionesController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo){
-        if($vehiculo->user_id !== Auth::user()->id && !$request->user()->hasRole('admin')){
+        if($vehiculo->user_id !== Auth::user()->id){
             return redirect('dashboard');
         }
 
@@ -36,10 +36,6 @@ class AsignacionesController extends Controller
      */
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        if (!$request->user()->hasRole('admin')) {
-            return response()->json(['message' => 'Acceso denegado.'], 403);
-        }
-
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'kilometraje' => 'required|numeric',
@@ -69,6 +65,7 @@ class AsignacionesController extends Controller
             'foto_kilometraje' => $respuesta
         ]);
 
+        $vehiculo->user_id = $nuevoUsuario->id;
         $vehiculo->save();
         
         NotificacionHelper::emitirAsignacionUsuario($vehiculo->placa, $admin->name, $nuevoUsuario->name);
@@ -79,7 +76,7 @@ class AsignacionesController extends Controller
     /**
      * Display the resource.
      */
-    public function show()
+    public function show(HistorialAsignaciones $registro)
     {
         //
     }

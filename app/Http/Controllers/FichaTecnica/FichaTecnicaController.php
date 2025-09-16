@@ -130,28 +130,6 @@ class FichaTecnicaController extends Controller
         ]);
     }
 
-    public function assignUser(Request $request, string $placa)
-    {
-        if (!$request->user()->hasRole('admin')) {
-            return response()->json(['message' => 'Acceso denegado.'], 403);
-        }
-
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-        ]);
-
-        $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
-        $vehiculo->user_id = $request->user_id;
-        $vehiculo->save();
-
-        $nuevoUsuario = User::find($request->user_id)?->name ?? 'Usuario desconocido';
-        $adminName = $request->user()->name;
-
-        NotificacionHelper::emitirAsignacionUsuario($placa, $adminName, $nuevoUsuario);
-
-        return redirect()->back()->with('success', 'Usuario asignado correctamente.');
-    }
-
     public function storeExpediente(Request $request, string $placa)
     {
         $data = $request->except('vehiculo_id');

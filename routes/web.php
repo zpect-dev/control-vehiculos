@@ -25,7 +25,6 @@ Route::get('/', function () {
 
 // Rutas protegidas por autenticación y verificación
 Route::middleware(['auth', 'verified'])->group(function () {
-
     // Dashboard principal (muestra las cards de vehículos)
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -46,19 +45,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Revisión Semanal
     Route::get('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
     Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
+});
 
-    // Nueva ruta para la asignación de usuario
-    Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [FichaTecnicaController::class, 'assignUser'])->name('fichaTecnica.assignUser');
-
-    // Rutas para modificar vehiculos (necesario proximamente)
-    Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
-    Route::patch('vehiculo/{vehiculo:placa}', [VehiculoController::class, 'update'])->name('vehiculo.update');
-
+Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas para asignaciones
     Route::get('historial/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
 
-    // Rutas para asignaciones
+    // Rutas para modificar vehiculos (necesario proximamente)
+    Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
+    Route::get('vehiculo/{vehiculo:placa}/{historialAsignaciones:id}', [VehiculoController::class, 'show'])->name('vehiculo.show');
+    Route::patch('vehiculo/{vehiculo:placa}', [VehiculoController::class, 'update'])->name('vehiculo.update');
 });
 
 // Configuración y autenticación
