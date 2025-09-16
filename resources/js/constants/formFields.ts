@@ -576,3 +576,24 @@ export const fluidosPorRevisarFields: Field[] = [
         ],
     },
 ];
+
+// Campos para Asignacion de Vehiculo
+export const getAsignacionFields = (users: { id: string | number; name: string }[]): Field[] => [
+    {
+        id: 'user_id',
+        label: 'Usuario a asignar',
+        type: 'select',
+        options: users.map((u) => ({ label: u.name, value: String(u.id) })),
+    },
+    {
+        id: 'kilometraje',
+        label: 'Kilometraje actual',
+        type: 'text',
+        placeholder: 'Ej. 123456',
+    },
+    {
+        id: 'foto_kilometraje',
+        label: 'Foto del Kilometraje',
+        type: 'file',
+    },
+];

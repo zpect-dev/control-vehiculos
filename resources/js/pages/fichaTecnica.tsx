@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AsignacionUser from '@/components/AsignacionUser';
+import ModalAsignacionUser from '@/components/modal/ModalAsignacionUser';
+
 import FichaSeccion from '@/components/FichaSeccion';
 import FlashMessage from '@/components/FlashMessage';
 import { accesoriosFields, expedienteTecnicoFields, permisologiaFields, piezasRevisadasFields } from '@/constants/formFields';
@@ -32,9 +33,10 @@ export default function fichaTecnica({
     isAdmin: boolean;
 }) {
     const { flash } = usePage<{ flash: FlashProps }>().props;
-    const vehiculo = vehiculos[0];
-    const placa = vehiculo?.placa || '';
+    const [vehiculoActual, setVehiculoActual] = useState(vehiculos[0]);
 
+    const placa = vehiculoActual?.placa || '';
+    const [modalOpen, setModalOpen] = useState(false);
     const [permisosLocal, setPermisosLocal] = useState(permisosGuardados);
     const [, setAccesoriosLocal] = useState(accesoriosGuardados);
 
@@ -94,11 +96,35 @@ export default function fichaTecnica({
 
     return (
         <AppLayout>
-            <Head title={`Ficha Técnica / ${vehiculo.modelo} (${vehiculo.placa})`} />
+            <Head title={`Ficha Técnica / ${vehiculoActual.modelo} (${vehiculoActual.placa})`} />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
-                <div className="mb-10 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Ficha Técnica del Vehículo {vehiculo.modelo}</h1>
-                    <AsignacionUser vehiculo={vehiculo} users={users} isAdmin={isAdmin} />
+                <div className="mb-6 text-center">
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Ficha Técnica del Vehículo {vehiculoActual.modelo}
+                    </h1>
+                    {vehiculoActual.usuario ? (
+                        <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                            <span className="font-semibold">Encargado actual:</span>{' '}
+                            <span className="rounded-full bg-green-100 px-2 py-0.5 font-medium text-[#49af4e] dark:bg-green-200 dark:text-green-900">
+                                {vehiculoActual.usuario.name}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">Encargado actual:</span>{' '}
+                            <span className="rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-500 dark:bg-red-200 dark:text-red-900">
+                                Sin asignar
+                            </span>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={() => setModalOpen(true)}
+                        className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                    >
+                        Asignar Usuario
+                    </button>
+
                     <FlashMessage mensaje={flash?.success} />
                 </div>
 
@@ -133,6 +159,16 @@ export default function fichaTecnica({
                         formType="piezas"
                         expediente={piezasGuardadas[placa]}
                         onSubmit={(data) => handleFormSubmit('piezas', data, placa)}
+                    />
+                    <ModalAsignacionUser
+                        isOpen={modalOpen}
+                        onClose={() => setModalOpen(false)}
+                        vehiculo={vehiculoActual}
+                        users={users}
+                        isAdmin={isAdmin}
+                        onSuccess={(nuevoUsuario) => {
+                            setVehiculoActual((prev: any) => ({ ...prev, usuario: nuevoUsuario }));
+                        }}
                     />
                 </div>
             </div>

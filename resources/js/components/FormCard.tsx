@@ -9,7 +9,7 @@ interface FormCardProps {
     title?: string;
     fields: Field[];
     buttonText?: string;
-    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion';
     onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
     expediente?: Record<string | number, string | boolean | File | null>;
 }

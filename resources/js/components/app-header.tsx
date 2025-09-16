@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CalendarRange, Car, Droplets, Menu } from 'lucide-react';
+import { BadgePlus, Bell, CalendarRange, Car, Droplets, Menu } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -32,6 +32,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               { title: 'Ficha Técnica', href: `/fichaTecnica/${placaActual}`, icon: Car },
               { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
               { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
+              { title: 'Observaciones', href: `/fichaTecnica/${placaActual}/observaciones`, icon: BadgePlus },
           ]
         : [];
 
@@ -98,9 +99,13 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         <div className="flex items-center justify-between">
                             <Link href="/dashboard" prefetch className="flex w-full items-center gap-2 space-x-22">
                                 <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
-                                <Link href="/notificaciones" prefetch className="flex items-center justify-end">
-                                    <Bell />
-                                </Link>
+                                <div>
+                                    {auth.user.is_admin && (
+                                        <Link href="/notificaciones" prefetch className="flex items-center justify-start">
+                                            <Bell />
+                                        </Link>
+                                    )}
+                                </div>
                             </Link>
                         </div>
                     </div>
@@ -114,7 +119,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         <div className="flex flex-1 justify-center">
                             {!isDashboard && (
                                 <NavigationMenu>
-                                    <NavigationMenuList className="flex items-center space-x-2">
+                                    <NavigationMenuList className="flex items-center space-x-1">
                                         {vehiculoNavItems.map((item, index) => (
                                             <NavigationMenuItem key={index}>
                                                 <Link
@@ -138,9 +143,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         </div>
 
                         <div className="flex items-center space-x-5">
-                            <Link href="/notificaciones" prefetch className="flex items-center justify-start">
-                                <Bell />
-                            </Link>
+                            {auth.user.is_admin && (
+                                <Link href="/notificaciones" prefetch className="flex items-center justify-start">
+                                    <Bell />
+                                </Link>
+                            )}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="size-10 rounded-full p-1">

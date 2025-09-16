@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AsignacionesController;
+use App\Http\Controllers\NotificacionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -55,6 +56,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
     Route::get('vehiculo/{vehiculo:placa}/{historialAsignaciones:id}', [VehiculoController::class, 'show'])->name('vehiculo.show');
     Route::patch('vehiculo/{vehiculo:placa}', [VehiculoController::class, 'update'])->name('vehiculo.update');
+    // Rutas para notificaciones
+    Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
+    Route::post('notificaciones/{notificacion}/marcar-leida', [NotificacionController::class, 'store'])->name('notificaciones.marcarLeida');
 });
 
 // Configuración y autenticación
