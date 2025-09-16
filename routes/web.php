@@ -13,6 +13,7 @@ use App\Http\Controllers\FichaTecnica\ExpedienteTecnicoController;
 use App\Http\Controllers\FichaTecnica\PermisologiaController;
 use App\Http\Controllers\FichaTecnica\AccesoriosController;
 use App\Http\Controllers\FichaTecnica\PiezasController;
+use App\Http\Controllers\ObservacionesController;
 use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
 use App\Http\Controllers\VehiculoController;
@@ -28,7 +29,9 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard principal (muestra las cards de vehículos)
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
+Route::middleware(['auth', 'acceso'])->group(function () {
     // Ficha Técnica
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
 
@@ -37,7 +40,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('fichaTecnica/{vehiculo:placa}/permisologia', [PermisologiaController::class, 'store'])->name('permisos.store');
     Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
     Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
-
     // Revisión de Fluidos
     Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
     Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
@@ -45,6 +47,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Revisión Semanal
     Route::get('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
     Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
+
+    // Observaciones
+    Route::get('observaciones/{vehiculo:placa}', [ObservacionesController::class, 'index'])->name('observaciones.index');
+    Route::get('observaciones/{vehiculo:placa}/{observaciones:id}', [ObservacionesController::class, 'show'])->name('observaciones.show');
+    Route::post('observaciones/{vehiculo:placa}/save', [ObservacionesController::class, 'store'])->name('observaciones.store');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -56,9 +63,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
     Route::get('vehiculo/{vehiculo:placa}/{historialAsignaciones:id}', [VehiculoController::class, 'show'])->name('vehiculo.show');
     Route::patch('vehiculo/{vehiculo:placa}', [VehiculoController::class, 'update'])->name('vehiculo.update');
+
     // Rutas para notificaciones
     Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
     Route::post('notificaciones/{notificacion}/marcar-leida', [NotificacionController::class, 'store'])->name('notificaciones.marcarLeida');
+
+    // Observaciones
+    Route::patch('observaciones/{vehiculo:placa}/{observaciones:id}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
 });
 
 // Configuración y autenticación

@@ -62,4 +62,9 @@ class Vehiculo extends Model
     {
         return $this->hasMany(VehiculoPiezas::class, 'vehiculo_id', 'placa');
     }
+
+    public function observaciones()
+    {
+        return $this->hasMany(Observacion::class, 'vehiculo_id', 'placa');
+    }
 }

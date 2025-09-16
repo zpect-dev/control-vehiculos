@@ -16,11 +16,6 @@ class RevisionDiariaController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo)
     {
-        // Validación de acceso con casting seguro
-        if ((int) $vehiculo->user_id !== (int) Auth::id() && !$request->user()->hasRole('admin')) {
-            abort(403, 'No autorizado');
-        }
-
         $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
         $finalSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toImmutable();
 
@@ -94,6 +89,6 @@ class RevisionDiariaController extends Controller
         }
 
         RevisionesDiarias::insert($datos);
-        redirect()->back()->with('success', 'Revisión diaria registrada correctamente.');
+        back()->with('success', 'Revisión diaria registrada correctamente.');
     }
 }

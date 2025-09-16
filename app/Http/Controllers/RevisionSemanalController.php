@@ -13,10 +13,6 @@ class RevisionSemanalController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo)
     {
-        if ($vehiculo->user_id !== Auth::id() && !$request->user()->hasRole('admin')) {
-            abort(403, 'No autorizado');
-        }
-
         $vehiculo->load('usuario');
 
         $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
