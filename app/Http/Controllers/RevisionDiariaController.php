@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Events\EventoNivelBajo;
 use App\Models\RevisionesDiarias;
 use App\Models\Vehiculo;
+use App\Services\Multimedia;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Auth;
 
 class RevisionDiariaController extends Controller
@@ -60,24 +58,17 @@ class RevisionDiariaController extends Controller
             'fluidos.*.dia' => 'required|string',
             'fluidos.*.nivel_fluido' => 'required|string',
             'fluidos.*.revisado' => 'required|string',
-            'fluidos.*.imagen' => 'nullable|file|max:5120',
+            'fluidos.*.imagen' => 'required|file|image|max:5120',
         ]);
 
         $datos = [];
 
-        foreach ($validatedData['fluidos'] as $index => $revision) {
-            $nameImage = null;
+        foreach ($validatedData['fluidos'] as $revision) {
+            $multimedia = new Multimedia;
 
-            $imageKey = "fluidos.{$index}.imagen";
-            if ($request->hasFile($imageKey)) {
-                $image = $request->file($imageKey);
-                $nameImage = Str::uuid() . '.' . $image->extension();
+            $nameImage = $multimedia->guardarImagen($revision['imagen']);
 
-                $serverImage = ImageManager::gd()->read($image);
-                $serverImage->cover(1000, 1000);
-                $targetPath = 'uploads/fotos-diarias';
-                Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
-            }
+            if(!$nameImage) { return back()->with('error', 'Error al guardar la imagen'); }
 
             $nivel = $revision['nivel_fluido'];
             $tipo = $revision['tipo'];
@@ -103,6 +94,6 @@ class RevisionDiariaController extends Controller
         }
 
         RevisionesDiarias::insert($datos);
-        return redirect()->back()->with('success', 'Revisión diaria registrada correctamente.');
+        redirect()->back()->with('success', 'Revisión diaria registrada correctamente.');
     }
 }

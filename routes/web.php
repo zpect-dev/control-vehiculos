@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AsignacionesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,6 +14,7 @@ use App\Http\Controllers\FichaTecnica\AccesoriosController;
 use App\Http\Controllers\FichaTecnica\PiezasController;
 use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
+use App\Http\Controllers\VehiculoController;
 
 // Ruta raíz: redirige al dashboard si está autenticado
 Route::get('/', function () {
@@ -47,6 +49,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Nueva ruta para la asignación de usuario
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [FichaTecnicaController::class, 'assignUser'])->name('fichaTecnica.assignUser');
+
+    // Rutas para modificar vehiculos (necesario proximamente)
+    Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
+    Route::patch('vehiculo/{vehiculo:placa}', [VehiculoController::class, 'update'])->name('vehiculo.update');
+
+    // Rutas para asignaciones
+    Route::get('historial/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
+    Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
+
+    // Rutas para asignaciones
 });
 
 // Configuración y autenticación
