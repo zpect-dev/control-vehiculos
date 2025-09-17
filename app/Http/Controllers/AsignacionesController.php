@@ -13,7 +13,6 @@ class AsignacionesController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo){
         $historial = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->paginate(10);
-
         return view('nombre_vista', [
             'historial' => $historial
         ]);
@@ -67,6 +66,8 @@ class AsignacionesController extends Controller
      */
     public function show(HistorialAsignaciones $registro)
     {
-        
+        return view('nombre_vista', [
+            'registro' => $registro
+        ]);
     }
 }

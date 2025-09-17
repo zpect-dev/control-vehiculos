@@ -57,11 +57,11 @@ Route::middleware(['auth', 'acceso'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas para asignaciones
     Route::get('historial/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
+    Route::get('historial/{registro}/asignacion', [AsignacionesController::class, 'show'])->name('asignaciones.show');
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
 
     // Rutas para modificar vehiculos (necesario proximamente)
     Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
-    Route::get('vehiculo/{vehiculo:placa}/{historialAsignaciones:id}', [VehiculoController::class, 'show'])->name('vehiculo.show');
     Route::patch('vehiculo/{vehiculo:placa}', [VehiculoController::class, 'update'])->name('vehiculo.update');
 
     // Rutas para notificaciones
