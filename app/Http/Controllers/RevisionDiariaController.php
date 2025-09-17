@@ -61,9 +61,9 @@ class RevisionDiariaController extends Controller
         foreach ($validatedData['fluidos'] as $revision) {
             $multimedia = new Multimedia;
 
-            $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diaria');
+            $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diario');
 
-            if(!$nameImage) return back()->with('error', 'Error al guardar la imagen');
+            if(!$nameImage) return back()->with('fail', 'Error al guardar la imagen');
 
             $nivel = $revision['nivel_fluido'];
             $tipo = $revision['tipo'];
