@@ -74,21 +74,21 @@ export default function Observaciones() {
         <AppLayout>
             <Head title={`Observaciones del Vehículo ${vehiculo.placa}`} />
 
-            <div className="min-h-screen px-4 py-10 font-sans">
+            <div className="min-h-screen bg-gray-100 px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-6 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
                         Observaciones del Vehículo {vehiculo.modelo} ({vehiculo.placa})
                     </h1>
                     <FlashMessage mensaje={flash?.success} />
                 </div>
 
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border bg-white p-6 shadow-xl sm:rounded-lg">
+                    <div className="overflow-hidden border p-6 shadow-xl sm:rounded-lg">
                         <h2 className="mb-4 text-2xl font-bold">Agregar Observación</h2>
 
                         <form onSubmit={handleSubmit} className="mb-6">
                             <div className="mb-4">
-                                <label htmlFor="observacion" className="mb-2 block text-sm font-bold text-gray-700">
+                                <label htmlFor="observacion" className="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
                                     Observación
                                 </label>
                                 <textarea
@@ -102,7 +102,7 @@ export default function Observaciones() {
                                     maxLength={300}
                                     required
                                 />
-                                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                                <div className="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
                                     <span>{data.observacion.length}/300 caracteres</span>
                                     {errors.observacion && <span className="text-red-500">{errors.observacion}</span>}
                                 </div>
