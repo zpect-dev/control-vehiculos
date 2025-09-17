@@ -1,88 +1,137 @@
 import FlashMessage from '@/components/FlashMessage';
-import { router } from '@inertiajs/react';
-import { useState } from 'react';
+import ObservacionCard from '@/components/ObservacionesCard';
+import AppLayout from '@/layouts/app-layout';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import React from 'react';
 
-export default function PanelObservaciones({ vehiculoId, observacionesGuardadas = [], usuario }) {
-    const [comentario, setComentario] = useState('');
-    const [adjunto, setAdjunto] = useState<File | null>(null);
-    const [flashMessage, setFlashMessage] = useState<string | null>(null);
+type VehiculoProps = {
+    id: number;
+    placa: string;
+    modelo: string;
+};
+
+type UserProps = {
+    id: number;
+    name: string;
+    role?: string;
+};
+
+type ObservacionProps = {
+    id: number;
+    observacion: string;
+    resuelto: boolean;
+    fecha_creacion: string;
+    fecha_resolucion?: string;
+    tipo?: string;
+    user: UserProps;
+    admin?: UserProps;
+};
+
+type PageProps = {
+    vehiculo: VehiculoProps;
+    observaciones: ObservacionProps[];
+    flash: { success?: string };
+    isAdmin: boolean;
+};
+
+export default function Observaciones() {
+    const { vehiculo, observaciones, flash, isAdmin } = usePage<PageProps>().props;
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        observacion: '',
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!comentario.trim()) {
-            setFlashMessage('La observación no puede estar vacía.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('vehiculo_id', vehiculoId.toString());
-        formData.append('usuario_id', usuario.id);
-        formData.append('comentario', comentario);
-        if (adjunto) formData.append('adjunto', adjunto);
-
-        router.post(`/vehiculos/${vehiculoId}/observaciones`, formData, {
-            forceFormData: true,
-            onSuccess: () => {
-                setComentario('');
-                setAdjunto(null);
-                setFlashMessage('Observación registrada con éxito.');
-            },
-            onError: () => setFlashMessage('Error al registrar la observación.'),
+        post(`/observaciones/${vehiculo.placa}/save`, {
+            preserveScroll: true,
+            onSuccess: () => reset(),
         });
     };
 
+    const resolverObservacion = (id: number) => {
+        console.log('Marcando como resuelta la observación con ID:', id);
+
+        router.patch(
+            `/observaciones/${vehiculo.placa}/${id}/edit`,
+            {
+                resuelto: true,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    console.log('Observación marcada como resuelta con éxito');
+                    router.reload({ only: ['observaciones'] });
+                },
+                onError: (error) => {
+                    console.error('Error al resolver observación:', error);
+                },
+            },
+        );
+    };
+
     return (
-        <div className="rounded-xl bg-white p-6 shadow-md dark:bg-gray-800">
-            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Observaciones del Usuario</h2>
-            <FlashMessage mensaje={flashMessage} isError={flashMessage?.includes('Error')} />
+        <AppLayout>
+            <Head title={`Observaciones del Vehículo ${vehiculo.placa}`} />
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <textarea
-                    value={comentario}
-                    onChange={(e) => setComentario(e.target.value)}
-                    placeholder="Escribe tu observación aquí..."
-                    className="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:text-white"
-                />
+            <div className="min-h-screen px-4 py-10 font-sans">
+                <div className="mb-6 text-center">
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        Observaciones del Vehículo {vehiculo.modelo} ({vehiculo.placa})
+                    </h1>
+                    <FlashMessage mensaje={flash?.success} />
+                </div>
 
-                <input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    onChange={(e) => setAdjunto(e.target.files?.[0] || null)}
-                    className="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:text-white"
-                />
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="overflow-hidden border bg-white p-6 shadow-xl sm:rounded-lg">
+                        <h2 className="mb-4 text-2xl font-bold">Agregar Observación</h2>
 
-                <button type="submit" className="rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]">
-                    Guardar Observación
-                </button>
-            </form>
+                        <form onSubmit={handleSubmit} className="mb-6">
+                            <div className="mb-4">
+                                <label htmlFor="observacion" className="mb-2 block text-sm font-bold text-gray-700">
+                                    Observación
+                                </label>
+                                <textarea
+                                    id="observacion"
+                                    value={data.observacion}
+                                    onChange={(e) => setData('observacion', e.target.value)}
+                                    className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${
+                                        errors.observacion ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    rows={3}
+                                    maxLength={300}
+                                    required
+                                />
+                                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                                    <span>{data.observacion.length}/300 caracteres</span>
+                                    {errors.observacion && <span className="text-red-500">{errors.observacion}</span>}
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-end">
+                                <button
+                                    type="submit"
+                                    className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                                    disabled={processing}
+                                >
+                                    Guardar
+                                </button>
+                            </div>
+                        </form>
 
-            <div className="mt-8 space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Historial de Observaciones</h3>
-                {observacionesGuardadas.length === 0 ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">No hay observaciones registradas aún.</p>
-                ) : (
-                    <ul className="space-y-3">
-                        {observacionesGuardadas.map((obs, index) => (
-                            <li key={index} className="rounded-md border p-4 dark:border-gray-600 dark:bg-gray-700">
-                                <p className="text-sm text-gray-700 dark:text-gray-200">
-                                    <span className="font-semibold">Fecha:</span> {obs.fecha}
-                                </p>
-                                <p className="mt-1 text-sm text-gray-800 dark:text-white">{obs.comentario}</p>
-                                {obs.adjunto && (
-                                    <a
-                                        href={obs.adjunto}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="mt-2 inline-block text-sm text-blue-600 underline dark:text-blue-400"
-                                    >
-                                        Ver adjunto
-                                    </a>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+                        <h2 className="mb-4 text-2xl font-bold">Historial de Observaciones</h2>
+
+                        {observaciones.length > 0 ? (
+                            <div className="space-y-4">
+                                {observaciones.map((obs) => (
+                                    <ObservacionCard key={obs.id} observacion={obs} isAdmin={isAdmin} onResolver={resolverObservacion} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="py-10 text-center text-gray-500">No hay observaciones registradas para este vehículo.</div>
+                        )}
+                    </div>
+                </div>
             </div>
-        </div>
+        </AppLayout>
     );
 }
