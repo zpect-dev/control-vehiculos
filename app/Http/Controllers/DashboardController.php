@@ -19,8 +19,14 @@ class DashboardController extends Controller
         $modo = $user->hasRole('admin') ? 'admin' : 'user';
 
         $vehiculos = $modo === 'admin'
-            ? Vehiculo::with('usuario')->get()
-            : Vehiculo::with('usuario')->where('user_id', $user->id)->get();
+            ? Vehiculo::with('usuario')
+                ->withCount([
+                    'observaciones as observaciones_no_resueltas' => function ($query) {
+                        $query->where('resuelto', false);
+                    }
+                ])
+                ->get()
+            : Vehiculo::with('usuario')->withCount('observaciones')->where('user_id', $user->id)->get();
 
         $notificaciones = $modo === 'admin'
             ? Notificacion::where('usuario_id', $user->id)
