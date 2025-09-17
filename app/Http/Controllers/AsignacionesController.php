@@ -34,12 +34,12 @@ class AsignacionesController extends Controller
         if ($registro->kilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
         
         // Verifica que el nuevo usuario existe
-        $nuevoUsuario = User::find($request->user_id);
+        $nuevoUsuario = User::find($validatedData['user_id']);
         if (!$nuevoUsuario) return back()->with('fail', 'Usuario no encontrado');
 
         // Procesa las imagenes
         $multimedia = new Multimedia;
-        $nombreImagen = $multimedia->guardarImagen($request->foto_kilometraje, 'asignacion');
+        $nombreImagen = $multimedia->guardarImagen($validatedData['foto_kilometraje'], 'asignacion');
         if (!$nombreImagen) return back()->with('fail', 'Error al guardar la imagen');
         
         $admin = $request->user();
