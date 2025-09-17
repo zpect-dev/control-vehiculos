@@ -8,16 +8,22 @@ use App\Models\User;
 use App\Helpers\NotificacionHelper;
 use App\Models\HistorialAsignaciones;
 use App\Services\Multimedia;
+use Inertia\Inertia;
 
 class AsignacionesController extends Controller
 {
     public function index(Request $request, Vehiculo $vehiculo)
     {
-        $historial = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->paginate(10);
-        return view('nombre_vista', [
-            'historial' => $historial
+        $historial = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)
+            ->with(['vehiculo', 'user', 'admin'])
+            ->orderByDesc('id')
+            ->get();
+        return Inertia::render('asignaciones', [
+            'vehiculo' => $vehiculo,
+            'historial' => $historial,
         ]);
     }
+
 
     /**
      * Store the newly created resource in storage.
@@ -32,7 +38,7 @@ class AsignacionesController extends Controller
 
         // Verifica que el nuevo kilometraje no sea menor al anterior
         $ultimoKilometraje = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->orderByDesc('fecha_asignacion')->first();
-        if ($ultimoKilometraje && $ultimoKilometraje->kilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
+        if ($ultimoKilometraje && $ultimoKilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
 
         // Verifica que el nuevo usuario existe
         $nuevoUsuario = User::find($validatedData['user_id']);
@@ -66,7 +72,7 @@ class AsignacionesController extends Controller
      */
     public function show(HistorialAsignaciones $registro)
     {
-        return view('nombre_vista', [
+        return view('asignaciones', [
             'registro' => $registro
         ]);
     }

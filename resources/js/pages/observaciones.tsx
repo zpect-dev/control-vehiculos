@@ -74,16 +74,15 @@ export default function Observaciones() {
         <AppLayout>
             <Head title={`Observaciones del Vehículo ${vehiculo.placa}`} />
 
-            <div className="min-h-screen bg-gray-100 px-4 py-10 font-sans dark:bg-gray-900">
+            <div className="min-h-screen px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-6 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
                         Observaciones del Vehículo {vehiculo.modelo} ({vehiculo.placa})
                     </h1>
-                    <FlashMessage mensaje={flash?.success} />
                 </div>
 
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border p-6 shadow-xl sm:rounded-lg">
+                    <div className="overflow-hidden  bg-gray-100 dark:bg-gray-900 border p-6 shadow-xl sm:rounded-lg">
                         <h2 className="mb-4 text-2xl font-bold">Agregar Observación</h2>
 
                         <form onSubmit={handleSubmit} className="mb-6">
@@ -115,6 +114,7 @@ export default function Observaciones() {
                                 >
                                     Guardar
                                 </button>
+                                <FlashMessage mensaje={flash?.success} />
                             </div>
                         </form>
 

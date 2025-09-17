@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BadgePlus, Bell, CalendarRange, Car, Droplets, Menu } from 'lucide-react';
+import { BadgePlus, Bell, CalendarRange, Car, Droplets, History, Menu } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -33,6 +33,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
               { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
               { title: 'Observaciones', href: `/fichaTecnica/observaciones/${placaActual}`, icon: BadgePlus },
+              { title: 'Asignaciones', href: `/fichaTecnica/historial/${placaActual}/asignaciones`, icon: History },
           ]
         : [];
 

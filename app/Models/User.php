@@ -67,4 +67,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notificacion::class);
     }
+
+    /**
+     * Historial donde el usuario fue asignado a un vehículo.
+     */
+    public function asignacionesRecibidas(): HasMany
+    {
+        return $this->hasMany(HistorialAsignaciones::class, 'user_id');
+    }
+
+    /**
+     * Historial donde el usuario hizo la asignación (como admin).
+     */
+    public function asignacionesRealizadas(): HasMany
+    {
+        return $this->hasMany(HistorialAsignaciones::class, 'admin_id');
+    }
 }

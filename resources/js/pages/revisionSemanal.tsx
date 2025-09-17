@@ -114,20 +114,20 @@ export default function revisionSemanal({ vehiculo, revisionSemanal = null, inic
                             </div>
                         )}
                     </div>
+                    {!isFormAlreadySubmitted && (
+                        <form onSubmit={handleFormSubmit} className="space-y-6" encType="multipart/form-data">
+                            <div className="flex justify-end pt-6">
+                                <button
+                                    type="submit"
+                                    className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
+                                    disabled={isFormAlreadySubmitted}
+                                >
+                                    Guardar Revision
+                                </button>
+                            </div>
+                        </form>
+                    )}
                 </div>
-                {!isFormAlreadySubmitted && (
-                    <form onSubmit={handleFormSubmit} className="space-y-6" encType="multipart/form-data">
-                        <div className="flex justify-end pt-6">
-                            <button
-                                type="submit"
-                                className="w-full rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none md:w-auto"
-                                disabled={isFormAlreadySubmitted}
-                            >
-                                Guardar Revision
-                            </button>
-                        </div>
-                    </form>
-                )}
             </div>
         </AppLayout>
     );

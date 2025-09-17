@@ -127,6 +127,8 @@ export default function fichaTecnica({
                     )}
 
                     <FlashMessage mensaje={flash?.success} />
+                    <FlashMessage mensaje={flash?.fail} isError />
+
                 </div>
 
                 <div className="space-y-4">
