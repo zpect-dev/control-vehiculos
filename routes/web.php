@@ -67,6 +67,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas para notificaciones
     Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
     Route::put('notificaciones/{notificacion}/marcar-leida', [NotificacionController::class, 'marcarComoLeida'])->name('notificaciones.marcarLeida');
+    Route::put('/notificaciones/marcar-todas', [NotificacionController::class, 'marcarTodasComoLeidas']);
     Route::delete('notificaciones/{notificacion}', [NotificacionController::class, 'destroy'])->name('notificaciones.destroy');
 
     // Editar Observacion

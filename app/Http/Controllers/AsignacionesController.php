@@ -11,7 +11,8 @@ use App\Services\Multimedia;
 
 class AsignacionesController extends Controller
 {
-    public function index(Request $request, Vehiculo $vehiculo){
+    public function index(Request $request, Vehiculo $vehiculo)
+    {
         $historial = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->paginate(10);
         return view('nombre_vista', [
             'historial' => $historial
@@ -30,9 +31,9 @@ class AsignacionesController extends Controller
         ]);
 
         // Verifica que el nuevo kilometraje no sea menor al anterior
-        $registro = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->orderByDesc('fecha_asignacion')->first();
-        if ($registro->kilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
-        
+        $ultimoKilometraje = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->orderByDesc('fecha_asignacion')->first();
+        if ($ultimoKilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
+
         // Verifica que el nuevo usuario existe
         $nuevoUsuario = User::find($validatedData['user_id']);
         if (!$nuevoUsuario) return back()->with('fail', 'Usuario no encontrado');
@@ -41,7 +42,7 @@ class AsignacionesController extends Controller
         $multimedia = new Multimedia;
         $nombreImagen = $multimedia->guardarImagen($validatedData['foto_kilometraje'], 'asignacion');
         if (!$nombreImagen) return back()->with('fail', 'Error al guardar la imagen');
-        
+
         $admin = $request->user();
         $respuesta = HistorialAsignaciones::create([
             'vehiculo_id' => $vehiculo->placa,
@@ -55,7 +56,7 @@ class AsignacionesController extends Controller
 
         $vehiculo->user_id = $nuevoUsuario->id;
         $vehiculo->save();
-        
+
         NotificacionHelper::emitirAsignacionUsuario($vehiculo->placa, $admin->name, $nuevoUsuario->name);
         return back()->with('success', 'Usuario asignado correctamente.');
     }

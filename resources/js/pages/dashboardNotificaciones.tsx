@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 interface Notificacion {
     id: number;
@@ -32,6 +33,7 @@ export default function DashboardNotificaciones() {
         modo: string;
         flash: FlashProps;
     }>().props;
+
     const [searchTerm, setSearchTerm] = useState('');
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>(rawNotificaciones);
 
@@ -54,34 +56,38 @@ export default function DashboardNotificaciones() {
             {} as Record<string, Notificacion[]>,
         );
     }, [notificacionesFiltradas]);
+
     const marcarYRedirigir = async (notificacion: Notificacion) => {
         const { id, tipo, vehiculo_id } = notificacion;
         try {
-            await router.put(`/notificaciones/${id}/marcar-leida`);
-            setNotificaciones((prev) => prev.filter((n) => n.id !== id));
+            await router.put(
+                `/notificaciones/${id}/marcar-leida`,
+                {},
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setNotificaciones((prev) => prev.filter((n) => n.id !== id));
 
-            if (!vehiculo_id) {
-                router.visit('/dashboard');
-                return;
-            }
+                        const destino = !vehiculo_id
+                            ? '/dashboard'
+                            : tipo === 'nivelFluido' || tipo === 'chequeoOmitido'
+                              ? `/fichaTecnica/${vehiculo_id}/revisionFluidos`
+                              : tipo === 'revisionSemanal'
+                                ? `/fichaTecnica/${vehiculo_id}/revisionSemanal`
+                                : ['permiso', 'cambioInput', 'estado_item', 'reasignacion'].includes(tipo)
+                                  ? `/fichaTecnica/${vehiculo_id}`
+                                  : '/dashboard';
 
-            switch (tipo) {
-                case 'chequeoOmitido':
-                case 'nivelFluido':
-                    router.visit(`/fichaTecnica/${vehiculo_id}/revisionFluidos`);
-                    break;
-                case 'revisionSemanal':
-                    router.visit(`/fichaTecnica/${vehiculo_id}/revisionSemanal`);
-                    break;
-                case 'permiso':
-                case 'cambioInput':
-                case 'estado_item':
-                case 'reasignacion':
-                    router.visit(`/fichaTecnica/${vehiculo_id}`);
-                    break;
-                default:
-                    router.visit('/dashboard');
-            }
+                        router.visit(destino);
+                        router.visit(destino, {
+                            preserveScroll: true,
+                            onFinish: () => {
+                                router.reload({ only: ['notificaciones'] });
+                            },
+                        });
+                    },
+                },
+            );
         } catch (error) {
             console.error('Error al procesar la notificación:', error);
         }
@@ -110,6 +116,36 @@ export default function DashboardNotificaciones() {
                         />
                     </div>
                 </div>
+
+                {modo === 'admin' && notificaciones.length > 0 && (
+                    <div className="mb-6 text-right">
+                        <button
+                            onClick={() => {
+                                toast('¿Marcar todas como leídas?', {
+                                    description: 'Esta acción ocultará todas las notificaciones del dashboard.',
+                                    action: {
+                                        label: 'Confirmar',
+                                        onClick: () => {
+                                            router.put(
+                                                '/notificaciones/marcar-todas',
+                                                {},
+                                                {
+                                                    preserveScroll: true,
+                                                    onSuccess: () => {
+                                                        router.visit('/notificaciones', { preserveScroll: true });
+                                                    },
+                                                },
+                                            );
+                                        },
+                                    },
+                                });
+                            }}
+                            className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+                        >
+                            Marcar todas como leídas
+                        </button>
+                    </div>
+                )}
 
                 <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
                     Mostrando <strong>{notificacionesFiltradas.length}</strong> de {notificaciones.length} notificaciones

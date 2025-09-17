@@ -71,10 +71,6 @@ class NotificacionController extends Controller
         };
     }
 
-
-
-
-
     public function destroy(Notificacion $notificacion, Request $request)
     {
         $user = $request->user();
@@ -86,5 +82,19 @@ class NotificacionController extends Controller
         $notificacion->delete();
 
         return response()->json(['status' => 'eliminada']);
+    }
+
+    public function marcarTodasComoLeidas(Request $request)
+    {
+        $user = $request->user();
+
+        $query = Notificacion::query()
+            ->where('leida', false)
+            ->when(!$user->hasRole('admin'), fn($q) => $q->where('usuario_id', $user->id))
+            ->when($user->hasRole('admin'), fn($q) => $q->where('solo_admin', true));
+
+        $query->update(['leida' => true]);
+
+        return redirect()->route('notificaciones.index');
     }
 }

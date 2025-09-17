@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ModalAsignacionUser from '@/components/modal/ModalAsignacionUser';
-
 import FichaSeccion from '@/components/FichaSeccion';
 import FlashMessage from '@/components/FlashMessage';
 import { accesoriosFields, expedienteTecnicoFields, permisologiaFields, piezasRevisadasFields } from '@/constants/formFields';
@@ -118,12 +117,14 @@ export default function fichaTecnica({
                         </div>
                     )}
 
-                    <button
-                        onClick={() => setModalOpen(true)}
-                        className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
-                    >
-                        Asignar Usuario
-                    </button>
+                    {isAdmin && (
+                        <button
+                            onClick={() => setModalOpen(true)}
+                            className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                        >
+                            Asignar Usuario
+                        </button>
+                    )}
 
                     <FlashMessage mensaje={flash?.success} />
                 </div>
@@ -160,16 +161,18 @@ export default function fichaTecnica({
                         expediente={piezasGuardadas[placa]}
                         onSubmit={(data) => handleFormSubmit('piezas', data, placa)}
                     />
-                    <ModalAsignacionUser
-                        isOpen={modalOpen}
-                        onClose={() => setModalOpen(false)}
-                        vehiculo={vehiculoActual}
-                        users={users}
-                        isAdmin={isAdmin}
-                        onSuccess={(nuevoUsuario) => {
-                            setVehiculoActual((prev: any) => ({ ...prev, usuario: nuevoUsuario }));
-                        }}
-                    />
+                    {isAdmin && (
+                        <ModalAsignacionUser
+                            isOpen={modalOpen}
+                            onClose={() => setModalOpen(false)}
+                            vehiculo={vehiculoActual}
+                            users={users}
+                            isAdmin={isAdmin}
+                            onSuccess={(nuevoUsuario) => {
+                                setVehiculoActual((prev: any) => ({ ...prev, usuario: nuevoUsuario }));
+                            }}
+                        />
+                    )}
                 </div>
             </div>
         </AppLayout>
