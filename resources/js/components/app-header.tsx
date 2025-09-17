@@ -32,7 +32,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               { title: 'Ficha Técnica', href: `/fichaTecnica/${placaActual}`, icon: Car },
               { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
               { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
-              { title: 'Observaciones', href: `/observaciones/${placaActual}`, icon: BadgePlus },
+              { title: 'Observaciones', href: `/fichaTecnica/observaciones/${placaActual}`, icon: BadgePlus },
           ]
         : [];
 
