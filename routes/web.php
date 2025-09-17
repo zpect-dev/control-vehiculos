@@ -49,15 +49,17 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
 
     // Observaciones
-    Route::get('fichaTecnica/observaciones/{vehiculo:placa}', [ObservacionesController::class, 'index'])->name('observaciones.index');
-    Route::get('fichaTecnica/observaciones/{vehiculo:placa}/{observacion}', [ObservacionesController::class, 'show'])->name('observaciones.show');
+    Route::get('fichaTecnica/{vehiculo:placa}/observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
+    Route::get('fichaTecnica/{vehiculo:placa}/observacion/{observacion}', [ObservacionesController::class, 'show'])->name('observaciones.show');
     Route::post('observaciones/{vehiculo:placa}/save', [ObservacionesController::class, 'store'])->name('observaciones.store');
+
+    // Rutas para asignaciones
+    Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
+    Route::get('fichaTecnica/{registro}/asignacion/{registro}', [AsignacionesController::class, 'show'])->name('asignaciones.show');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    // Rutas para asignaciones
-    Route::get('fichaTecnica/historial/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
-    Route::get('fichaTecnica/historial/{registro}/asignacion', [AsignacionesController::class, 'show'])->name('asignaciones.show');
+
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
 
     // Rutas para modificar vehiculos (necesario proximamente)

@@ -18,6 +18,7 @@ class AsignacionesController extends Controller
             ->with(['vehiculo', 'user', 'admin'])
             ->orderByDesc('id')
             ->get();
+        
         return Inertia::render('asignaciones', [
             'vehiculo' => $vehiculo,
             'historial' => $historial,
