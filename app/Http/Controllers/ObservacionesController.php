@@ -30,9 +30,7 @@ class ObservacionesController extends Controller
             'resuelto' => false,
         ]);
 
-        if (!$respuesta) {
-            return back()->with('fail', 'Error al registrar la observacion');
-        }
+        if (!$respuesta) return back()->with('fail', 'Error al registrar la observacion');
 
         return back()->with('success', 'Observacion enviada correctamente');
     }
@@ -47,9 +45,7 @@ class ObservacionesController extends Controller
 
         $validatedData['fecha_resolucion'] = now();
 
-        if (!$observacion->update($validatedData)) {
-            return back()->with('fail', 'Error al resolver la observacion');
-        }
+        if (!$observacion->update($validatedData)) return back()->with('fail', 'Error al resolver la observacion');
 
         return back()->with('success', 'Observacion resulta correctamente');
     }

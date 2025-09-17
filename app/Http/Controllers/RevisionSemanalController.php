@@ -22,9 +22,7 @@ class RevisionSemanalController extends Controller
             ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
             ->first();
 
-        if ($revisionSemanal) {
-            $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
-        }
+        if ($revisionSemanal) $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
@@ -37,9 +35,8 @@ class RevisionSemanalController extends Controller
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        if (!$request->hasFile('video')) {
-            return back()->with('mensaje', 'Debe subir un video a la plataforma');
-        }
+        if (!$request->hasFile('video')) return back()->with('mensaje', 'Debe subir un video a la plataforma');
+        
         $validatedData = $request->validate([
             'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm'
         ]);

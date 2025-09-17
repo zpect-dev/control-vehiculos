@@ -64,7 +64,7 @@ class RevisionDiariaController extends Controller
 
             $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diaria');
 
-            if(!$nameImage) { return back()->with('error', 'Error al guardar la imagen'); }
+            if(!$nameImage) return back()->with('error', 'Error al guardar la imagen');
 
             $nivel = $revision['nivel_fluido'];
             $tipo = $revision['tipo'];

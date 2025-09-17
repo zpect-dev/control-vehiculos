@@ -24,36 +24,35 @@ class AsignacionesController extends Controller
      */
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'user_id' => 'required|exists:users,id',
             'kilometraje' => 'required|numeric',
             'foto_kilometraje' => 'required|image|file|max:5120'
         ]);
 
+        // Verifica que el nuevo kilometraje no sea menor al anterior
+        $ultimoKilometraje = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->orderByDesc('fecha_asignacion')->first();
+        if ($ultimoKilometraje < $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
+        
+        // Verifica que el nuevo usuario existe
         $nuevoUsuario = User::find($request->user_id);
+        if (!$nuevoUsuario) return back()->with('fail', 'Usuario no encontrado');
 
-        if(!$nuevoUsuario){
-            dd('usuario no encontrado');
-            return back()->with('fail', 'Usuario no encontrado');
-        }
-
-        $admin = $request->user();
-        
+        // Procesa las imagenes
         $multimedia = new Multimedia;
-        $respuesta = $multimedia->guardarImagen($request->foto_kilometraje, 'asignacion');
-
-        if(!$respuesta){
-            dd('error al guardar la imagen');
-            return back()->with('fail', 'Error al guardar la imagen');
-        }
+        $nombreImagen = $multimedia->guardarImagen($request->foto_kilometraje, 'asignacion');
+        if (!$nombreImagen) return back()->with('fail', 'Error al guardar la imagen');
         
-        HistorialAsignaciones::create([
+        $admin = $request->user();
+        $respuesta = HistorialAsignaciones::create([
             'vehiculo_id' => $vehiculo->placa,
             'user_id' => $nuevoUsuario->id,
             'admin_id' => $admin->id,
-            'kilometraje' => $request->kilometraje,
-            'foto_kilometraje' => $respuesta
+            'kilometraje' => $validatedData['kilometraje'],
+            'foto_kilometraje' => $nombreImagen
         ]);
+
+        if (!$respuesta) return back()->with('fail', 'Error al realizar el registro');
 
         $vehiculo->user_id = $nuevoUsuario->id;
         $vehiculo->save();
