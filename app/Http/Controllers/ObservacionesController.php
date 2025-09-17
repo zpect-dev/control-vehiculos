@@ -15,7 +15,7 @@ class ObservacionesController extends Controller
         $isAdmin = $user->hasRole('admin');
 
         $observaciones = $vehiculo->observaciones()
-            ->with(['user', 'admin']) // ← para mostrar quién resolvió
+            ->with(['user', 'admin'])
             ->get();
 
         return Inertia::render('observaciones', [
@@ -46,28 +46,24 @@ class ObservacionesController extends Controller
         return back()->with('success', 'Observacion enviada correctamente');
     }
 
-    public function update(Request $request, Observacion $observacion)
-{
-    if (!$request->user()->hasRole('admin')) {
-        abort(403);
+    public function update(Request $request, Vehiculo $vehiculo, Observacion $observacion)
+    {
+        $validatedData = $request->validate([
+            'resuelto' => 'required|boolean',
+        ]);
+
+        $validatedData['fecha_resolucion'] = now();
+        $validatedData['admin_id'] = $request->user()->id;
+
+        $respuesta = $observacion->update($validatedData);
+
+        if (!$respuesta) return back()->with('fail', 'Error al resolver la observacion');
+
+        return back()->with('success', 'Observacion resuelta');
     }
 
-    $validatedData = $request->validate([
-        'resuelto' => 'required|boolean',
-    ]);
-// dd($validatedData);
 
-    $validatedData['fecha_resolucion'] = now();
-    $validatedData['admin_id'] = $request->user()->id;
-
-    $res = $observacion->update($validatedData);
-    dd($res);
-
-    return response()->json(['success' => true]);
-}
-
-
-    public function show(Request $request, Observacion $observacion)
+    public function show(Request $request, Vehiculo $vehiculo, Observacion $observacion)
     {
         $user = $request->user();
         $isAdmin = $user->hasRole('admin');

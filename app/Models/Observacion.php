@@ -9,16 +9,17 @@ use App\Models\Vehiculo;
 class Observacion extends Model
 {
     protected $table = 'observaciones';
+    public $timestamps = false;
 
-protected $fillable = [
-    'user_id',
-    'admin_id',
-    'vehiculo_id',
-    'observacion',
-    'tipo',
-    'resuelto',
-    'fecha_resolucion',
-];
+    protected $fillable = [
+        'user_id',
+        'admin_id',
+        'vehiculo_id',
+        'observacion',
+        'tipo',
+        'resuelto',
+        'fecha_resolucion',
+    ];
 
 
     protected $casts = [

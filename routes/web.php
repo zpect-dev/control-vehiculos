@@ -50,7 +50,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
 
     // Observaciones
     Route::get('observaciones/{vehiculo:placa}', [ObservacionesController::class, 'index'])->name('observaciones.index');
-    Route::get('observaciones/{vehiculo:placa}/{observaciones:id}', [ObservacionesController::class, 'show'])->name('observaciones.show');
+    Route::get('observaciones/{vehiculo:placa}/{observacion}', [ObservacionesController::class, 'show'])->name('observaciones.show');
     Route::post('observaciones/{vehiculo:placa}/save', [ObservacionesController::class, 'store'])->name('observaciones.store');
 });
 
@@ -71,7 +71,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('notificaciones/{notificacion}', [NotificacionController::class, 'destroy'])->name('notificaciones.destroy');
 
     // Editar Observacion
-    Route::patch('observaciones/{vehiculo:placa}/{observaciones:id}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
+    Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
 });
 
 // Configuración y autenticación
