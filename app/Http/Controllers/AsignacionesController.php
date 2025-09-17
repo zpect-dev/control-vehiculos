@@ -19,6 +19,12 @@ class AsignacionesController extends Controller
             ->orderByDesc('id')
             ->get();
         
+        foreach($historial as $historia){
+            if ($historia->foto_kilometraje) {
+                $historia->foto_kilometraje = 'uploads/fotos-asignaciones/' . ltrim($historia->foto_kilometraje, '/');
+            }
+        }
+
         return Inertia::render('asignaciones', [
             'vehiculo' => $vehiculo,
             'historial' => $historial,
