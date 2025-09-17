@@ -32,7 +32,7 @@ class AsignacionesController extends Controller
 
         // Verifica que el nuevo kilometraje no sea menor al anterior
         $ultimoKilometraje = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->orderByDesc('fecha_asignacion')->first();
-        if ($ultimoKilometraje < $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
+        if ($ultimoKilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
         
         // Verifica que el nuevo usuario existe
         $nuevoUsuario = User::find($request->user_id);
