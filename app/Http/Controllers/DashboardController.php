@@ -49,14 +49,16 @@ class DashboardController extends Controller
                     ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
                     ->first();
 
-                $clave = "video_alertado_{$vehiculo->placa}_{$inicioSemana}";
-                if (!session()->has($clave) && !$revision?->video) {
-                    session()->put($clave, true);
-
-                    NotificacionHelper::emitirVideoSemanalOmitido(
+                $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
+                ->whereDate('created_at', $fechaHoy)
+                ->where('tipo', 'chequeoOmitido')
+                ->exists();
+                    
+                if (!$yaAlertado && !$revision) {
+                    NotificacionHelper::emitirChequeoOmitido(
                         $vehiculo->placa,
                         $vehiculo->usuario->name ?? 'Desconocido',
-                        "Semana del {$inicioSemana} al {$finalSemana}"
+                        $fechaHoy
                     );
                 }
             }
@@ -68,11 +70,13 @@ class DashboardController extends Controller
                 $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
                     ->whereDate('fecha_creacion', $fechaHoy)
                     ->exists();
+                    
+                $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
+                ->whereDate('created_at', $fechaHoy)
+                ->where('tipo', 'chequeoOmitido')
+                ->exists();
 
-                $clave = "chequeo_alertado_{$vehiculo->placa}_{$fechaHoy}";
-                if (!session()->has($clave) && !$revisadoHoy) {
-                    session()->put($clave, true);
-
+                if (!$yaAlertado && !$revisadoHoy) {
                     NotificacionHelper::emitirChequeoOmitido(
                         $vehiculo->placa,
                         $vehiculo->usuario->name ?? 'Desconocido',
