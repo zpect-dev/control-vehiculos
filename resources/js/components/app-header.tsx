@@ -40,82 +40,73 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
         <>
             <div className="border-b border-sidebar-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="mx-auto flex h-16 items-center justify-between px-4 md:max-w-7xl">
-                    {/* Mobile Menu */}
-                    <div className="flex items-center lg:hidden">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px]">
-                                    <Menu className="h-5 w-5" />
-                                </Button>
-                            </SheetTrigger>
-
-                            <SheetContent side="left" className="flex h-full w-64 flex-col justify-between bg-sidebar">
-                                <SheetHeader className="flex justify-start p-4 text-left">
-                                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Control de Vehículos</h2>
-                                </SheetHeader>
-
-                                {/* Navegación */}
-                                <div className="flex-1 overflow-y-auto px-4 pb-4">
-                                    {!isDashboard && vehiculoNavItems.length > 0 && (
-                                        <div className="flex flex-col space-y-2">
-                                            {vehiculoNavItems.map((item) => (
-                                                <Link
-                                                    key={item.title}
-                                                    href={item.href}
-                                                    className="flex items-center space-x-2 rounded-md p-2 text-sm font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    {/* Mobile & Tablet Menu */}
+                    <div className="flex w-full items-center justify-between lg:hidden">
+                        <div className="flex items-center">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px]">
+                                        <Menu className="h-5 w-5" />
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="left" className="flex h-full w-64 flex-col justify-between bg-sidebar">
+                                    <SheetHeader className="flex justify-start p-4 text-left">
+                                        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Control de Vehículos</h2>
+                                    </SheetHeader>
+                                    <div className="flex-1 overflow-y-auto px-4 pb-4">
+                                        {!isDashboard && vehiculoNavItems.length > 0 && (
+                                            <div className="flex flex-col space-y-2">
+                                                {vehiculoNavItems.map((item) => (
+                                                    <Link
+                                                        key={item.title}
+                                                        href={item.href}
+                                                        className="flex items-center space-x-2 rounded-md p-2 text-sm font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                    >
+                                                        {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="border-t border-gray-300 p-4 dark:border-gray-700">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    className="flex w-full items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium"
                                                 >
-                                                    {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                                    <span>{item.title}</span>
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Menú de usuario */}
-                                <div className="border-t border-gray-300 p-4 dark:border-gray-700">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                className="flex w-full items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium"
-                                            >
-                                                <Avatar className="size-6 overflow-hidden rounded-full">
-                                                    <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
-                                                    <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                        {getInitials(auth.user.name)}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <span className="text-gray-800 dark:text-white">{auth.user.name}</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-full" align="start">
-                                            <UserMenuContent user={auth.user} />
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-                        <div className="flex items-center justify-between">
-                            <Link href="/dashboard" prefetch className="flex w-full items-center gap-2 space-x-22">
+                                                    <Avatar className="size-6 overflow-hidden rounded-full">
+                                                        <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                            {getInitials(auth.user.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <span className="text-gray-800 dark:text-white">{auth.user.name}</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-full" align="start">
+                                                <UserMenuContent user={auth.user} />
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                            <Link href="/dashboard" prefetch className="flex items-center gap-2">
                                 <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
-                                <div>
-                                    {auth.user.is_admin && (
-                                        <Link href="/notificaciones" prefetch className="flex items-center justify-start">
-                                            <Bell />
-                                        </Link>
-                                    )}
-                                </div>
                             </Link>
                         </div>
+                        {auth.user.is_admin && (
+                            <Link href="/notificaciones" prefetch className="flex items-center">
+                                <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
+                            </Link>
+                        )}
                     </div>
-
                     {/* Desktop Menu */}
                     <div className="hidden w-full items-center justify-between lg:flex">
                         <Link href="/dashboard" prefetch className="flex items-center">
                             <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                         </Link>
-
                         <div className="flex flex-1 justify-center">
                             {!isDashboard && (
                                 <NavigationMenu>
@@ -141,7 +132,6 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </NavigationMenu>
                             )}
                         </div>
-
                         <div className="flex items-center space-x-5">
                             {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch className="flex items-center justify-start">
@@ -167,7 +157,6 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     </div>
                 </div>
             </div>
-
             {!isDashboard && breadcrumbs.length > 1 && (
                 <div className="flex w-full border-b border-sidebar-border/70">
                     <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">

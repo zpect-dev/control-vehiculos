@@ -18,9 +18,11 @@ class NotificacionController extends Controller
             ->when($modo === 'admin', fn($q) => $q->where('solo_admin', true))
             ->when($modo !== 'admin', fn($q) => $q->where('usuario_id', $user->id));
 
-        // 🔍 Filtros dinámicos
+        // Filtros dinámicos
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
+        } else {
+            $query->where('leida', false);
         }
 
         if ($request->filled('estado')) {
@@ -54,6 +56,35 @@ class NotificacionController extends Controller
 
         $notificacion->update(['leida' => true]);
 
-        return redirect()->back()->with('success', 'Notificacion vista!.');
+        $tipo = $notificacion->tipo;
+        $vehiculoId = $notificacion->vehiculo_id;
+
+        if (!$vehiculoId) {
+            return redirect('/dashboard');
+        }
+
+        return match ($tipo) {
+            'nivelFluido' => redirect("/fichaTecnica/{$vehiculoId}/revisionFluidos"),
+            'revisionSemanal' => redirect("/fichaTecnica/{$vehiculoId}/revisionSemanal"),
+            'permiso', 'cambioInput', 'estado_item', 'reasignacion' => redirect("/fichaTecnica/{$vehiculoId}"),
+            default => redirect('/dashboard'),
+        };
+    }
+
+
+
+
+
+    public function destroy(Notificacion $notificacion, Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->id !== $notificacion->usuario_id && !$user->hasRole('admin')) {
+            abort(403, 'No autorizado');
+        }
+
+        $notificacion->delete();
+
+        return response()->json(['status' => 'eliminada']);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\EventoNivelBajo;
 use App\Helpers\NotificacionHelper;
 use App\Models\RevisionesDiarias;
 use App\Models\Vehiculo;

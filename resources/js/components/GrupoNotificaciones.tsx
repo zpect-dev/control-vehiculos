@@ -6,7 +6,7 @@ type Props = {
     tipo: string;
     notificaciones: Notificacion[];
     modo: 'admin' | 'user';
-    onMarcarLeida: (id: number) => void;
+    onMarcarLeida: (noti: Notificacion) => void;
 };
 
 export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarcarLeida }: Props) {
@@ -26,7 +26,7 @@ export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarc
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {notificaciones.map((noti) => (
                     <div key={noti.id} className="transition-transform duration-300 hover:scale-[1.02]">
-                        <NotificacionCard notificacion={noti} modo={modo} onMarcarLeida={() => onMarcarLeida(noti.id)} />
+                        <NotificacionCard notificacion={noti} modo={modo} onMarcarLeida={() => onMarcarLeida(noti)} />
                     </div>
                 ))}
             </div>

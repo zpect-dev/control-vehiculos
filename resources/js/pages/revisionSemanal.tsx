@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppLayout from '@/layouts/app-layout';
+import { RevisionSemanalProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function revisionSemanal({ vehiculo, revisionSemanal = null, inicio, final }) {
+export default function revisionSemanal({ vehiculo, revisionSemanal = null, inicio, final }: RevisionSemanalProps) {
     const [weeklyVideo, setWeeklyVideo] = useState<File | null>(null);
     const isFormAlreadySubmitted = revisionSemanal ? true : false;
 
@@ -33,14 +34,9 @@ export default function revisionSemanal({ vehiculo, revisionSemanal = null, inic
     const handleFormSubmit = (e: any) => {
         e.preventDefault();
 
-        let revision = {};
-
         if (weeklyVideo) {
             const formData = new FormData();
             formData.append('video', weeklyVideo);
-
-            // You can add other form fields here if needed
-            // formData.append('observaciones', '...');
 
             router.post(`/fichaTecnica/${vehiculo.placa}/revisionSemanal`, formData, {
                 onSuccess: () => console.log('Revisiones registradas con éxito.'),
@@ -92,7 +88,7 @@ export default function revisionSemanal({ vehiculo, revisionSemanal = null, inic
                             <div className="flex-1 rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
                                 <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal (Video)</h3>
                                 <div className="flex flex-col items-start space-y-4">
-                                    <video preload="auto" controls width="640" height="480" src={revisionSemanal.video}></video>
+                                    <video preload="auto" controls width="640" height="480" src={revisionSemanal?.video ?? ''}></video>
                                 </div>
                             </div>
                         ) : (

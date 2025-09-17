@@ -7,7 +7,6 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-// Interfaz para la estructura de la notificación
 interface Notificacion {
     id: number;
     titulo: string;
@@ -33,7 +32,6 @@ export default function DashboardNotificaciones() {
         modo: string;
         flash: FlashProps;
     }>().props;
-
     const [searchTerm, setSearchTerm] = useState('');
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>(rawNotificaciones);
 
@@ -56,18 +54,37 @@ export default function DashboardNotificaciones() {
             {} as Record<string, Notificacion[]>,
         );
     }, [notificacionesFiltradas]);
+    const marcarYRedirigir = async (notificacion: Notificacion) => {
+        const { id, tipo, vehiculo_id } = notificacion;
+        try {
+            await router.put(`/notificaciones/${id}/marcar-leida`);
+            setNotificaciones((prev) => prev.filter((n) => n.id !== id));
 
-    const marcarComoLeida = (id: number) => {
-        router.put(
-            `/notificaciones/${id}/marcar-leida`,
-            {},
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setNotificaciones((prev) => prev.map((n) => (n.id === id ? { ...n, leida: true } : n)));
-                },
-            },
-        );
+            if (!vehiculo_id) {
+                router.visit('/dashboard');
+                return;
+            }
+
+            switch (tipo) {
+                case 'chequeoOmitido':
+                case 'nivelFluido':
+                    router.visit(`/fichaTecnica/${vehiculo_id}/revisionFluidos`);
+                    break;
+                case 'revisionSemanal':
+                    router.visit(`/fichaTecnica/${vehiculo_id}/revisionSemanal`);
+                    break;
+                case 'permiso':
+                case 'cambioInput':
+                case 'estado_item':
+                case 'reasignacion':
+                    router.visit(`/fichaTecnica/${vehiculo_id}`);
+                    break;
+                default:
+                    router.visit('/dashboard');
+            }
+        } catch (error) {
+            console.error('Error al procesar la notificación:', error);
+        }
     };
 
     return (
@@ -75,10 +92,12 @@ export default function DashboardNotificaciones() {
             <Head title="Dashboard de Notificaciones" />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <NotificacionRealtime />
+
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Notificaciones</h1>
                     {flash?.success && <p className="mt-2 animate-pulse font-semibold text-green-600 dark:text-green-400">{flash.success}</p>}
                 </div>
+
                 <div className="mb-6 flex justify-center">
                     <div className="relative w-full max-w-md">
                         <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
@@ -91,6 +110,7 @@ export default function DashboardNotificaciones() {
                         />
                     </div>
                 </div>
+
                 <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
                     Mostrando <strong>{notificacionesFiltradas.length}</strong> de {notificaciones.length} notificaciones
                 </div>
@@ -102,7 +122,7 @@ export default function DashboardNotificaciones() {
                             tipo={tipo}
                             notificaciones={grupo}
                             modo={modo as 'admin' | 'user'}
-                            onMarcarLeida={marcarComoLeida}
+                            onMarcarLeida={marcarYRedirigir}
                         />
                     ))
                 ) : (

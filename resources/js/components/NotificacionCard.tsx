@@ -1,4 +1,3 @@
-import { router } from '@inertiajs/react';
 import clsx from 'clsx';
 import { AlertTriangle, Bell, CalendarClock, ClipboardPenLine, Droplets, UserCheck } from 'lucide-react';
 
@@ -15,11 +14,11 @@ type Notificacion = {
 type Props = {
     notificacion: Notificacion;
     modo: 'admin' | 'user';
-    onMarcarLeida?: () => void;
+    onMarcarLeida?: (noti: Notificacion) => void;
 };
 
 export default function NotificacionCard({ notificacion, onMarcarLeida }: Props) {
-    const { id, titulo, descripcion, tipo, leida, created_at } = notificacion;
+    const { titulo, descripcion, tipo, leida, created_at } = notificacion;
 
     const icono = (() => {
         switch (tipo) {
@@ -41,21 +40,9 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: Props)
         }
     })();
 
-    const handleClick = async () => {
-        try {
-            await router.put(
-                `/notificaciones/${id}/marcar-leida`,
-                {},
-                {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        onMarcarLeida?.();
-                    },
-                },
-            );
-        } catch (error) {
-            console.error('Error al marcar la notificación como leída:', error);
-        }
+    const handleClick = () => {
+        onMarcarLeida?.(notificacion);
+        console.log(notificacion)
     };
 
     return (

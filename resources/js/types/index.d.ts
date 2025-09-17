@@ -62,3 +62,14 @@ export interface Notificacion {
     created_at: string;
     vehiculo_id?: number;
 }
+
+interface RevisionSemanalData {
+    video: string;
+}
+
+interface RevisionSemanalProps {
+    vehiculo: Vehiculo;
+    revisionSemanal?: RevisionSemanalData | null;
+    inicio: string;
+    final: string;
+}

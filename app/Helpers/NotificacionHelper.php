@@ -28,6 +28,7 @@ class NotificacionHelper
         foreach ($admins as $admin) {
             Notificacion::create([
                 'titulo' => 'Cambio crítico en formulario',
+                'vehiculo_id' => $placa,
                 'descripcion' => "El campo '{$field}' del formulario '{$formType}' para el vehículo '{$placa}' fue modificado por {$userName}. Nuevo valor: '{$value}'",
                 'tipo' => 'cambioInput',
                 'usuario_id' => $admin->id,
@@ -51,6 +52,7 @@ class NotificacionHelper
         foreach ($admins as $admin) {
             Notificacion::create([
                 'titulo' => 'Reasignación de usuario',
+                'vehiculo_id' => $placa,
                 'descripcion' => "El administrador {$adminName} reasignó el vehículo '{$placa}' al usuario {$nuevoUsuario}.",
                 'tipo' => 'reasignacion',
                 'usuario_id' => $admin->id,
@@ -71,6 +73,7 @@ class NotificacionHelper
         foreach ($admins as $admin) {
             Notificacion::create([
                 'titulo' => 'Nivel de Fluido Bajo',
+                'vehiculo_id' => $placa,
                 'descripcion' => "El vehículo '{$placa}' tiene un nivel bajo en el campo '{$campo}' del formulario '{$formulario}'. Notificado por '{$userName}'.",
                 'tipo' => 'nivelFluido',
                 'usuario_id' => $admin->id,
@@ -92,6 +95,7 @@ class NotificacionHelper
         foreach ($admins as $admin) {
             Notificacion::create([
                 'titulo' => 'Chequeo Omitido',
+                'vehiculo_id' => $placa,
                 'descripcion' => "El vehículo '{$placa}' no realizó el chequeo programado para el {$fecha}. Responsable: '{$userName}'.",
                 'tipo' => 'chequeoOmitido',
                 'usuario_id' => $admin->id,
@@ -112,6 +116,7 @@ class NotificacionHelper
         foreach ($admins as $admin) {
             Notificacion::create([
                 'titulo' => 'Permiso por Vencer',
+                'vehiculo_id' => $placa,
                 'descripcion' => "El permiso del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
                 'tipo' => 'permiso',
                 'usuario_id' => $admin->id,
@@ -131,6 +136,7 @@ class NotificacionHelper
         foreach ($admins as $admin) {
             Notificacion::create([
                 'titulo' => 'Video Semanal Omitido',
+                'vehiculo_id' => $placa,
                 'descripcion' => "El usuario '{$userName}' ha omitido el video semanal del vehículo '{$placa}' correspondiente a la semana {$semana}.",
                 'tipo' => 'revisionSemanal',
                 'usuario_id' => $admin->id,

@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +18,7 @@ class AccesoMiddleware
     {
         $vehiculo = $request->route('vehiculo');
 
-        if ($vehiculo->user_id !== Auth::user()->id && !$request->user()->hasRole('admin')) {
+        if ($vehiculo->user_id  !== Auth::user()->id && !$request->user()->hasRole('admin')) {
             abort(403);
         }
         return $next($request);
