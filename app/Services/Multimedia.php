@@ -8,13 +8,22 @@ use Illuminate\Support\Facades\Storage;
 
 class Multimedia
 {
-    public function guardarImagen($image)
+    protected $rutasGuardado = [
+        'diario' => 'uploads/fotos-diarias',
+        'asignacion' => 'uploads/fotos-asignaciones'
+    ];
+
+    public function guardarImagen($image, $tipo)
     {
         $nameImage = Str::uuid() . '.' . $image->extension();
         $serverImage = ImageManager::gd()->read($image);
         $serverImage->cover(1000, 1000);
-        $targetPath = 'uploads/fotos-diarias';
 
+        if(!array_key_exists($tipo, $this->rutasGuardado)){
+            return false;
+        }
+
+        $targetPath = $this->rutasGuardado[$tipo];
         $respuesta = Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
 
         if(!$respuesta){

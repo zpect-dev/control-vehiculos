@@ -68,7 +68,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
     Route::post('notificaciones/{notificacion}/marcar-leida', [NotificacionController::class, 'store'])->name('notificaciones.marcarLeida');
 
-    // Observaciones
+    // Editar Observacion
     Route::patch('observaciones/{vehiculo:placa}/{observaciones:id}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
 });
 

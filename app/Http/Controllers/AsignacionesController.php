@@ -18,13 +18,6 @@ class AsignacionesController extends Controller
             'historial' => $historial
         ]);
     }
-    /**
-     * Show the form for creating the resource.
-     */
-    public function create()
-    {
-        abort(404);
-    }
 
     /**
      * Store the newly created resource in storage.
@@ -40,15 +33,17 @@ class AsignacionesController extends Controller
         $nuevoUsuario = User::find($request->user_id);
 
         if(!$nuevoUsuario){
+            dd('usuario no encontrado');
             return back()->with('fail', 'Usuario no encontrado');
         }
 
         $admin = $request->user();
         
         $multimedia = new Multimedia;
-        $respuesta = $multimedia->guardarImagen($request->foto_kilometraje);
+        $respuesta = $multimedia->guardarImagen($request->foto_kilometraje, 'asignacion');
 
         if(!$respuesta){
+            dd('error al guardar la imagen');
             return back()->with('fail', 'Error al guardar la imagen');
         }
         

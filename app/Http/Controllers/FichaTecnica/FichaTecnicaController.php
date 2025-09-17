@@ -16,36 +16,36 @@ use Inertia\Inertia;
 
 class FichaTecnicaController extends Controller
 {
-    public function show(Request $request, string $placa)
+    public function show(Request $request, Vehiculo $vehiculo)
     {
         $user = $request->user();
         $isAdmin = $user->hasRole('admin');
 
-        $vehiculo = Vehiculo::with('usuario')->where('placa', $placa)->firstOrFail();
+        $vehiculo = Vehiculo::with('usuario')->where('placa', $vehiculo->placa)->firstOrFail();
 
-        $expediente = VehiculoEspecificaciones::where('vehiculo_id', $placa)->get();
+        $expediente = VehiculoEspecificaciones::where('vehiculo_id', $vehiculo->placa)->get();
         $expedientesTecnicosPorVehiculo = [
-            $placa => $expediente->pluck('estado', 'especificacion_id')->toArray()
+            $vehiculo->placa => $expediente->pluck('estado', 'especificacion_id')->toArray()
         ];
 
-        $accesorios = VehiculoAccesorios::where('vehiculo_id', $placa)->get();
-        $accesoriosPorVehiculo[$placa] = $accesorios->pluck('estado', 'accesorio_id')->toArray();
+        $accesorios = VehiculoAccesorios::where('vehiculo_id', $vehiculo->placa)->get();
+        $accesoriosPorVehiculo[$vehiculo->placa] = $accesorios->pluck('estado', 'accesorio_id')->toArray();
 
-        $piezas = VehiculoPiezas::where('vehiculo_id', $placa)->get();
-        $piezasPorVehiculo[$placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
+        $piezas = VehiculoPiezas::where('vehiculo_id', $vehiculo->placa)->get();
+        $piezasPorVehiculo[$vehiculo->placa] = $piezas->pluck('estado', 'pieza_id')->map(fn($e) => (string) $e)->toArray();
 
-        $permisos = VehiculoPermisos::where('vehiculo_id', $placa)->get();
-        $permisosPorVehiculo = [$placa => []];
+        $permisos = VehiculoPermisos::where('vehiculo_id', $vehiculo->placa)->get();
+        $permisosPorVehiculo = [$vehiculo->placa => []];
         foreach ($permisos as $permiso) {
             $config = $this->mapaPermisos()[$permiso->permiso_id] ?? null;
             if (!$config) continue;
             $campo = $config['campo'];
             $tipo = $config['tipo'];
             if ($tipo === 'text') {
-                $permisosPorVehiculo[$placa][$campo] = $permiso->valor_texto;
+                $permisosPorVehiculo[$vehiculo->placa][$campo] = $permiso->valor_texto;
             } else {
-                $permisosPorVehiculo[$placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
-                $permisosPorVehiculo[$placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
+                $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
+                $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
             }
         }
 
