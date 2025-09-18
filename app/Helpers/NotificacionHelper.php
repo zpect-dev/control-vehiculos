@@ -8,6 +8,7 @@ use App\Events\EventoAsignacionUsuario;
 use App\Events\EventoNivelBajo;
 use App\Events\EventoPermisoPorVencer;
 use App\Events\NotificacionPush;
+use App\Events\ObservacionAgregada;
 use App\Events\VideoSemanalOmitido;
 use App\Models\Notificacion;
 use App\Models\User;
@@ -109,7 +110,7 @@ class NotificacionHelper
     /**
      * Emite y guarda una notificación de permiso por vencer.
      */
-    public static function emitirPermisoPorVencer(string $placa, string $userName, string $fechaVencimiento): void
+    public static function emitirPermisoPorVencer(string $placa, string $userName, string $permiso, string $fechaVencimiento): void
     {
         $admins = User::role('admin')->get();
 
@@ -117,12 +118,12 @@ class NotificacionHelper
             Notificacion::create([
                 'titulo' => 'Permiso por Vencer',
                 'vehiculo_id' => $placa,
-                'descripcion' => "El permiso del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
+                'descripcion' => "El permiso '{$placa}' del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
                 'tipo' => 'permiso',
                 'usuario_id' => $admin->id,
                 'solo_admin' => true,
             ]);
-            broadcast(new EventoPermisoPorVencer($placa, $userName, 'Permiso del Vehículo', $fechaVencimiento))->toOthers();
+            broadcast(new EventoPermisoPorVencer($placa, $userName, $permiso, $fechaVencimiento))->toOthers();
         }
     }
 
@@ -144,6 +145,28 @@ class NotificacionHelper
             ]);
 
             broadcast(new VideoSemanalOmitido($placa, $userName, $semana))->toOthers();
+        }
+    }
+
+    /**
+     * Emite y guarda una notificación cuando se agrega una observación.
+     */
+    public static function emitirObservacionAgregada(string $placa, string $userName, string $contenido, string $estado): void
+    {
+        $admins = User::role('admin')->get();
+
+        foreach ($admins as $admin) {
+            Notificacion::create([
+                'titulo' => 'Nueva Observación Agregada',
+                'vehiculo_id' => $placa,
+                'descripcion' => "El usuario '{$userName}' agregó una observación al vehículo '{$placa}' con estado '{$estado}': \"{$contenido}\"",
+                'tipo' => 'observacion',
+                'usuario_id' => $admin->id,
+                'solo_admin' => true,
+            ]);
+
+            broadcast(new ObservacionAgregada($placa, $userName, $contenido, $estado))->toOthers();
+
         }
     }
 }

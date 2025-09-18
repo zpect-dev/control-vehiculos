@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificacionHelper;
 use App\Models\Observacion;
 use App\Models\Vehiculo;
 use Illuminate\Http\Request;
@@ -47,6 +48,14 @@ class ObservacionesController extends Controller
             if (!$respuesta) {
                 throw new \Exception('Error al registrar la observación');
             }
+
+            // Emitir notificación
+            NotificacionHelper::emitirObservacionAgregada(
+                $vehiculo->placa,
+                $request->user()->name,
+                $validatedData['observacion'],
+                'pendiente'
+            );
         }, 'Observación enviada correctamente.', 'Error al registrar la observación.');
     }
 

@@ -20,6 +20,9 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                 return <ClipboardPenLine className="h-5 w-5 text-blue-600" />;
             case 'reasignacion':
                 return <UserCheck className="h-5 w-5 text-green-600" />;
+            case 'observacion':
+                return <ClipboardPenLine className="h-5 w-5 text-purple-600" />;
+
             default:
                 return <AlertTriangle className="h-5 w-5 text-gray-400" />;
         }
@@ -41,6 +44,7 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                     'border-yellow-600 bg-yellow-50 dark:bg-yellow-900': (tipo === 'revisionSemanal' || tipo === 'permiso') && !leida,
                     'border-indigo-600 bg-indigo-50 dark:bg-indigo-900': (tipo === 'cambioInput' || tipo === 'estado_item') && !leida,
                     'border-green-400 bg-green-50 dark:bg-green-800': tipo === 'reasignacion' && !leida,
+                    'border-purple-600 bg-purple-50 dark:bg-purple-900': tipo === 'observacion' && !leida,
                 },
                 leida && 'border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800',
                 !leida && 'hover:scale-[1.02] active:scale-[0.98]',
@@ -62,6 +66,8 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                         'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200': (tipo === 'cambioInput' || tipo === 'estado_item') && !leida,
                         'bg-green-200 text-green-700 dark:bg-green-700 dark:text-green-300': tipo === 'reasignacion' && !leida,
                         'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400': leida,
+                        'bg-purple-50 text-purple-600 dark:bg-purple-900 dark:text-purple-400': tipo === 'observacion' && !leida,
+
                     })}
                 >
                     {tipo}

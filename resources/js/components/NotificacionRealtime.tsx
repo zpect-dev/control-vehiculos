@@ -130,7 +130,10 @@ export default function NotificacionRealtime() {
         channel.bind('video.semanal.omitido', (data: any) => {
             toast.error(`Video semanal no subido`, {
                 description: (
-                    <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}/revisionSemanal`)}>
+                    <div
+                        className="flex cursor-pointer flex-col gap-1 text-left"
+                        onClick={() => router.visit(`/fichaTecnica/${data.placa}/revisionSemanal`)}
+                    >
                         <span className="text-sm font-semibold text-red-700">
                             El vehículo <strong>{data.placa}</strong> no tiene video para <strong>{data.semana}</strong>
                         </span>
@@ -138,6 +141,27 @@ export default function NotificacionRealtime() {
                             Responsable: <strong>{data.usuario}</strong>
                         </span>
                         <span className="text-xs text-gray-500 italic">Haz clic para revisar el módulo de videos.</span>
+                    </div>
+                ),
+                duration: 15000,
+            });
+        });
+
+        // Notificación sobre nueva observación agregada
+        channel.bind('observacion.agregada', (data: any) => {
+            toast.info(`Nueva observación registrada`, {
+                description: (
+                    <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}/observaciones`)}>
+                        <span className="text-sm font-semibold text-purple-700">
+                            <strong>{data.userName}</strong> agregó una observación al vehículo <strong>{data.placa}</strong>
+                        </span>
+                        <span className="text-xs text-gray-700">
+                            Estado: <strong>{data.estado}</strong>
+                        </span>
+                        <span className="text-xs text-gray-600">
+                            Contenido: <em>{data.contenido}</em>
+                        </span>
+                        <span className="text-xs text-gray-500 italic">Haz clic para ver el historial de observaciones.</span>
                     </div>
                 ),
                 duration: 15000,
