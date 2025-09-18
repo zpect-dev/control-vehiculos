@@ -16,6 +16,7 @@ export interface Vehiculo {
     placa: string;
     modelo: string;
     usuario?: UsuarioAsignado | null;
+    observaciones_no_resueltas?: number;
 }
 
 export interface NavGroup {

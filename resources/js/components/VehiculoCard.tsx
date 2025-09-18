@@ -2,6 +2,8 @@ import { Vehiculo } from '@/types';
 import { router } from '@inertiajs/react';
 
 export default function VehiculoCard({ vehiculo }: { vehiculo: Vehiculo }) {
+    const { observaciones_no_resueltas = 0 } = vehiculo;
+
     return (
         <div
             className="group flex h-[220px] flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-md transition duration-200 hover:shadow-lg hover:ring-2 hover:ring-[#49af4e] dark:border-gray-700 dark:bg-gray-800"
@@ -19,6 +21,22 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: Vehiculo }) {
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                         <span className="font-medium">Usuario:</span> {vehiculo.usuario?.name || 'Sin asignar'}
                     </p>
+
+                    {observaciones_no_resueltas > 0 && (
+                        <div className="mt-2">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.get(`/fichaTecnica/${vehiculo.placa}/observaciones`);
+                                }}
+                                className="inline-block rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700 hover:underline dark:bg-purple-800 dark:text-purple-300"
+                            >
+                                {observaciones_no_resueltas} observación
+                                {observaciones_no_resueltas > 1 ? 'es' : ''} pendiente
+                                {observaciones_no_resueltas > 1 ? 's' : ''}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
