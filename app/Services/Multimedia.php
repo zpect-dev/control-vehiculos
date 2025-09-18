@@ -10,7 +10,8 @@ class Multimedia
 {
     protected $rutasGuardado = [
         'diario' => 'uploads/fotos-diarias',
-        'asignacion' => 'uploads/fotos-asignaciones'
+        'asignacion' => 'uploads/fotos-asignaciones',
+        'documentos' => 'uploads/fotos-documentos'
     ];
 
     public function guardarImagen($image, $tipo)

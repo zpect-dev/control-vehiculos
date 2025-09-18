@@ -17,14 +17,19 @@ class RevisionSemanalController extends Controller
         $vehiculo->load('usuario');
 
         $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
-        $finalSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toImmutable();
+        $finalSemana = Carbon::now()->endOfWeek(Carbon::SUNDAY)->toImmutable();
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
-            ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
+            ->whereBetween('created_at', [$inicioSemana, $finalSemana])
             ->first();
 
         if ($revisionSemanal) {
-            $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
+            $basePath = '/storage/uploads/videos-semanales/';
+            $revisionSemanal->video_inicial = $basePath . ltrim($revisionSemanal->video_inicial, '/');
+
+            if($revisionSemanal->video_final){
+                $revisionSemanal->video_final = $basePath . ltrim($revisionSemanal->video_final, '/');
+            }
         }
 
         return Inertia::render('revisionSemanal', [
@@ -48,20 +53,51 @@ class RevisionSemanalController extends Controller
             }
 
             $validatedData = $request->validate([
-                'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm'
+                'video_inicial' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm',
+                'kilometraje_inicial' => 'required|numeric'
             ]);
 
-            $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
+            $KilometrajeFinal = RevisionesSemanales::select('kilometraje_final')->where('vehiculo_id', $vehiculo->placa)->latest()->first();
+
+            if($KilometrajeFinal && $KilometrajeFinal !== $validatedData['kilometraje_inicial']){
+                return back()->with('error', 'El kilometraje no concuerda con el de la semana pasada, comunicarse con un administrador');   
+            }
+
+            $videoPath = $request->file('video_inicial')->store('uploads/videos-semanales', 'public');
             $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
             $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
 
             RevisionesSemanales::create([
                 'vehiculo_id' => $vehiculo->placa,
                 'user_id' => Auth::id(),
-                'observaciones' => '',
-                'video' => $videoName,
-                'revisado' => false
+                'video_inicial' => $videoName,
+                'kilometraje_inicial' => $validatedData['kilometraje_inicial'],
             ]);
         }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
     }
+
+    public function update(Request $request, Vehiculo $vehiculo, RevisionesSemanales $revision)
+    {
+        $validatedData = $request->validate([
+            'video_final' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm',
+            'kilometraje_final' => 'required|numeric'
+        ]);
+
+        if($revision->kilometraje_inicial < $validatedData['kilometraje_final']){
+            return back()->with('error', 'El kilometraje que intenta ingresar, es menor al de inicio de semana');
+        }
+
+        $videoPath = $request->file('video_final')->store('uploads/videos-semanales', 'public');
+        $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
+        $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
+
+        $validatedData['video_final'] = $videoName;
+        $respuesta = $revision->update($validatedData);
+
+        if(!$respuesta){
+            return back()->with('error', 'Error al realizar la revision');
+        }
+
+        return back()->with('success', 'Revision realizada correctamente');
+    }   
 }

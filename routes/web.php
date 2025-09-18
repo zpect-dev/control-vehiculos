@@ -16,6 +16,7 @@ use App\Http\Controllers\FichaTecnica\PiezasController;
 use App\Http\Controllers\ObservacionesController;
 use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehiculoController;
 
 // Ruta raíz: redirige al dashboard si está autenticado
@@ -31,6 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
+Route::get('perfil/{user}', [UsersController::class, 'show'])->name('perfil.show');
+Route::patch('perfil/{user}', [UsersController::class, 'update'])->name('perfil.update');
+
 Route::middleware(['auth', 'acceso'])->group(function () {
     // Ficha Técnica
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
@@ -40,6 +44,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::post('fichaTecnica/{vehiculo:placa}/permisologia', [PermisologiaController::class, 'store'])->name('permisos.store');
     Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
     Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
+    
     // Revisión de Fluidos
     Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
     Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
@@ -47,6 +52,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     // Revisión Semanal
     Route::get('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
     Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
+    Route::patch('fichaTecnica/{vehiculo:placa}/revisionSemanal/{revision}', [RevisionSemanalController::class, 'update'])->name('revisionSemanal.update');
 
     // Observaciones
     Route::get('fichaTecnica/{vehiculo:placa}/observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
@@ -60,6 +66,9 @@ Route::middleware(['auth', 'acceso'])->group(function () {
 });
 Route::get('perfil', [DashboardController::class, 'miPerfil'])->name('mi.perfil');
 Route::middleware(['auth', 'admin'])->group(function () {
+    // Visualizar perfil
+    Route::get('perfiles', [UsersController::class, 'index'])->name('perfil.index');
+
     // Asignar usuario
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
 
