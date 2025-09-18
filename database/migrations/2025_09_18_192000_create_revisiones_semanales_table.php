@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('vehiculo_id');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('observaciones');
-            $table->string('video');
-            $table->dateTime('fecha_creacion')->useCurrent();
-            $table->boolean('revisado')->default(false);
-            $table->dateTime('fecha_revision')->nullable();
+            $table->string('video_inicial');
+            $table->bigInteger('kilometraje_inicial');
+            $table->string('video_final');
+            $table->bigInteger('kilometraje_final');
+            $table->timestamps();
 
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onUpdate('cascade')->onDelete('cascade');
         });

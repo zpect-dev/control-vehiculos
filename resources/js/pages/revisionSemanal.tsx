@@ -58,7 +58,7 @@ export default function revisionSemanal({ vehiculo, revisionSemanal = null, inic
 
                 {/* Card de Detalles del Vehículo y Carga de Video */}
                 <div className="mx-auto mb-10 max-w-5xl">
-                    <div className="mb-2 flex justify-end gap-4 text-gray-700">
+                    <div className="mb-2 flex justify-end gap-4 text-gray-700 dark:text-gray-200">
                         <p className="p-0">
                             <span className="font-semibold">Desde:</span> {inicio}
                         </p>
