@@ -276,3 +276,10 @@ interface ModalAsignacionUserProps {
     isAdmin: boolean;
     onSuccess?: (user: UsuarioAsignado) => void;
 }
+
+export interface UsuarioBasico {
+    id: number;
+    name: string;
+    email: string;
+}
+

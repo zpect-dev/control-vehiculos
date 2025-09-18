@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CalendarRange, Car, Droplets, Eye, History, Menu } from 'lucide-react';
+import { Bell, CalendarRange, Car, Droplets, Eye, History, Menu, SquareUserRound } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -97,11 +97,18 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                             </Link>
                         </div>
-                        {auth.user.is_admin && (
-                            <Link href="/notificaciones" prefetch className="flex items-center">
-                                <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
-                            </Link>
-                        )}
+                        <div className="flex items-center space-x-4">
+                            {auth.user.is_admin && (
+                                <Link href="/usuarios" prefetch>
+                                    <SquareUserRound className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
+                            {auth.user.is_admin && (
+                                <Link href="/notificaciones" prefetch>
+                                    <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
+                        </div>
                     </div>
                     {/* Desktop Menu */}
                     <div className="hidden w-full items-center justify-between lg:flex">
@@ -134,6 +141,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             )}
                         </div>
                         <div className="flex items-center space-x-5">
+                            {auth.user.is_admin && (
+                                <Link href="/usuarios" prefetch className="flex items-center justify-start">
+                                    <SquareUserRound />
+                                </Link>
+                            )}
                             {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch className="flex items-center justify-start">
                                     <Bell />

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Models\RevisionesSemanales;
 use App\Models\RevisionesDiarias;
 use App\Helpers\NotificacionHelper;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -20,12 +21,12 @@ class DashboardController extends Controller
 
         $vehiculos = $modo === 'admin'
             ? Vehiculo::with('usuario')
-                ->withCount([
-                    'observaciones as observaciones_no_resueltas' => function ($query) {
-                        $query->where('resuelto', false);
-                    }
-                ])
-                ->get()
+            ->withCount([
+                'observaciones as observaciones_no_resueltas' => function ($query) {
+                    $query->where('resuelto', false);
+                }
+            ])
+            ->get()
             : Vehiculo::with('usuario')->withCount('observaciones')->where('user_id', $user->id)->get();
 
         $notificaciones = $modo === 'admin'
@@ -50,11 +51,11 @@ class DashboardController extends Controller
                     ->first();
 
                 $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
-                ->whereDate('created_at', $fechaHoy)
-                ->where('tipo', 'chequeoOmitido')
-                ->where('usuario_id', $user->id)
-                ->exists();
-                    
+                    ->whereDate('created_at', $fechaHoy)
+                    ->where('tipo', 'chequeoOmitido')
+                    ->where('usuario_id', $user->id)
+                    ->exists();
+
                 if (!$yaAlertado && !$revision) {
                     NotificacionHelper::emitirChequeoOmitido(
                         $vehiculo->placa,
@@ -71,11 +72,11 @@ class DashboardController extends Controller
                 $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
                     ->whereDate('fecha_creacion', $fechaHoy)
                     ->exists();
-                    
+
                 $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
-                ->whereDate('created_at', $fechaHoy)
-                ->where('tipo', 'chequeoOmitido')
-                ->exists();
+                    ->whereDate('created_at', $fechaHoy)
+                    ->where('tipo', 'chequeoOmitido')
+                    ->exists();
 
                 if (!$yaAlertado && !$revisadoHoy) {
                     NotificacionHelper::emitirChequeoOmitido(
@@ -101,6 +102,23 @@ class DashboardController extends Controller
             'flash' => [
                 'success' => session('success'),
             ],
+        ]);
+    }
+
+    public function usuariosDashboard(Request $request)
+    {
+        $usuarios = User::select('id', 'name', 'email')->get();
+
+        return Inertia::render('dashboardUsuarios', [
+            'usuarios' => $usuarios,
+        ]);
+    }
+
+
+    public function verPerfil(User $user)
+    {
+        return Inertia::render('perfilUsuario', [
+            'usuario' => $user->only(['id', 'name', 'email']),
         ]);
     }
 }

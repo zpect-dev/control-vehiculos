@@ -83,4 +83,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(HistorialAsignaciones::class, 'admin_id');
     }
+    /**
+     * Observaciones registradas por el usuario.
+     */
+    public function observaciones(): HasMany
+    {
+        return $this->hasMany(\App\Models\Observacion::class, 'user_id');
+    }
 }
