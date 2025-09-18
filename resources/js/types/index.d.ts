@@ -149,6 +149,13 @@ type FlashProps = {
     [key: string]: any;
 };
 
+interface FlashPropsCont {
+  flash?: {
+    success?: string;
+    error?: string;
+  };
+}
+
 interface Notificacion {
     id: number;
     titulo: string;

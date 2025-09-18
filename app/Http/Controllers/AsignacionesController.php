@@ -6,6 +6,7 @@ use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Helpers\NotificacionHelper;
+use App\Helpers\FlashHelper;
 use App\Models\HistorialAsignaciones;
 use App\Services\Multimedia;
 use Inertia\Inertia;
@@ -18,8 +19,8 @@ class AsignacionesController extends Controller
             ->with(['vehiculo', 'user', 'admin'])
             ->orderByDesc('id')
             ->get();
-        
-        foreach($historial as $historia){
+
+        foreach ($historial as $historia) {
             if ($historia->foto_kilometraje) {
                 $historia->foto_kilometraje = 'uploads/fotos-asignaciones/' . ltrim($historia->foto_kilometraje, '/');
             }
@@ -28,48 +29,62 @@ class AsignacionesController extends Controller
         return Inertia::render('asignaciones', [
             'vehiculo' => $vehiculo,
             'historial' => $historial,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
 
-    /**
-     * Store the newly created resource in storage.
-     */
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'kilometraje' => 'required|numeric',
-            'foto_kilometraje' => 'required|image|file|max:5120'
-        ]);
+        return FlashHelper::try(function () use ($request, $vehiculo) {
+            $validatedData = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'kilometraje' => 'required|numeric',
+                'foto_kilometraje' => 'required|image|file|max:5120'
+            ]);
 
-        // Verifica que el nuevo kilometraje no sea menor al anterior
-        $ultimoKilometraje = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)->orderByDesc('fecha_asignacion')->first();
-        if ($ultimoKilometraje && $ultimoKilometraje->kilometraje > $validatedData['kilometraje']) return back()->with('fail', 'Kilometraje invalido');
+            $ultimoKilometraje = HistorialAsignaciones::where('vehiculo_id', $vehiculo->placa)
+                ->orderByDesc('fecha_asignacion')
+                ->first();
 
-        // Verifica que el nuevo usuario existe
-        $nuevoUsuario = User::find($validatedData['user_id']);
-        if (!$nuevoUsuario) return back()->with('fail', 'Usuario no encontrado');
+            if ($ultimoKilometraje && $ultimoKilometraje->kilometraje > $validatedData['kilometraje']) {
+                throw new \Exception('Kilometraje inválido');
+            }
 
-        // Procesa las imagenes
-        $multimedia = new Multimedia;
-        $nombreImagen = $multimedia->guardarImagen($validatedData['foto_kilometraje'], 'asignacion');
-        if (!$nombreImagen) return back()->with('fail', 'Error al guardar la imagen');
+            $nuevoUsuario = User::find($validatedData['user_id']);
+            if (!$nuevoUsuario) {
+                throw new \Exception('Usuario no encontrado');
+            }
 
-        $admin = $request->user();
-        $respuesta = HistorialAsignaciones::create([
-            'vehiculo_id' => $vehiculo->placa,
-            'user_id' => $nuevoUsuario->id,
-            'admin_id' => $admin->id,
-            'kilometraje' => $validatedData['kilometraje'],
-            'foto_kilometraje' => $nombreImagen
-        ]);
+            $multimedia = new Multimedia;
+            $nombreImagen = $multimedia->guardarImagen($validatedData['foto_kilometraje'], 'asignacion');
+            if (!$nombreImagen) {
+                throw new \Exception('Error al guardar la imagen');
+            }
 
-        if (!$respuesta) return back()->with('fail', 'Error al realizar el registro');
+            $admin = $request->user();
+            $respuesta = HistorialAsignaciones::create([
+                'vehiculo_id' => $vehiculo->placa,
+                'user_id' => $nuevoUsuario->id,
+                'admin_id' => $admin->id,
+                'kilometraje' => $validatedData['kilometraje'],
+                'foto_kilometraje' => $nombreImagen
+            ]);
 
-        $vehiculo->user_id = $nuevoUsuario->id;
-        $vehiculo->save();
+            if (!$respuesta) {
+                throw new \Exception('Error al realizar el registro');
+            }
 
-        NotificacionHelper::emitirAsignacionUsuario($vehiculo->placa, $admin->name, $nuevoUsuario->name);
-        return back()->with('success', 'Usuario asignado correctamente.');
+            $vehiculo->user_id = $nuevoUsuario->id;
+            $vehiculo->save();
+
+            NotificacionHelper::emitirAsignacionUsuario(
+                $vehiculo->placa,
+                $admin->name,
+                $nuevoUsuario->name
+            );
+        }, 'Usuario asignado correctamente.', 'Error al asignar el usuario.');
     }
 }

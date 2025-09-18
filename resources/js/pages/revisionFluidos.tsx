@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccionFluidos from '@/components/FichaSeccionFluidos';
-import FlashMessage from '@/components/FlashMessage';
 import { fluidosPorRevisarFields } from '@/constants/formFields';
 import AppLayout from '@/layouts/app-layout';
 import { FlashProps, RevisionFluido, RevisionFluidosProps } from '@/types';
@@ -12,7 +11,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const diasSemana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     const diasSemanaTexto = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-    const { flash, modo, revisionDiaria, vehiculo } = usePage<{
+    const { modo, revisionDiaria, vehiculo } = usePage<{
         flash: FlashProps;
         modo: string;
         revisionDiaria?: Record<string, RevisionFluido[]>;
@@ -22,7 +21,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const esAdmin = modo === 'admin';
     const diaActual = diasSemana[(new Date().getDay() + 6) % 7];
     const diasVisibles = esAdmin ? diasSemana : [diaActual];
-    const [validationError, setValidationError] = useState<string | null>(null);
+    const [, setValidationError] = useState<string | null>(null);
 
     const [revisiones] = useState(() => {
         const mapa = diasSemana.reduce((diasAcc: any, dia) => {
@@ -123,7 +122,6 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
                             ? `Revisión Semanal de Fluidos - ${vehiculo?.modelo}`
                             : `Revisión de Fluidos - ${vehiculo?.modelo} - ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
                     </h1>
-                    <FlashMessage mensaje={flash?.success || validationError} isError={!!validationError} />
                 </div>
 
                 {diasVisibles.map((dia) => {

@@ -8,6 +8,7 @@ use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use App\Models\RevisionesSemanales;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\FlashHelper;
 
 class RevisionSemanalController extends Controller
 {
@@ -22,40 +23,45 @@ class RevisionSemanalController extends Controller
             ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
             ->first();
 
-        if ($revisionSemanal) $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
+        if ($revisionSemanal) {
+            $revisionSemanal->video = '/storage/uploads/videos-semanales/' . ltrim($revisionSemanal->video, '/');
+        }
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
             'revisionSemanal' => $revisionSemanal,
             'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
             'final' => $finalSemana->isoFormat('D-M-YYYY'),
-            'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal'
+            'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal',
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        if (!$request->hasFile('video')) return back()->with('mensaje', 'Debe subir un video a la plataforma');
-        
-        $validatedData = $request->validate([
-            'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm'
-        ]);
+        return FlashHelper::try(function () use ($request, $vehiculo) {
+            if (!$request->hasFile('video')) {
+                throw new \Exception('Debe subir un video a la plataforma');
+            }
 
-        $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
-        $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
-        $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
+            $validatedData = $request->validate([
+                'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm'
+            ]);
 
-        RevisionesSemanales::create([
-            'vehiculo_id' => $vehiculo->placa,
-            'user_id' => Auth::id(),
-            'observaciones' => '',
-            'video' => $videoName,
-            'revisado' => false
-        ]);
+            $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
+            $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
+            $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
 
-        return back()->with([
-            'vehiculo' => $vehiculo,
-            'flash' => 'Revision semanal cargada correctamente'
-        ]);
+            RevisionesSemanales::create([
+                'vehiculo_id' => $vehiculo->placa,
+                'user_id' => Auth::id(),
+                'observaciones' => '',
+                'video' => $videoName,
+                'revisado' => false
+            ]);
+        }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
     }
 }

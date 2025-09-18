@@ -1,4 +1,3 @@
-import FlashMessage from '@/components/FlashMessage';
 import ObservacionCard from '@/components/ObservacionesCard';
 import AppLayout from '@/layouts/app-layout';
 import { PagePropsObs } from '@/types';
@@ -6,7 +5,7 @@ import { Head, router, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
 export default function Observaciones() {
-    const { vehiculo, observaciones, flash, isAdmin } = usePage<PagePropsObs>().props;
+    const { vehiculo, observaciones, isAdmin } = usePage<PagePropsObs>().props;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         observacion: '',
@@ -50,7 +49,6 @@ export default function Observaciones() {
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
                         Observaciones del Vehículo {vehiculo.modelo} ({vehiculo.placa})
                     </h1>
-                    <FlashMessage mensaje={flash?.success} />
                 </div>
 
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\NotificacionHelper;
+use App\Helpers\FlashHelper;
 use App\Models\RevisionesDiarias;
 use App\Models\Vehiculo;
 use App\Services\Multimedia;
@@ -33,6 +34,7 @@ class RevisionDiariaController extends Controller
             if ($revision->imagen) {
                 $revision->imagen = '/storage/uploads/fotos-diarias/' . ltrim($revision->imagen, '/');
             }
+
             $revisionesDiarias[$dia][] = $revision;
         }
 
@@ -40,54 +42,60 @@ class RevisionDiariaController extends Controller
             'vehiculoId' => $vehiculo->placa,
             'vehiculo' => $vehiculo,
             'revisionDiaria' => $revisionesDiarias,
-            'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal'
+            'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal',
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        $validatedData = $request->validate([
-            'fluidos' => 'required|array',
-            'fluidos.*.tipo' => 'required|string',
-            'fluidos.*.vehiculo_id' => 'required|string|max:255',
-            'fluidos.*.dia' => 'required|string',
-            'fluidos.*.nivel_fluido' => 'required|string',
-            'fluidos.*.revisado' => 'required|string',
-            'fluidos.*.imagen' => 'required|file|image|max:5120',
-        ]);
+        return FlashHelper::try(function () use ($request, $vehiculo) {
+            $validatedData = $request->validate([
+                'fluidos' => 'required|array',
+                'fluidos.*.tipo' => 'required|string',
+                'fluidos.*.vehiculo_id' => 'required|string|max:255',
+                'fluidos.*.dia' => 'required|string',
+                'fluidos.*.nivel_fluido' => 'required|string',
+                'fluidos.*.revisado' => 'required|string',
+                'fluidos.*.imagen' => 'required|file|image|max:5120',
+            ]);
 
-        $datos = [];
+            $datos = [];
 
-        foreach ($validatedData['fluidos'] as $revision) {
-            $multimedia = new Multimedia;
+            foreach ($validatedData['fluidos'] as $revision) {
+                $multimedia = new Multimedia;
+                $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diario');
 
-            $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diario');
+                if (!$nameImage) {
+                    throw new \Exception('Error al guardar la imagen');
+                }
 
-            if(!$nameImage) return back()->with('fail', 'Error al guardar la imagen');
+                $nivel = $revision['nivel_fluido'];
+                $tipo = $revision['tipo'];
 
-            $nivel = $revision['nivel_fluido'];
-            $tipo = $revision['tipo'];
+                if ($nivel === '0') {
+                    NotificacionHelper::emitirNivelBajo(
+                        $vehiculo->placa,
+                        Auth::user()->name,
+                        $tipo,
+                        'Revisión de Fluidos'
+                    );
+                }
 
-            if ($nivel === '0') {
-                NotificacionHelper::emitirNivelBajo(
-                    $vehiculo->placa,
-                    Auth::user()->name,
-                    $tipo,
-                    'Revisión de Fluidos'
-                );
+                $datos[] = [
+                    'vehiculo_id' => $vehiculo->placa,
+                    'user_id' => Auth::id(),
+                    'nivel_fluido' => $nivel,
+                    'imagen' => $nameImage,
+                    'revisado' => (bool)$revision['revisado'],
+                    'tipo' => $tipo,
+                ];
             }
 
-            $datos[] = [
-                'vehiculo_id' => $vehiculo->placa,
-                'user_id' => Auth::id(),
-                'nivel_fluido' => $nivel,
-                'imagen' => $nameImage,
-                'revisado' => (bool)$revision['revisado'],
-                'tipo' => $tipo,
-            ];
-        }
-
-        RevisionesDiarias::insert($datos);
-        back()->with('success', 'Revisión diaria registrada correctamente.');
+            RevisionesDiarias::insert($datos);
+        }, 'Revisión diaria registrada correctamente.', 'Error al registrar la revisión diaria.');
     }
 }

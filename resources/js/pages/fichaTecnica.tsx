@@ -1,12 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
-import FlashMessage from '@/components/FlashMessage';
 import ModalAsignacionUser from '@/components/modal/ModalAsignacionUser';
 import { accesoriosFields, expedienteTecnicoFields, permisologiaFields, piezasRevisadasFields } from '@/constants/formFields';
 import AppLayout from '@/layouts/app-layout';
-import { FlashProps } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function fichaTecnica({
@@ -27,7 +25,6 @@ export default function fichaTecnica({
     users: any[];
     isAdmin: boolean;
 }) {
-    const { flash } = usePage<{ flash: FlashProps }>().props;
     const [vehiculoActual, setVehiculoActual] = useState(vehiculos[0]);
 
     const placa = vehiculoActual?.placa || '';
@@ -121,9 +118,6 @@ export default function fichaTecnica({
                             Asignar Usuario
                         </button>
                     )}
-
-                    <FlashMessage mensaje={flash?.success} />
-                    <FlashMessage mensaje={flash?.fail} isError />
                 </div>
 
                 <div className="space-y-4">

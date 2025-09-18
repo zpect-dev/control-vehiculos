@@ -6,6 +6,7 @@ use App\Models\Observacion;
 use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Helpers\FlashHelper;
 
 class ObservacionesController extends Controller
 {
@@ -24,41 +25,46 @@ class ObservacionesController extends Controller
             'isAdmin' => $isAdmin,
             'flash' => [
                 'success' => session('success'),
+                'error' => session('error'),
             ],
         ]);
     }
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        $validatedData = $request->validate([
-            'observacion' => 'required|string'
-        ]);
+        return FlashHelper::try(function () use ($request, $vehiculo) {
+            $validatedData = $request->validate([
+                'observacion' => 'required|string'
+            ]);
 
-        $respuesta = Observacion::create([
-            'user_id' => $request->user()->id,
-            'vehiculo_id' => $vehiculo->placa,
-            'observacion' => $validatedData['observacion'],
-            'resuelto' => false,
-        ]);
+            $respuesta = Observacion::create([
+                'user_id' => $request->user()->id,
+                'vehiculo_id' => $vehiculo->placa,
+                'observacion' => $validatedData['observacion'],
+                'resuelto' => false,
+            ]);
 
-        if (!$respuesta) return back()->with('fail', 'Error al registrar la observacion');
-
-        return back()->with('success', 'Observacion enviada correctamente');
+            if (!$respuesta) {
+                throw new \Exception('Error al registrar la observación');
+            }
+        }, 'Observación enviada correctamente.', 'Error al registrar la observación.');
     }
 
     public function update(Request $request, Vehiculo $vehiculo, Observacion $observacion)
     {
-        $validatedData = $request->validate([
-            'resuelto' => 'required|boolean',
-        ]);
+        return FlashHelper::try(function () use ($request, $observacion) {
+            $validatedData = $request->validate([
+                'resuelto' => 'required|boolean',
+            ]);
 
-        $validatedData['fecha_resolucion'] = now();
-        $validatedData['admin_id'] = $request->user()->id;
+            $validatedData['fecha_resolucion'] = now();
+            $validatedData['admin_id'] = $request->user()->id;
 
-        $respuesta = $observacion->update($validatedData);
+            $respuesta = $observacion->update($validatedData);
 
-        if (!$respuesta) return back()->with('fail', 'Error al resolver la observacion');
-
-        return back()->with('success', 'Observacion resuelta');
+            if (!$respuesta) {
+                throw new \Exception('Error al resolver la observación');
+            }
+        }, 'Observación resuelta.', 'Error al resolver la observación.');
     }
 }

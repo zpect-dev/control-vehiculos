@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\FichaTecnica;
 
 use App\Events\EventoPermisoPorVencer;
+use App\Helpers\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
 use App\Models\VehiculoAccesorios;
@@ -62,113 +63,106 @@ class FichaTecnicaController extends Controller
             'modo' => $isAdmin ? 'admin' : 'usuario',
             'flash' => [
                 'success' => session('success'),
+                'error' => session('error'),
             ],
         ]);
     }
 
     public function storeExpediente(Request $request, string $placa)
     {
-        $data = $request->except('vehiculo_id');
-        foreach ($data as $especificacion_id => $estado) {
-            VehiculoEspecificaciones::updateOrCreate(
-                ['vehiculo_id' => $placa, 'especificacion_id' => $especificacion_id],
-                ['estado' => $estado]
-            );
-        }
-        return back()->with('success', 'Expediente técnico actualizado correctamente.');
+        return FlashHelper::try(function () use ($request, $placa) {
+            $data = $request->except('vehiculo_id');
+            foreach ($data as $especificacion_id => $estado) {
+                VehiculoEspecificaciones::updateOrCreate(
+                    ['vehiculo_id' => $placa, 'especificacion_id' => $especificacion_id],
+                    ['estado' => $estado]
+                );
+            }
+        }, 'Expediente técnico actualizado correctamente.', 'Error al actualizar el expediente técnico.');
     }
 
     public function storePermisos(Request $request, string $placa)
     {
-        $data = $request->except('vehiculo_id');
-        $usuario = $request->user()->name;
+        return FlashHelper::try(function () use ($request, $placa) {
+            $data = $request->except('vehiculo_id');
+            $usuario = $request->user()->name;
 
-        foreach ($this->mapaPermisos() as $permiso_id => $config) {
-            $campo = $config['campo'];
-            $tipo = $config['tipo'];
+            foreach ($this->mapaPermisos() as $permiso_id => $config) {
+                $campo = $config['campo'];
+                $tipo = $config['tipo'];
 
-            $registro = VehiculoPermisos::firstOrNew([
-                'vehiculo_id' => $placa,
-                'permiso_id' => $permiso_id,
-            ]);
+                $registro = VehiculoPermisos::firstOrNew([
+                    'vehiculo_id' => $placa,
+                    'permiso_id' => $permiso_id,
+                ]);
 
-            if ($tipo === 'text') {
-                $registro->valor_texto = array_key_exists($campo, $data) ? $data[$campo] : null;
-            } else {
-                $expedicion = $data["{$campo}_expedicion"] ?? null;
-                $vencimiento = $data["{$campo}_vencimiento"] ?? null;
+                if ($tipo === 'text') {
+                    $registro->valor_texto = array_key_exists($campo, $data) ? $data[$campo] : null;
+                } else {
+                    $expedicion = $data["{$campo}_expedicion"] ?? null;
+                    $vencimiento = $data["{$campo}_vencimiento"] ?? null;
 
-                $registro->fecha_expedicion = $expedicion;
-                $registro->fecha_vencimiento = $vencimiento;
+                    $registro->fecha_expedicion = $expedicion;
+                    $registro->fecha_vencimiento = $vencimiento;
 
-                // Emitir alerta si el permiso vence en 15 días o menos
-                if ($vencimiento) {
-                    $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
-                    $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+                    if ($vencimiento) {
+                        $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
+                        $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+                        $clave = "permiso_alertado_{$placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
 
-                    // Clave de sesión para evitar notificaciones duplicadas
-                    $clave = "permiso_alertado_{$placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
-                    if (!session()->has($clave)) {
-                        session()->put($clave, true);
+                        if (!session()->has($clave)) {
+                            session()->put($clave, true);
 
-                        if ($diasRestantes < 0) {
-                            // Vencido
-                            broadcast(new EventoPermisoPorVencer(
-                                $placa,
-                                $usuario,
-                                ucfirst($campo),
-                                $vencimientoCarbon->toDateString()
-                            ))->toOthers();
-                        } elseif ($diasRestantes <= 15) {
-                            // Por vencer
-                            broadcast(new EventoPermisoPorVencer(
-                                $placa,
-                                $usuario,
-                                ucfirst($campo),
-                                $vencimientoCarbon->toDateString()
-                            ))->toOthers();
+                            if ($diasRestantes < 0 || $diasRestantes <= 15) {
+                                broadcast(new EventoPermisoPorVencer(
+                                    $placa,
+                                    $usuario,
+                                    ucfirst($campo),
+                                    $vencimientoCarbon->toDateString()
+                                ))->toOthers();
+                            }
                         }
                     }
                 }
+
+                $registro->save();
             }
-
-            $registro->save();
-        }
-
-        return back()->with('success', 'Permisología actualizada correctamente.');
+        }, 'Permisología actualizada correctamente.', 'Error al actualizar la permisología.');
     }
 
     public function storeAccesorios(Request $request, string $placa)
     {
-        $data = $request->except('vehiculo_id');
-        $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
-        foreach ($data as $accesorio_id => $estado) {
-            $vehiculo->accesorios()->updateOrCreate(
-                ['accesorio_id' => $accesorio_id],
-                ['estado' => $estado]
-            );
-        }
-        return back()->with('success', 'Accesorios actualizados correctamente.');
+        return FlashHelper::try(function () use ($request, $placa) {
+            $data = $request->except('vehiculo_id');
+            $vehiculo = Vehiculo::where('placa', $placa)->firstOrFail();
+            foreach ($data as $accesorio_id => $estado) {
+                $vehiculo->accesorios()->updateOrCreate(
+                    ['accesorio_id' => $accesorio_id],
+                    ['estado' => $estado]
+                );
+            }
+        }, 'Accesorios actualizados correctamente.', 'Error al actualizar los accesorios.');
     }
 
     public function storePiezas(Request $request, string $placa)
     {
-        $data = $request->except('vehiculo_id');
-        foreach ($data as $pieza_id => $estado) {
-            if ($estado !== null && $estado !== '') {
-                VehiculoPiezas::updateOrCreate(
-                    [
-                        'vehiculo_id' => $placa,
-                        'pieza_id' => $pieza_id,
-                    ],
-                    [
-                        'estado' => $estado,
-                        'user_id' => $request->user()->id,
-                    ]
-                );
+        return FlashHelper::try(function () use ($request, $placa) {
+            $data = $request->except('vehiculo_id');
+            foreach ($data as $pieza_id => $estado) {
+                if ($estado !== null && $estado !== '') {
+                    VehiculoPiezas::updateOrCreate(
+                        [
+                            'vehiculo_id' => $placa,
+                            'pieza_id' => $pieza_id,
+                        ],
+                        [
+                            'estado' => $estado,
+                            'user_id' => $request->user()->id,
+                        ]
+                    );
+                }
             }
-        }
-        return back()->with('success', 'Piezas actualizadas correctamente.');
+        }, 'Piezas actualizadas correctamente.', 'Error al actualizar las piezas.');
     }
 
     private function mapaPermisos(): array

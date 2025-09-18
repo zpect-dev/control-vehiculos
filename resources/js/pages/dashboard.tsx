@@ -3,16 +3,14 @@ import NotificacionRealtime from '@/components/NotificacionRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import VehiculoCard from '@/components/VehiculoCard';
 import AppLayout from '@/layouts/app-layout';
-import { FlashProps } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function Dashboard() {
-    const { vehiculos, flash } = usePage<{
+    const { vehiculos } = usePage<{
         vehiculos: any[];
         modo: string;
-        flash: FlashProps;
     }>().props;
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +32,6 @@ export default function Dashboard() {
                 <NotificacionRealtime />
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Vehículos</h1>
-                    {flash?.success && <p className="mt-2 animate-pulse font-semibold text-green-600 dark:text-green-400">{flash.success}</p>}
                 </div>
                 <div className="mb-6 flex justify-center">
                     <div className="relative w-full max-w-md">
