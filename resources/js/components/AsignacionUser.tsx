@@ -1,13 +1,7 @@
-import type { UsuarioAsignado, Vehiculo } from '@/types';
+import type { AsignacionUserProps, UsuarioAsignado } from '@/types';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
-interface AsignacionUserProps {
-    vehiculo: Vehiculo;
-    users: UsuarioAsignado[];
-    isAdmin: boolean;
-    onSuccess?: (user: UsuarioAsignado) => void;
-}
 
 export default function AsignacionUser({ vehiculo, users, onSuccess }: AsignacionUserProps) {
     const [, setAssignedUser] = useState<UsuarioAsignado | null>(vehiculo.usuario || null);

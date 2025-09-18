@@ -4,30 +4,10 @@ import FichaSeccionFluidos from '@/components/FichaSeccionFluidos';
 import FlashMessage from '@/components/FlashMessage';
 import { fluidosPorRevisarFields } from '@/constants/formFields';
 import AppLayout from '@/layouts/app-layout';
+import { FlashProps, RevisionFluido, RevisionFluidosProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-// Se corrige la interfaz para reflejar la estructura de los datos del servidor
-interface RevisionFluidosProps {
-    vehiculoId: number | string;
-    vehiculo: any; // Se agrega la prop vehiculo
-}
-
-interface RevisionFluido {
-    id: number;
-    tipo: string;
-    nivel_fluido: string | number;
-    imagen: string | null;
-    revisado: boolean;
-    fecha_creacion: string;
-}
-
-type FlashProps = {
-    success?: string;
-    [key: string]: any;
-};
-
-// Se corrige el tipado para que revisionDiaria sea un objeto
 export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const diasSemana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     const diasSemanaTexto = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -36,7 +16,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
         flash: FlashProps;
         modo: string;
         revisionDiaria?: Record<string, RevisionFluido[]>;
-        vehiculo: any; // Se agrega la prop vehiculo
+        vehiculo: any;
     }>().props;
 
     const esAdmin = modo === 'admin';

@@ -1,14 +1,8 @@
 import FormCard from '@/components/FormCard';
-import { Field } from '@/hooks/useFormLogic';
+import { FichaSeccionFluidosProps } from '@/types';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { PanelTopOpen } from 'lucide-react';
 
-interface FichaSeccionFluidosProps {
-    title: string;
-    fields: Field[];
-    expediente: Record<string | number, string | boolean | File | null>;
-    onSubmit: (formData: Record<string, string | boolean | File | null>) => void;
-}
 
 export default function FichaSeccionFluidos({ title, fields, expediente, onSubmit }: FichaSeccionFluidosProps) {
     return (

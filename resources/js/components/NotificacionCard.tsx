@@ -1,23 +1,8 @@
+import { PropsNoti } from '@/types';
 import clsx from 'clsx';
 import { AlertTriangle, Bell, CalendarClock, ClipboardPenLine, Droplets, UserCheck } from 'lucide-react';
 
-type Notificacion = {
-    id: number;
-    titulo: string;
-    descripcion: string;
-    tipo: string;
-    leida: boolean;
-    created_at: string;
-    vehiculo_id?: number;
-};
-
-type Props = {
-    notificacion: Notificacion;
-    modo: 'admin' | 'user';
-    onMarcarLeida?: (noti: Notificacion) => void;
-};
-
-export default function NotificacionCard({ notificacion, onMarcarLeida }: Props) {
+export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsNoti) {
     const { titulo, descripcion, tipo, leida, created_at } = notificacion;
 
     const icono = (() => {
@@ -42,7 +27,7 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: Props)
 
     const handleClick = () => {
         onMarcarLeida?.(notificacion);
-        console.log(notificacion)
+        console.log(notificacion);
     };
 
     return (

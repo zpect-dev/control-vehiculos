@@ -1,15 +1,9 @@
 import NotificacionCard from '@/components/NotificacionCard';
-import type { Notificacion } from '@/types';
+import type { PropsGrupoNoti } from '@/types';
 import clsx from 'clsx';
 
-type Props = {
-    tipo: string;
-    notificaciones: Notificacion[];
-    modo: 'admin' | 'user';
-    onMarcarLeida: (noti: Notificacion) => void;
-};
 
-export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarcarLeida }: Props) {
+export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarcarLeida }: PropsGrupoNoti) {
     return (
         <div className="mb-10">
             <h2

@@ -1,10 +1,6 @@
+import { FlashMessageProps } from '@/types';
 import { useEffect, useState } from 'react';
 
-interface FlashMessageProps {
-    mensaje?: string | null;
-    duracion?: number;
-    isError?: boolean;
-}
 
 export default function FlashMessage({ mensaje, isError, duracion = 4000 }: FlashMessageProps) {
     const [visible, setVisible] = useState(!!mensaje);

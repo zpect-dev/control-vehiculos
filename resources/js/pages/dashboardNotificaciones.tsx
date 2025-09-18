@@ -1,27 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import GrupoNotificaciones from '@/components/GrupoNotificaciones';
 import NotificacionRealtime from '@/components/NotificacionRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import AppLayout from '@/layouts/app-layout';
+import { FlashProps, Notificacion } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-
-interface Notificacion {
-    id: number;
-    titulo: string;
-    descripcion: string;
-    tipo: string;
-    leida: boolean;
-    created_at: string;
-    vehiculo_id?: number;
-}
-
-type FlashProps = {
-    success?: string;
-    [key: string]: any;
-};
 
 export default function DashboardNotificaciones() {
     const {

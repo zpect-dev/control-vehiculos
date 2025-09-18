@@ -3,14 +3,10 @@ import NotificacionRealtime from '@/components/NotificacionRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import VehiculoCard from '@/components/VehiculoCard';
 import AppLayout from '@/layouts/app-layout';
+import { FlashProps } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
-
-type FlashProps = {
-    success?: string;
-    [key: string]: any;
-};
 
 export default function Dashboard() {
     const { vehiculos, flash } = usePage<{

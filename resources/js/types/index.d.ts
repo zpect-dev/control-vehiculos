@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Field } from '@/hooks/useFormLogic';
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 
@@ -72,4 +73,198 @@ interface RevisionSemanalProps {
     revisionSemanal?: RevisionSemanalData | null;
     inicio: string;
     final: string;
+}
+
+type VehiculoProps = {
+    placa: string;
+    modelo: string;
+};
+
+type UserProps = {
+    id: number;
+    name: string;
+};
+
+type AsignacionProps = {
+    id: number;
+    vehiculo: VehiculoProps;
+    user: UserProps;
+    admin: UserProps;
+    kilometraje: number;
+    foto_kilometraje?: string;
+    fecha_asignacion?: string;
+};
+
+type PageProps = {
+    vehiculo: VehiculoProps;
+    historial: AsignacionProps[];
+};
+
+type VehiculoProps = {
+    id: number;
+    placa: string;
+    modelo: string;
+};
+
+type UserProps = {
+    id: number;
+    name: string;
+    role?: string;
+};
+
+type ObservacionProps = {
+    id: number;
+    observacion: string;
+    resuelto: boolean;
+    fecha_creacion: string;
+    fecha_resolucion?: string;
+    tipo?: string;
+    user: UserProps;
+    admin?: UserProps;
+};
+
+type PagePropsObs = {
+    vehiculo: VehiculoProps;
+    observaciones: ObservacionProps[];
+    flash: { success?: string };
+    isAdmin: boolean;
+};
+
+interface RevisionFluidosProps {
+    vehiculoId: number | string;
+    vehiculo: any;
+}
+
+interface RevisionFluido {
+    id: number;
+    tipo: string;
+    nivel_fluido: string | number;
+    imagen: string | null;
+    revisado: boolean;
+    fecha_creacion: string;
+}
+
+type FlashProps = {
+    success?: string;
+    [key: string]: any;
+};
+
+interface Notificacion {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    tipo: string;
+    leida: boolean;
+    created_at: string;
+    vehiculo_id?: number;
+}
+
+interface Usuario {
+    name: string;
+}
+
+interface Vehiculo {
+    placa: string;
+    modelo: string;
+    usuario?: Usuario;
+    imagen_url?: string;
+}
+
+type UserProps = {
+    id: number;
+    name: string;
+};
+
+type ObservacionProps = {
+    id: number;
+    observacion: string;
+    resuelto: boolean;
+    fecha_creacion: string;
+    fecha_resolucion?: string;
+    tipo?: string;
+    user: UserProps;
+    admin?: UserProps;
+};
+
+type Props = {
+    observacion: ObservacionProps;
+    isAdmin?: boolean;
+    onResolver?: (id: number) => void;
+};
+
+type Notificacion = {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    tipo: string;
+    leida: boolean;
+    created_at: string;
+    vehiculo_id?: number;
+};
+
+type PropsNoti = {
+    notificacion: Notificacion;
+    modo: 'admin' | 'user';
+    onMarcarLeida?: (noti: Notificacion) => void;
+};
+
+type PropsGrupoNoti = {
+    tipo: string;
+    notificaciones: Notificacion[];
+    modo: 'admin' | 'user';
+    onMarcarLeida: (noti: Notificacion) => void;
+};
+
+interface FichaSeccionFluidosProps {
+    title: string;
+    fields: Field[];
+    expediente: Record<string | number, string | boolean | File | null>;
+    onSubmit: (formData: Record<string, string | boolean | File | null>) => void;
+}
+
+interface FormCardProps {
+    title?: string;
+    fields: Field[];
+    buttonText?: string;
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion';
+    onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
+    expediente?: Record<string | number, string | boolean | File | null>;
+}
+
+interface FlashMessageProps {
+    mensaje?: string | null;
+    duracion?: number;
+    isError?: boolean;
+}
+
+interface FichaSeccionFluidosProps {
+    title: string;
+    fields: Field[];
+    expediente: Record<string, string | boolean | File | null>;
+    onSubmit: (formData: Record<string, string | boolean | File | null>) => void;
+}
+
+interface FichaSeccionProps {
+    title: string;
+    fields: Field[];
+    formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
+    expediente: Record<string, string | boolean | File | null>;
+    onSubmit: (data: Record<string, string | boolean | File | null>) => void;
+}
+
+
+interface AsignacionUserProps {
+    vehiculo: Vehiculo;
+    users: UsuarioAsignado[];
+    isAdmin: boolean;
+    onSuccess?: (user: UsuarioAsignado) => void;
+}
+
+interface ModalAsignacionUserProps {
+    isOpen: boolean;
+    onClose: () => void;
+    vehiculo: Vehiculo;
+    users: User[];
+    isAdmin: boolean;
+    onSuccess?: (user: UsuarioAsignado) => void;
 }

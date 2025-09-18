@@ -1,18 +1,10 @@
 import FormCard from '@/components/FormCard';
 import { getAsignacionFields } from '@/constants/formFields';
-import type { User, UsuarioAsignado, Vehiculo } from '@/types';
+import type { ModalAsignacionUserProps } from '@/types';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
 import { X } from 'lucide-react';
 
-interface ModalAsignacionUserProps {
-    isOpen: boolean;
-    onClose: () => void;
-    vehiculo: Vehiculo;
-    users: User[];
-    isAdmin: boolean;
-    onSuccess?: (user: UsuarioAsignado) => void;
-}
 
 export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, onSuccess }: ModalAsignacionUserProps) {
     const fields = getAsignacionFields(users);

@@ -1,15 +1,7 @@
 import FormCard from '@/components/FormCard';
-import { Field } from '@/hooks/useFormLogic';
+import { FichaSeccionProps } from '@/types';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { PanelTopOpen } from 'lucide-react';
-
-interface FichaSeccionProps {
-    title: string;
-    fields: Field[];
-    formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
-    expediente: Record<string, string | boolean | File | null>;
-    onSubmit: (data: Record<string, string | boolean | File | null>) => void;
-}
 
 export default function FichaSeccion({ title, fields, formType, expediente, onSubmit }: FichaSeccionProps) {
     return (

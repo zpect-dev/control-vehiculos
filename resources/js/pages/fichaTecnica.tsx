@@ -1,17 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ModalAsignacionUser from '@/components/modal/ModalAsignacionUser';
 import FichaSeccion from '@/components/FichaSeccion';
 import FlashMessage from '@/components/FlashMessage';
+import ModalAsignacionUser from '@/components/modal/ModalAsignacionUser';
 import { accesoriosFields, expedienteTecnicoFields, permisologiaFields, piezasRevisadasFields } from '@/constants/formFields';
 import AppLayout from '@/layouts/app-layout';
+import { FlashProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-
-type FlashProps = {
-    success?: string;
-    [key: string]: any;
-};
 
 export default function fichaTecnica({
     vehiculos,
@@ -128,7 +124,6 @@ export default function fichaTecnica({
 
                     <FlashMessage mensaje={flash?.success} />
                     <FlashMessage mensaje={flash?.fail} isError />
-
                 </div>
 
                 <div className="space-y-4">

@@ -1,15 +1,5 @@
+import { Vehiculo } from '@/types';
 import { router } from '@inertiajs/react';
-
-interface Usuario {
-    name: string;
-}
-
-interface Vehiculo {
-    placa: string;
-    modelo: string;
-    usuario?: Usuario;
-    imagen_url?: string;
-}
 
 export default function VehiculoCard({ vehiculo }: { vehiculo: Vehiculo }) {
     return (

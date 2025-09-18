@@ -4,15 +4,8 @@ import { TextField } from '@/components/form-fields/TextField';
 import { Field, useFormLogic } from '@/hooks/useFormLogic';
 import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
+import { FormCardProps } from '@/types';
 
-interface FormCardProps {
-    title?: string;
-    fields: Field[];
-    buttonText?: string;
-    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion';
-    onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
-    expediente?: Record<string | number, string | boolean | File | null>;
-}
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, handleChange } = useFormLogic(expediente, fields);

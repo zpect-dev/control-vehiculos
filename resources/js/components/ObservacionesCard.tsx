@@ -1,24 +1,5 @@
-type UserProps = {
-    id: number;
-    name: string;
-};
+import { Props } from "@/types";
 
-type ObservacionProps = {
-    id: number;
-    observacion: string;
-    resuelto: boolean;
-    fecha_creacion: string;
-    fecha_resolucion?: string;
-    tipo?: string;
-    user: UserProps;
-    admin?: UserProps;
-};
-
-type Props = {
-    observacion: ObservacionProps;
-    isAdmin?: boolean;
-    onResolver?: (id: number) => void;
-};
 
 export default function ObservacionCard({ observacion, isAdmin = false, onResolver }: Props) {
     const estadoColor = observacion.resuelto ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';

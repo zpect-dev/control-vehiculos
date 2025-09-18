@@ -54,6 +54,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
 
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
+    Route::get('fichaTecnica/{registro}/asignacion', [AsignacionesController::class, 'show'])->name('asignaciones.show');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
