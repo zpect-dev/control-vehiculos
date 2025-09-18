@@ -31,7 +31,6 @@ class AsignacionesController extends Controller
         ]);
     }
 
-
     /**
      * Store the newly created resource in storage.
      */
@@ -72,15 +71,5 @@ class AsignacionesController extends Controller
 
         NotificacionHelper::emitirAsignacionUsuario($vehiculo->placa, $admin->name, $nuevoUsuario->name);
         return back()->with('success', 'Usuario asignado correctamente.');
-    }
-
-    /**
-     * Display the resource.
-     */
-    public function show(HistorialAsignaciones $registro)
-    {
-        return view('asignaciones', [
-            'registro' => $registro
-        ]);
     }
 }

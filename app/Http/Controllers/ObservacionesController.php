@@ -61,16 +61,4 @@ class ObservacionesController extends Controller
 
         return back()->with('success', 'Observacion resuelta');
     }
-
-
-    public function show(Request $request, Vehiculo $vehiculo, Observacion $observacion)
-    {
-        $user = $request->user();
-        $isAdmin = $user->hasRole('admin');
-
-        return Inertia::render('observaciones', [
-            'observacion' => $observacion->load(['user', 'admin']),
-            'isAdmin' => $isAdmin,
-        ]);
-    }
 }
