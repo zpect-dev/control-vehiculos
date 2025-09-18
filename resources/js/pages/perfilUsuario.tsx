@@ -15,7 +15,7 @@ export default function PerfilUsuario() {
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">ID interno: {usuario.id}</p>
                 </div>
 
-                <div className="mx-auto max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <div className="mx-auto max-w-5xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Nombre completo</h2>
                         <p className="text-sm text-gray-600 dark:text-gray-300">{usuario.name}</p>

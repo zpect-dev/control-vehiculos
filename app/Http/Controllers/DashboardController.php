@@ -121,4 +121,13 @@ class DashboardController extends Controller
             'usuario' => $user->only(['id', 'name', 'email']),
         ]);
     }
+
+    public function miPerfil(Request $request)
+    {
+        $user = $request->user();
+
+        return Inertia::render('perfilUsuario', [
+            'usuario' => $user->only(['id', 'name', 'email']),
+        ]);
+    }
 }

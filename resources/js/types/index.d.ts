@@ -39,7 +39,7 @@ export interface SharedData {
     [key: string]: any;
 }
 
-export interface User {
+export interface UserInterface {
     id: number;
     name: string;
     email: string;

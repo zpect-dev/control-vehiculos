@@ -25,7 +25,7 @@ export default function NotificacionRealtime() {
             toast.warning(`Cambio crítico registrado`, {
                 description: (
                     <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}`)}>
-                        <span className="text-sm font-semibold text-gray-700">
+                        <span className="text-sm font-semibold text-blue-700">
                             <strong>{data.userName}</strong> marcó el campo <strong>{data.field}</strong> como <strong>{estado}</strong>
                         </span>
                         <span className="text-xs text-gray-700">
@@ -49,7 +49,7 @@ export default function NotificacionRealtime() {
             toast.info(`Reasignación de vehículo`, {
                 description: (
                     <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}`)}>
-                        <span className="text-sm font-semibold text-gray-700">
+                        <span className="text-sm font-semibold text-blue-700">
                             <strong>{data.adminName}</strong> asignó el vehículo <strong>{data.placa}</strong> a <strong>{data.nuevoUsuario}</strong>
                         </span>
                         <span className="text-xs text-gray-500 italic">Cambio registrado en tiempo real.</span>

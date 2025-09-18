@@ -54,8 +54,11 @@ Route::middleware(['auth', 'acceso'])->group(function () {
 
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
-});
 
+    // Ruta para el perfil
+
+});
+Route::get('perfil', [DashboardController::class, 'miPerfil'])->name('mi.perfil');
 Route::middleware(['auth', 'admin'])->group(function () {
     // Asignar usuario
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
