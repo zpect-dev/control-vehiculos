@@ -6,13 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class RevisionesSemanales extends Model
 {
-    public $timestamps = false;
-
     protected $casts = [
-        'fecha_creacion' => 'datetime',
-        'fecha_revision' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
-
     
     protected $fillable = [
         'vehiculo_id',
