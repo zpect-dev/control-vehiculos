@@ -277,10 +277,24 @@ interface ModalAsignacionUserProps {
 }
 
 export interface UsuarioBasico {
-    id: number;
-    name: string;
-    email: string;
+  id: number;
+  name: string;
+  email: string;
+  zona?: string;
+  foto_cedula?: string;
+  vencimiento_cedula?: string;
+  foto_licencia?: string;
+  vencimiento_licencia?: string;
+  foto_certificado_medico?: string;
+  vencimiento_certificado_medico?: string;
+  foto_seguro_civil?: string;
+  vencimiento_seguro_civil?: string;
+  foto_carnet_circulacion?: string;
+  vencimiento_carnet_circulacion?: string;
+  foto_solvencia?: string;
+  vencimiento_solvencia?: string;
 }
+
 
 export interface RevisionSemanalData {
     id: number;

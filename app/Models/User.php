@@ -16,7 +16,21 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'zona',
+        'foto_cedula',
+        'vencimiento_cedula',
+        'foto_licencia',
+        'vencimiento_licencia',
+        'foto_certificado_medico',
+        'vencimiento_certificado_medico',
+        'foto_seguro_civil',
+        'vencimiento_seguro_civil',
+        'foto_carnet_circulacion',
+        'vencimiento_carnet_circulacion',
+        'foto_solvencia',
+        'vencimiento_solvencia',
     ];
+
 
     protected $hidden = [
         'password',
