@@ -26,6 +26,7 @@ export default function fichaTecnica({
     isAdmin: boolean;
 }) {
     const [vehiculoActual, setVehiculoActual] = useState(vehiculos[0]);
+    const tipoVehiculo = vehiculoActual?.tipo as 'CARRO' | 'MOTO';
 
     const placa = vehiculoActual?.placa || '';
     const [modalOpen, setModalOpen] = useState(false);
@@ -123,7 +124,7 @@ export default function fichaTecnica({
                 <div className="space-y-4">
                     <FichaSeccion
                         title="Expediente Técnico del Vehículo"
-                        fields={expedienteTecnicoFields}
+                        fields={expedienteTecnicoFields[tipoVehiculo]}
                         formType="expediente"
                         expediente={expedientesTecnicos[placa] || {}}
                         onSubmit={(data) => handleFormSubmit('expedientes', data, placa)}
@@ -139,7 +140,7 @@ export default function fichaTecnica({
 
                     <FichaSeccion
                         title="Accesorios del Vehículo"
-                        fields={accesoriosFields}
+                        fields={accesoriosFields[tipoVehiculo]}
                         formType="accesorios"
                         expediente={accesoriosGuardados[placa]}
                         onSubmit={(data) => handleFormSubmit('accesorios', data, placa)}
@@ -147,7 +148,7 @@ export default function fichaTecnica({
 
                     <FichaSeccion
                         title="Piezas Revisadas del Vehículo"
-                        fields={piezasRevisadasFields}
+                        fields={piezasRevisadasFields[tipoVehiculo]}
                         formType="piezas"
                         expediente={piezasGuardadas[placa]}
                         onSubmit={(data) => handleFormSubmit('piezas', data, placa)}

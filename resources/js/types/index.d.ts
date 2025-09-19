@@ -14,6 +14,7 @@ export interface BreadcrumbItem {
 
 export interface Vehiculo {
     placa: string;
+    tipo: 'CARRO' | 'MOTO';
     modelo: string;
     usuario?: UsuarioAsignado | null;
     observaciones_no_resueltas?: number;
@@ -255,6 +256,7 @@ interface FichaSeccionFluidosProps {
 interface FichaSeccionProps {
     title: string;
     fields: Field[];
+    options?: string[];
     formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
     expediente: Record<string, string | boolean | File | null>;
     onSubmit: (data: Record<string, string | boolean | File | null>) => void;

@@ -25,6 +25,8 @@ class EspecificacionesSeeder extends Seeder
             'Sistema de inyeccion',
             'Cauchos',
             'Kilometraje',
+            'Tipo de motor',
+            'Cilindrada',
         ];
         foreach ($especificaciones as $especificacion) {
             DB::table('especificaciones')->insert([

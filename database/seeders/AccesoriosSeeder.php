@@ -20,6 +20,8 @@ class AccesoriosSeeder extends Seeder
             'Extintor',
             'Gato',
             'Llave de cruz',
+            'Linterna',
+            'Repuesto',
         ];
         foreach ($accesorios as $accesorio) {
             DB::table('accesorios')->insert([

@@ -15,8 +15,11 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
         flash: FlashProps;
         modo: string;
         revisionDiaria?: Record<string, RevisionFluido[]>;
-        vehiculo: any;
+        vehiculo: { tipo: 'CARRO' | 'MOTO'; modelo: string };
     }>().props;
+
+    const tipoVehiculo = vehiculo?.tipo === 'MOTO' ? 'MOTO' : 'CARRO';
+    const fluidosBase = fluidosPorRevisarFields[tipoVehiculo];
 
     const esAdmin = modo === 'admin';
     const diaActual = diasSemana[(new Date().getDay() + 6) % 7];
@@ -25,7 +28,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
 
     const [revisiones] = useState(() => {
         const mapa = diasSemana.reduce((diasAcc: any, dia) => {
-            diasAcc[dia] = fluidosPorRevisarFields.reduce((acc: any, fluido) => {
+            diasAcc[dia] = fluidosBase.reduce((acc: any, fluido) => {
                 acc[fluido.id] = { nivel: '', foto: null, realizado: false };
                 return acc;
             }, {});
@@ -51,15 +54,12 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
         return mapa;
     });
 
-    const fluidosFields = fluidosPorRevisarFields.flatMap((fluido) => [
+    const fluidosFields = fluidosBase.flatMap((fluido) => [
         {
             id: fluido.id,
             label: fluido.label,
             type: 'select' as const,
-            options: [
-                { value: '1', label: 'Normal' },
-                { value: '0', label: 'Bajo' },
-            ],
+            options: fluido.options,
         },
         {
             id: `${fluido.id}_foto`,
@@ -69,13 +69,11 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     ]);
 
     const handleSubmitFluidos = (dia: string, formData: Record<string | number, string | boolean | File | null>) => {
-        setValidationError(null); // Clear previous errors
+        setValidationError(null);
 
-        // Validación para asegurarse de que todos los fluidos con nivel también tienen una imagen
-        const missingImage = fluidosPorRevisarFields.find((fluido) => {
+        const missingImage = fluidosBase.find((fluido) => {
             const nivel = formData[fluido.id];
             const imagen = formData[`${fluido.id}_foto`];
-            // Si el nivel está seleccionado, pero no hay imagen, consideramos que falta
             return nivel && !imagen;
         });
 
@@ -86,7 +84,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
 
         const form = new FormData();
 
-        fluidosPorRevisarFields.forEach((fluido, index) => {
+        fluidosBase.forEach((fluido, index) => {
             form.append(`fluidos[${index}][tipo]`, fluido.id);
             form.append(`fluidos[${index}][vehiculo_id]`, vehiculoId.toString());
             form.append(`fluidos[${index}][dia]`, dia);
@@ -126,14 +124,15 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
 
                 {diasVisibles.map((dia) => {
                     const expediente = Object.fromEntries(
-                        fluidosPorRevisarFields.flatMap((fluido) => {
+                        fluidosBase.flatMap((fluido) => {
                             const registro = revisiones[dia][fluido.id];
                             return [
                                 [fluido.id, registro.nivel],
-                                [`${fluido.id}_foto`, registro.foto ? registro.foto : null],
+                                [`${fluido.id}_foto`, registro.foto ?? null],
                             ];
                         }),
                     );
+
                     return (
                         <div key={dia} className="py-2">
                             <FichaSeccionFluidos

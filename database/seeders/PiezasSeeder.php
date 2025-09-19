@@ -69,6 +69,9 @@ class PiezasSeeder extends Seeder
             'Vidrios laterales delanteros',
             'Vidrios laterales traseros',
             'Vidrios traseros',
+            'Caucho Delantero',
+            'Caucho Trasero',
+            'Luces Exploradoras',
         ];
         foreach ($piezas as $pieza) {
             DB::table('piezas')->insert([

@@ -64,10 +64,10 @@ export default function Observaciones() {
                                     id="observacion"
                                     value={data.observacion}
                                     onChange={(e) => setData('observacion', e.target.value)}
-                                    className={`w-full rounded  px-3 py-2 dark:bg-gray-800 dark:text-gray-300 shadow focus:outline-none ${
+                                    className={`w-full rounded  px-3 py-2 bg-white dark:bg-gray-800 dark:text-gray-300 shadow focus:outline-none ${
                                         errors.observacion ? 'border-red-500' : 'border-gray-300'
                                     }`}
-                                    rows={5}
+                                    rows={3}
                                     maxLength={500}
                                     required
                                 />
