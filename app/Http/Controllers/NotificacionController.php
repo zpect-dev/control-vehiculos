@@ -38,7 +38,7 @@ class NotificacionController extends Controller
             $query->whereHas('usuario', fn($q) => $q->where('name', 'like', '%' . $request->usuario . '%'));
         }
 
-        $notificaciones = $query->orderByDesc('created_at')->where('usuario_id', $user->id)->get();
+        $notificaciones = $query->orderByDesc('created_at')->get();
 
         return Inertia::render('dashboardNotificaciones', [
             'notificaciones' => $notificaciones,

@@ -24,7 +24,7 @@ class NotificacionHelper
     {
         broadcast(new EventoCambioInputs($field, $value, $formType, $placa, $userName))->toOthers();
 
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
@@ -48,7 +48,7 @@ class NotificacionHelper
     {
         broadcast(new EventoAsignacionUsuario($placa, $adminName, $nuevoUsuario))->toOthers();
 
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
@@ -69,7 +69,7 @@ class NotificacionHelper
      */
     public static function emitirNivelBajo(string $placa, string $userName, string $campo, string $formulario): void
     {
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
@@ -91,7 +91,7 @@ class NotificacionHelper
      */
     public static function emitirChequeoOmitido(string $placa, string $userName, string $fecha): void
     {
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
@@ -112,7 +112,7 @@ class NotificacionHelper
      */
     public static function emitirPermisoPorVencer(string $placa, string $userName, string $permiso, string $fechaVencimiento): void
     {
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
@@ -132,7 +132,7 @@ class NotificacionHelper
      */
     public static function emitirVideoSemanalOmitido(string $placa, string $userName, string $semana): void
     {
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
@@ -153,7 +153,7 @@ class NotificacionHelper
      */
     public static function emitirObservacionAgregada(string $placa, string $userName, string $contenido, string $estado): void
     {
-        $admins = User::role('admin')->get();
+        $admins = User::role('admin')->where('id', 1)->get();
 
         foreach ($admins as $admin) {
             Notificacion::create([
