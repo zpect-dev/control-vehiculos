@@ -73,7 +73,7 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                     {tipo}
                 </span>
             </div>
-            <p className={clsx('mt-2 text-xs', leida ? 'text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300')}>{descripcion}</p>
+            <p className={clsx('mt-2 text-xs line-clamp-2', leida ? 'text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300')}>{descripcion}</p>
             <div className={clsx('mt-2 text-right text-[11px]', leida ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500 dark:text-gray-400')}>
                 {new Date(created_at).toLocaleString('es-VE', {
                     day: '2-digit',
