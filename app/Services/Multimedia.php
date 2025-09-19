@@ -18,7 +18,7 @@ class Multimedia
     {
         $nameImage = Str::uuid() . '.' . $image->extension();
         $serverImage = ImageManager::gd()->read($image);
-        $serverImage->cover(1000, 1000);
+        $serverImage->cover(1200, 800);
 
         if(!array_key_exists($tipo, $this->rutasGuardado)){
             return false;
