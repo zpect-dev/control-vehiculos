@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import AppLayout from '@/layouts/app-layout';
 import { UsuarioBasico } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function PerfilUsuario() {
     const { usuario } = usePage<{ usuario: UsuarioBasico }>().props;
@@ -34,13 +35,21 @@ export default function PerfilUsuario() {
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null) payload.append(key, value);
         });
-
-
+ payload.append('_method', 'PATCH');
         router.post(`/perfil/${usuario.id}`, payload, {
             forceFormData: true,
             onFinish: () => setSubmitting(false),
         });
     };
+
+    useEffect(() => {
+        const initialData: Record<string, string | File | null> = {};
+        documentos.forEach(({ key }) => {
+            const vencimiento = usuario[`vencimiento_${key}` as keyof UsuarioBasico] as string | undefined;
+            if (vencimiento) initialData[`vencimiento_${key}`] = vencimiento;
+        });
+        setFormData(initialData);
+    }, []);
 
     return (
         <AppLayout>
@@ -48,7 +57,6 @@ export default function PerfilUsuario() {
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Perfil del Empleado</h1>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">ID interno: {usuario.id}</p>
                 </div>
 
                 <div className="mx-auto max-w-5xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -70,7 +78,7 @@ export default function PerfilUsuario() {
                         <h2 className="mb-6 text-center text-xl font-bold text-gray-800 dark:text-white">Documentación</h2>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             {documentos.map(({ label, key }) => {
-                                console.log(key)
+                                console.log(key);
                                 const foto = usuario[`foto_${key}` as keyof UsuarioBasico] as string | undefined;
                                 const vencimiento = usuario[`vencimiento_${key}` as keyof UsuarioBasico] as string | undefined;
                                 const vencido = vencimiento && new Date(vencimiento) < new Date();
@@ -92,9 +100,9 @@ export default function PerfilUsuario() {
 
                                         {foto ? (
                                             <img
-                                            src={foto}
-                                            alt={`Documento ${label}`}
-                                            className="mb-3 max-h-40 w-full rounded object-contain shadow"
+                                                src={foto}
+                                                alt={`Documento ${label}`}
+                                                className="mb-3 max-h-40 w-full rounded object-contain shadow"
                                             />
                                         ) : (
                                             <p className="mb-3 text-sm text-gray-500 italic dark:text-gray-400">No cargado</p>
@@ -120,8 +128,12 @@ export default function PerfilUsuario() {
                                                 <input
                                                     type="date"
                                                     onChange={(e) => handleDateChange(key, e.target.value)}
+                                                    value={
+                                                        typeof formData[`vencimiento_${key}`] === 'string'
+                                                            ? (formData[`vencimiento_${key}`] as string)
+                                                            : vencimiento || ''
+                                                    }
                                                     className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                                    value={vencimiento}
                                                 />
                                             </div>
                                         </div>
