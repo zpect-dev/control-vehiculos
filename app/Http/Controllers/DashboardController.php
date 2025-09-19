@@ -105,29 +105,4 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function usuariosDashboard(Request $request)
-    {
-        $usuarios = User::select('id', 'name', 'email')->get();
-
-        return Inertia::render('dashboardUsuarios', [
-            'usuarios' => $usuarios,
-        ]);
-    }
-
-
-    public function verPerfil(User $user)
-    {
-        return Inertia::render('perfilUsuario', [
-            'usuario' => $user->only(['id', 'name', 'email']),
-        ]);
-    }
-
-    public function miPerfil(Request $request)
-    {
-        $user = $request->user();
-
-        return Inertia::render('perfilUsuario', [
-            'usuario' => $user->only(['id', 'name', 'email']),
-        ]);
-    }
 }

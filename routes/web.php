@@ -86,8 +86,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
 
     // Ruta Dashboard usuarios
-    Route::get('usuarios', [DashboardController::class, 'usuariosDashboard'])->name('admin.usuarios');
-    Route::get('usuarios/{user}', [DashboardController::class, 'verPerfil'])->name('usuarios.perfil');
+    Route::get('usuarios', [UsersController::class, 'index'])->name('admin.usuarios');
+    Route::get('usuarios/{user}', [UsersController::class, 'show'])->name('usuarios.perfil');
 });
 
 // Configuración y autenticación
