@@ -151,10 +151,10 @@ type FlashProps = {
 };
 
 interface FlashPropsCont {
-  flash?: {
-    success?: string;
-    error?: string;
-  };
+    flash?: {
+        success?: string;
+        error?: string;
+    };
 }
 
 interface Notificacion {
@@ -260,7 +260,6 @@ interface FichaSeccionProps {
     onSubmit: (data: Record<string, string | boolean | File | null>) => void;
 }
 
-
 interface AsignacionUserProps {
     vehiculo: Vehiculo;
     users: UsuarioAsignado[];
@@ -283,3 +282,28 @@ export interface UsuarioBasico {
     email: string;
 }
 
+export interface RevisionSemanalData {
+    id: number;
+    vehiculo_id: string;
+    user_id: number;
+    video_inicial: string;
+    kilometraje_inicial: number;
+    video_final?: string;
+    kilometraje_final?: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface VehiculoData {
+    placa: string;
+    modelo: string;
+    usuario?: { name: string } | null;
+}
+
+
+export interface RevisionSemanalProps {
+    vehiculo: VehiculoData;
+    revisionSemanal?: RevisionSemanalData | null;
+    inicio: string;
+    final: string;
+}
