@@ -78,7 +78,7 @@ class UsersController extends Controller
             }
 
             $user->update($validatedData);
-        }, 'Documentos actualizados correctamente.', 'Error al actualizar los documentos.', route('perfil.show', $user));
+        }, 'Documentos actualizados correctamente.', 'Error al actualizar los documentos.');
     }
     
 }
