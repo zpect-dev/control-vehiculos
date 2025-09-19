@@ -22,9 +22,9 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal = null, inic
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="pb-4">
                         {/* Card de Detalles del Vehículo */}
-                        <div className="rounded-lg bg-white border p-4 shadow-md dark:bg-gray-700">
+                        <div className="rounded-lg border bg-white p-4 shadow-md dark:bg-gray-700">
                             <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Detalles del Vehículo</h3>
                             <div className="space-y-2 text-gray-700 dark:text-gray-300">
                                 <p>
@@ -38,10 +38,10 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal = null, inic
                                 </p>
                             </div>
                         </div>
-
-                        {/* Card de Revisión Semanal */}
-                        <CardRevisionSemanal vehiculo={vehiculo} revisionSemanal={revisionSemanal} />
                     </div>
+
+                    {/* Card de Revisión Semanal */}
+                    <CardRevisionSemanal vehiculo={vehiculo} revisionSemanal={revisionSemanal} revisionAnteriorFinalExiste />
                 </div>
             </div>
         </AppLayout>

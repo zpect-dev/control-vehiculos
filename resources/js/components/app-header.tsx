@@ -99,7 +99,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         </div>
                         <div className="flex items-center space-x-4">
                             {auth.user.is_admin && (
-                                <Link href="/usuarios" prefetch>
+                                <Link href="/perfiles" prefetch>
                                     <SquareUserRound className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
                             )}
@@ -142,7 +142,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         </div>
                         <div className="flex items-center space-x-5">
                             {auth.user.is_admin && (
-                                <Link href="/usuarios" prefetch className="flex items-center justify-start">
+                                <Link href="/perfiles" prefetch className="flex items-center justify-start">
                                     <SquareUserRound />
                                 </Link>
                             )}

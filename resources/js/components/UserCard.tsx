@@ -5,7 +5,7 @@ export default function UserCard({ usuario }: { usuario: UsuarioBasico }) {
     return (
         <div
             className="group flex h-[180px] flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-md transition duration-200 hover:shadow-lg hover:ring-2 hover:ring-blue-500 dark:border-gray-700 dark:bg-gray-800"
-            onClick={() => router.get(`/usuarios/${usuario.id}`)}
+            onClick={() => router.get(`/perfil/${usuario.id}`)}
         >
             <div>
                 <h2 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 dark:text-white">{usuario.name}</h2>

@@ -60,7 +60,6 @@ class RevisionSemanalController extends Controller
             $KilometrajeFinal = RevisionesSemanales::select('kilometraje_final')->where('vehiculo_id', $vehiculo->placa)->latest()->first();
             
             if($KilometrajeFinal && $KilometrajeFinal !== $validatedData['kilometraje_inicial']){
-                dd('1');
                 return back()->with('error', 'El kilometraje no concuerda con el de la semana pasada, comunicarse con un administrador');   
             }
             
@@ -84,9 +83,10 @@ class RevisionSemanalController extends Controller
             'kilometraje_final' => 'required|numeric'
         ]);
 
-        if($revision->kilometraje_inicial < $validatedData['kilometraje_final']){
-            return back()->with('error', 'El kilometraje que intenta ingresar, es menor al de inicio de semana');
-        }
+if ($validatedData['kilometraje_final'] < $revision->kilometraje_inicial) {
+    return back()->with('error', 'El kilometraje final no puede ser menor al inicial');
+}
+
 
         $videoPath = $request->file('video_final')->store('uploads/videos-semanales', 'public');
         $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);

@@ -35,7 +35,6 @@ export default function PerfilUsuario() {
             if (value !== null) payload.append(key, value);
         });
 
-        payload.append('_method', 'PATCH');
 
         router.post(`/perfil/${usuario.id}`, payload, {
             forceFormData: true,

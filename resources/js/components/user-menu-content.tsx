@@ -29,7 +29,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                    <Link className="block w-full" href={'/perfil'} as="button" prefetch onClick={cleanup}>
+                    <Link className="block w-full" href={`/perfil/${user.id}`} as="button" prefetch onClick={cleanup}>
                         <User className="mr-2" />
                         Perfil
                     </Link>

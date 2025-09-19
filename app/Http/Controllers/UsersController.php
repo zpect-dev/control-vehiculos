@@ -35,7 +35,7 @@ class UsersController extends Controller
         foreach ($documentos as $doc) {
             $foto = "foto_$doc";
             if ($usuario[$foto]) {
-                $usuario[$foto] = '/storage/fotos-documentos/' . ltrim($usuario[$foto], '/');
+                $usuario[$foto] = '/storage/uploads/fotos-documentos/' . ltrim($usuario[$foto], '/');
             }
         }
 
