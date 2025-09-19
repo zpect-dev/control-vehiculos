@@ -76,6 +76,7 @@ class DashboardController extends Controller
                 $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
                     ->whereDate('created_at', $fechaHoy)
                     ->where('tipo', 'chequeoOmitido')
+                    ->where('usuario_id', $user->id)
                     ->exists();
 
                 if (!$yaAlertado && !$revisadoHoy) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FlashHelper;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -79,9 +80,9 @@ class NotificacionController extends Controller
             abort(403, 'No autorizado');
         }
 
-        $notificacion->delete();
-
-        return response()->json(['status' => 'eliminada']);
+        return FlashHelper::try(function () use ($notificacion) {
+            $notificacion->delete();
+        }, 'Notificación eliminada correctamente');
     }
 
     public function marcarTodasComoLeidas(Request $request)

@@ -35,7 +35,7 @@ export default function PerfilUsuario() {
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null) payload.append(key, value);
         });
- payload.append('_method', 'PATCH');
+        payload.append('_method', 'PATCH');
         router.post(`/perfil/${usuario.id}`, payload, {
             forceFormData: true,
             onFinish: () => setSubmitting(false),
@@ -62,12 +62,12 @@ export default function PerfilUsuario() {
                 <div className="mx-auto max-w-5xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     {/* Datos personales */}
                     <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="rounded-lg border bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                        <div className="rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-700">
                             <h2 className="mb-1 text-center text-sm font-medium text-gray-500 dark:text-gray-400">Nombre completo</h2>
                             <p className="text-center text-lg font-semibold text-gray-900 dark:text-white">{usuario.name}</p>
                         </div>
 
-                        <div className="rounded-lg border bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                        <div className="rounded-lg border bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-700">
                             <h2 className="mb-1 text-center text-sm font-medium text-gray-500 dark:text-gray-400">Cédula</h2>
                             <p className="text-center text-lg font-semibold text-gray-900 dark:text-white">{usuario.email}</p>
                         </div>

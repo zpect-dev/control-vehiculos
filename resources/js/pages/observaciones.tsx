@@ -15,12 +15,12 @@ export default function Observaciones() {
         e.preventDefault();
         post(`/observaciones/${vehiculo.placa}/save`, {
             preserveScroll: true,
+            preserveState:false,
             onSuccess: () => reset(),
         });
     };
 
     const resolverObservacion = (id: number) => {
-        console.log('Marcando como resuelta la observación con ID:', id);
 
         router.patch(
             `/observaciones/${vehiculo.placa}/${id}/edit`,
@@ -64,15 +64,15 @@ export default function Observaciones() {
                                     id="observacion"
                                     value={data.observacion}
                                     onChange={(e) => setData('observacion', e.target.value)}
-                                    className={`w-full rounded border px-3 py-2 shadow focus:outline-none ${
+                                    className={`w-full rounded  px-3 py-2 dark:bg-gray-800 dark:text-gray-300 shadow focus:outline-none ${
                                         errors.observacion ? 'border-red-500' : 'border-gray-300'
                                     }`}
-                                    rows={3}
-                                    maxLength={300}
+                                    rows={5}
+                                    maxLength={500}
                                     required
                                 />
                                 <div className="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                                    <span>{data.observacion.length}/300 caracteres</span>
+                                    <span>{data.observacion.length}/500 caracteres</span>
                                     {errors.observacion && <span className="text-red-500">{errors.observacion}</span>}
                                 </div>
                             </div>

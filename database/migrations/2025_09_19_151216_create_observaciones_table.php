@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('admin_id')->nullable();
             $table->string('vehiculo_id');
-            $table->string('observacion');
+            $table->text('observacion');
             $table->string('tipo')->nullable();
             $table->boolean('resuelto')->default(false);
             $table->dateTime('fecha_creacion')->useCurrent();
