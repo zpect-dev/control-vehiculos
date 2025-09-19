@@ -24,20 +24,17 @@ class NotificacionHelper
     {
         broadcast(new EventoCambioInputs($field, $value, $formType, $placa, $userName))->toOthers();
 
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Cambio crítico en formulario',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El campo '{$field}' del formulario '{$formType}' para el vehículo '{$placa}' fue modificado por {$userName}. Nuevo valor: '{$value}'",
-                'tipo' => 'cambioInput',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-
-            broadcast(new NotificacionPush($admin->id))->toOthers();
-        }
+        Notificacion::create([
+            'titulo' => 'Cambio crítico en formulario',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El campo '{$field}' del formulario '{$formType}' para el vehículo '{$placa}' fue modificado por {$userName}. Nuevo valor: '{$value}'",
+            'tipo' => 'cambioInput',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new NotificacionPush($admin->id))->toOthers();
     }
 
     /**
@@ -48,20 +45,17 @@ class NotificacionHelper
     {
         broadcast(new EventoAsignacionUsuario($placa, $adminName, $nuevoUsuario))->toOthers();
 
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Reasignación de usuario',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El administrador {$adminName} reasignó el vehículo '{$placa}' al usuario {$nuevoUsuario}.",
-                'tipo' => 'reasignacion',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-
-            broadcast(new NotificacionPush($admin->id))->toOthers();
-        }
+        Notificacion::create([
+            'titulo' => 'Reasignación de usuario',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El administrador {$adminName} reasignó el vehículo '{$placa}' al usuario {$nuevoUsuario}.",
+            'tipo' => 'reasignacion',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new NotificacionPush($admin->id))->toOthers();
     }
 
     /**
@@ -69,21 +63,17 @@ class NotificacionHelper
      */
     public static function emitirNivelBajo(string $placa, string $userName, string $campo, string $formulario): void
     {
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Nivel de Fluido Bajo',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El vehículo '{$placa}' tiene un nivel bajo en el campo '{$campo}' del formulario '{$formulario}'. Notificado por '{$userName}'.",
-                'tipo' => 'nivelFluido',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-
-
-            broadcast(new EventoNivelBajo($placa, $userName, $campo, $formulario))->toOthers();
-        }
+        Notificacion::create([
+            'titulo' => 'Nivel de Fluido Bajo',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El vehículo '{$placa}' tiene un nivel bajo en el campo '{$campo}' del formulario '{$formulario}'. Notificado por '{$userName}'.",
+            'tipo' => 'nivelFluido',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new EventoNivelBajo($placa, $userName, $campo, $formulario))->toOthers();
     }
 
     /**
@@ -91,20 +81,17 @@ class NotificacionHelper
      */
     public static function emitirChequeoOmitido(string $placa, string $userName, string $fecha): void
     {
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Chequeo Omitido',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El vehículo '{$placa}' no realizó el chequeo programado para el {$fecha}. Responsable: '{$userName}'.",
-                'tipo' => 'chequeoOmitido',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-
-            broadcast(new ChequeoOmitido($placa, $userName, $fecha))->toOthers();
-        }
+        Notificacion::create([
+            'titulo' => 'Chequeo Omitido',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El vehículo '{$placa}' no realizó el chequeo programado para el {$fecha}. Responsable: '{$userName}'.",
+            'tipo' => 'chequeoOmitido',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new ChequeoOmitido($placa, $userName, $fecha))->toOthers();
     }
 
     /**
@@ -112,19 +99,17 @@ class NotificacionHelper
      */
     public static function emitirPermisoPorVencer(string $placa, string $userName, string $permiso, string $fechaVencimiento): void
     {
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Permiso por Vencer',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El permiso '{$placa}' del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
-                'tipo' => 'permiso',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-            broadcast(new EventoPermisoPorVencer($placa, $userName, $permiso, $fechaVencimiento))->toOthers();
-        }
+        Notificacion::create([
+            'titulo' => 'Permiso por Vencer',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El permiso '{$placa}' del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
+            'tipo' => 'permiso',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new EventoPermisoPorVencer($placa, $userName, $permiso, $fechaVencimiento))->toOthers();
     }
 
     /**
@@ -132,20 +117,17 @@ class NotificacionHelper
      */
     public static function emitirVideoSemanalOmitido(string $placa, string $userName, string $semana): void
     {
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Video Semanal Omitido',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El usuario '{$userName}' ha omitido el video semanal del vehículo '{$placa}' correspondiente a la semana {$semana}.",
-                'tipo' => 'revisionSemanal',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-
-            broadcast(new VideoSemanalOmitido($placa, $userName, $semana))->toOthers();
-        }
+        Notificacion::create([
+            'titulo' => 'Video Semanal Omitido',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El usuario '{$userName}' ha omitido el video semanal del vehículo '{$placa}' correspondiente a la semana {$semana}.",
+            'tipo' => 'revisionSemanal',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new VideoSemanalOmitido($placa, $userName, $semana))->toOthers();
     }
 
     /**
@@ -153,20 +135,16 @@ class NotificacionHelper
      */
     public static function emitirObservacionAgregada(string $placa, string $userName, string $contenido, string $estado): void
     {
-        $admins = User::role('admin')->where('id', 1)->get();
+        $admin = User::role('admin')->first();
 
-        foreach ($admins as $admin) {
-            Notificacion::create([
-                'titulo' => 'Nueva Observación Agregada',
-                'vehiculo_id' => $placa,
-                'descripcion' => "El usuario '{$userName}' agregó una observación al vehículo '{$placa}' con estado '{$estado}': \"{$contenido}\"",
-                'tipo' => 'observacion',
-                'usuario_id' => $admin->id,
-                'solo_admin' => true,
-            ]);
-
-            broadcast(new ObservacionAgregada($placa, $userName, $contenido, $estado))->toOthers();
-
-        }
+        Notificacion::create([
+            'titulo' => 'Nueva Observación Agregada',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El usuario '{$userName}' agregó una observación al vehículo '{$placa}' con estado '{$estado}': \"{$contenido}\"",
+            'tipo' => 'observacion',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+        broadcast(new ObservacionAgregada($placa, $userName, $contenido, $estado))->toOthers();
     }
 }
