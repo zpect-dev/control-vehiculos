@@ -30,38 +30,49 @@ class PermisologiaController extends Controller
                 'trimestres' => ['id' => 9, 'tipo' => 'date'],
             ];
 
+            $multimedia = new Multimedia;
+
             foreach ($mapaPermisos as $campo => $config) {
                 $permisoId = $config['id'];
                 $tipo = $config['tipo'];
 
+                $archivo = $request->file("{$campo}_archivo");
+                $documento = null;
+
+                if ($archivo) {
+                    $mime = $archivo->getClientMimeType();
+                    if ($mime === 'application/pdf') {
+                        $documento = $multimedia->guardarArchivoPdf($archivo, 'pdf');
+                    } else {
+                        $documento = $multimedia->guardarImagen($archivo, 'documento');
+                    }
+                }
+
                 if ($tipo === 'text') {
                     $valor = $request->input($campo);
                     if ($valor !== null && $valor !== '') {
+                        $datos = [
+                            'valor_texto' => $valor,
+                            'estado' => true,
+                            'fecha_expedicion' => null,
+                            'fecha_vencimiento' => null,
+                        ];
+                        if ($documento) {
+                            $datos['documento'] = $documento;
+                        }
+
                         VehiculoPermisos::updateOrCreate(
                             [
                                 'user_id' => $request->user()->id,
                                 'vehiculo_id' => $vehiculo->placa,
                                 'permiso_id' => $permisoId,
                             ],
-                            [
-                                'valor_texto' => $valor,
-                                'estado' => true,
-                                'fecha_expedicion' => null,
-                                'fecha_vencimiento' => null,
-                            ]
+                            $datos
                         );
                     }
                 } else {
                     $expedicion = $request->input("{$campo}_expedicion");
                     $vencimiento = $request->input("{$campo}_vencimiento");
-
-                    $multimedia = new Multimedia;
-
-                    if ($request->documento->getClientMimeType() !== 'application/pdf') {
-                        $documento = $multimedia->guardarArchivoPdf($request->documento, 'pdf');
-                    } else {
-                        $documento = $multimedia->guardarImagen($request->documento, 'documento');
-                    }
 
                     if ($expedicion && $vencimiento && $vencimiento < $expedicion) {
                         continue;
@@ -70,19 +81,23 @@ class PermisologiaController extends Controller
                     if ($expedicion || $vencimiento) {
                         $estado = $vencimiento ? now()->lt($vencimiento) : true;
 
+                        $datos = [
+                            'estado' => $estado,
+                            'fecha_expedicion' => $expedicion,
+                            'fecha_vencimiento' => $vencimiento,
+                            'valor_texto' => null,
+                        ];
+                        if ($documento) {
+                            $datos['documento'] = $documento;
+                        }
+
                         VehiculoPermisos::updateOrCreate(
                             [
                                 'user_id' => $request->user()->id,
                                 'vehiculo_id' => $vehiculo->placa,
                                 'permiso_id' => $permisoId,
                             ],
-                            [
-                                'estado' => $estado,
-                                'fecha_expedicion' => $expedicion,
-                                'fecha_vencimiento' => $vencimiento,
-                                'valor_texto' => null,
-                                'documento' => $documento
-                            ]
+                            $datos
                         );
 
                         if ($vencimiento) {
@@ -107,7 +122,6 @@ class PermisologiaController extends Controller
                 }
             }
 
-            // Guardar los datos actualizados en sesión para que el frontend los reciba
             $permisosActualizados = VehiculoPermisos::where('vehiculo_id', $vehiculo->placa)
                 ->get()
                 ->groupBy('permiso_id')
@@ -118,7 +132,7 @@ class PermisologiaController extends Controller
                         'fecha_vencimiento' => $permiso->fecha_vencimiento,
                         'valor_texto' => $permiso->valor_texto,
                         'estado' => $permiso->estado,
-                        'documento' => $permiso->documento
+                        'documento' => $permiso->documento,
                     ];
                 });
 

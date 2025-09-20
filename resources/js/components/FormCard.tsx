@@ -2,14 +2,13 @@ import { DateField } from '@/components/form-fields/DateField';
 import { SelectField } from '@/components/form-fields/SelectField';
 import { TextField } from '@/components/form-fields/TextField';
 import { Field, useFormLogic } from '@/hooks/useFormLogic';
+import { FormCardProps } from '@/types';
 import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
-import { FormCardProps } from '@/types';
-
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, handleChange } = useFormLogic(expediente, fields);
-console.log(expediente)
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (hasFechasInvalidas) {
@@ -35,19 +34,35 @@ console.log(expediente)
                 );
 
             case 'select':
-                return (
-                    <SelectField
-                        id={field.id}
-                        label={field.label}
-                        value={value}
-                        options={field.options}
-                        onChange={handleChange}
-                    />
-                );
+                return <SelectField id={field.id} label={field.label} value={value} options={field.options} onChange={handleChange} />;
 
             case 'file': {
                 const safeFile = typeof value === 'string' || value instanceof File || value === null ? value : undefined;
-                return <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />;
+                const baseId = field.id.replace('_archivo', '');
+                const rawDocumento = expediente[`${baseId}_documento`];
+                const documentoActual = typeof rawDocumento === 'string' ? rawDocumento : undefined;
+
+                return (
+                    <div className="space-y-2">
+                        <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />
+                        {documentoActual &&
+                            (/\.(pdf)$/i.test(documentoActual) ? (
+                                <a
+                                    href={`/storage/${documentoActual}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block text-sm text-blue-600 underline"
+                                >
+                                    Ver PDF actual
+                                </a>
+                            ) : (
+                                <img src={`/storage/${documentoActual}`} alt="Documento actual" className="max-h-48 rounded border" />
+                            ))}
+                        {documentoActual && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Al subir un nuevo archivo, se reemplazará el documento actual.</p>
+                        )}
+                    </div>
+                );
             }
 
             case 'checkbox':

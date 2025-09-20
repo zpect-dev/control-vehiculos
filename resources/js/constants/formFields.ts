@@ -29,12 +29,24 @@ export const expedienteTecnicoFields: Record<'CARRO' | 'MOTO', Field[]> = {
 export const permisologiaFields: Field[] = [
     { id: 'titulo', label: 'Título del Vehículo', type: 'text' },
     { id: 'carnet', label: 'Carnet de Circulación', type: 'text' },
+
     { id: 'seguro', label: 'Seguro RCV', type: 'date' },
+    { id: 'seguro_archivo', label: 'Documento de Seguro RCV', type: 'file' },
+
     { id: 'roct', label: 'Roct', type: 'date' },
+    { id: 'roct_archivo', label: 'Documento Roct', type: 'file' },
+
     { id: 'permisoRotReg', label: 'Permiso de Rotulado Regional', type: 'date' },
+    { id: 'permisoRotReg_archivo', label: 'Documento Rotulado Regional', type: 'file' },
+
     { id: 'permisoRotNac', label: 'Permiso de Rotulado Nacional', type: 'date' },
+    { id: 'permisoRotNac_archivo', label: 'Documento Rotulado Nacional', type: 'file' },
+
     { id: 'salvoconducto', label: 'Salvoconducto', type: 'date' },
+    { id: 'salvoconducto_archivo', label: 'Documento Salvoconducto', type: 'file' },
+
     { id: 'permisoAliMed', label: 'Permiso de Alimentos y Medicamentos', type: 'date' },
+    { id: 'permisoAliMed_archivo', label: 'Documento Alimentos y Medicamentos', type: 'file' },
 ];
 
 // Campos para el formulario de Accesorios

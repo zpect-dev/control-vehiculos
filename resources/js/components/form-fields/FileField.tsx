@@ -39,16 +39,19 @@ export function FileField({ id, label, value, onChange }: FileFieldProps) {
 
     return (
         <div className="flex flex-col gap-2">
-            <label htmlFor={id} className="text-sm font-semibold text-muted-foreground">
-                {label}
-            </label>
-            <input
-                type="file"
-                id={id}
-                accept="image/*"
-                onChange={handleFileChange}
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
+            <label className="text-sm font-semibold text-gray-600 dark:text-gray-300">{label}</label>
+            <div className="flex flex-col gap-1">
+                <label htmlFor={id} className="text-xs text-gray-500 dark:text-gray-400">
+                    {label}
+                </label>
+                <input
+                    type="file"
+                    id={id}
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                />
+            </div>
             {previewUrl && (
                 <img
                     src={previewUrl}

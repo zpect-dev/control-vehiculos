@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
@@ -38,6 +39,7 @@ export default function fichaTecnica({
         Object.entries(permisos).forEach(([key, value]) => {
             if (value?.fecha_expedicion) plano[`${key}_expedicion`] = value.fecha_expedicion;
             if (value?.fecha_vencimiento) plano[`${key}_vencimiento`] = value.fecha_vencimiento;
+            if (value?.documento) plano[`${key}_documento`] = value.documento;
             else if (typeof value === 'string') plano[key] = value;
         });
         return plano;
@@ -64,23 +66,50 @@ export default function fichaTecnica({
         rawData: Record<string, string | boolean | File | null>,
         vehiculoId: string,
     ) => {
-        const formData = sanitizeFormData(rawData);
-        formData.vehiculo_id = vehiculoId;
+        const formData = new FormData();
+        formData.append('vehiculo_id', vehiculoId);
+
+        Object.entries(rawData).forEach(([key, value]) => {
+            if (value instanceof File) {
+                formData.append(key, value);
+            } else if (typeof value === 'boolean') {
+                formData.append(key, value ? 'true' : 'false');
+            } else if (typeof value === 'string') {
+                formData.append(key, value);
+            }
+        });
 
         router.post(`/fichaTecnica/${vehiculoId}/${tipo}`, formData, {
+            forceFormData: true,
             onSuccess: () => {
                 console.log(`${tipo} guardado con éxito`);
+
                 if (tipo === 'permisologia') {
-                    setPermisosLocal((prev) => ({
-                        ...prev,
-                        [vehiculoId]: { ...prev[vehiculoId], ...formData },
-                    }));
+                    const sanitized = sanitizeFormData(rawData);
+                    setPermisosLocal((prev) => {
+                        const anterior = prev[vehiculoId] || {};
+                        return {
+                            ...prev,
+                            [vehiculoId]: {
+                                ...anterior,
+                                ...Object.fromEntries(Object.entries(sanitized).filter(([_, v]) => typeof v === 'string')),
+                            },
+                        };
+                    });
                 }
+
                 if (tipo === 'accesorios') {
-                    setAccesoriosLocal((prev) => ({
-                        ...prev,
-                        [vehiculoId]: { ...prev[vehiculoId], ...formData },
-                    }));
+                    const sanitized = sanitizeFormData(rawData);
+                    setAccesoriosLocal((prev) => {
+                        const anterior = prev[vehiculoId] || {};
+                        return {
+                            ...prev,
+                            [vehiculoId]: {
+                                ...anterior,
+                                ...Object.fromEntries(Object.entries(sanitized).filter(([_, v]) => typeof v === 'string')),
+                            },
+                        };
+                    });
                 }
             },
             onError: (errors) => console.error(`Error al guardar ${tipo}:`, errors),

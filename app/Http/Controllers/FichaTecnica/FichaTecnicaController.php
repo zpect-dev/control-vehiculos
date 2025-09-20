@@ -11,6 +11,7 @@ use App\Models\VehiculoEspecificaciones;
 use App\Models\VehiculoPermisos;
 use App\Models\VehiculoPiezas;
 use App\Models\User;
+use App\Services\Multimedia;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -37,17 +38,22 @@ class FichaTecnicaController extends Controller
 
         $permisos = VehiculoPermisos::where('vehiculo_id', $vehiculo->placa)->get();
         $permisosPorVehiculo = [$vehiculo->placa => []];
+
         foreach ($permisos as $permiso) {
             $config = $this->mapaPermisos()[$permiso->permiso_id] ?? null;
             if (!$config) continue;
+
             $campo = $config['campo'];
             $tipo = $config['tipo'];
+
             if ($tipo === 'text') {
                 $permisosPorVehiculo[$vehiculo->placa][$campo] = $permiso->valor_texto;
             } else {
                 $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
                 $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
             }
+
+            $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = $permiso->documento;
         }
 
         $users = $isAdmin ? User::select('id', 'name')->get() : [];
@@ -68,24 +74,12 @@ class FichaTecnicaController extends Controller
         ]);
     }
 
-    public function storeExpediente(Request $request, string $placa)
-    {
-        return FlashHelper::try(function () use ($request, $placa) {
-            $data = $request->except('vehiculo_id');
-            foreach ($data as $especificacion_id => $estado) {
-                VehiculoEspecificaciones::updateOrCreate(
-                    ['vehiculo_id' => $placa, 'especificacion_id' => $especificacion_id],
-                    ['estado' => $estado]
-                );
-            }
-        }, 'Expediente técnico actualizado correctamente.', 'Error al actualizar el expediente técnico.');
-    }
-
     public function storePermisos(Request $request, string $placa)
     {
         return FlashHelper::try(function () use ($request, $placa) {
             $data = $request->except('vehiculo_id');
             $usuario = $request->user()->name;
+            $multimedia = new Multimedia;
 
             foreach ($this->mapaPermisos() as $permiso_id => $config) {
                 $campo = $config['campo'];
@@ -125,9 +119,30 @@ class FichaTecnicaController extends Controller
                     }
                 }
 
+                $archivo = $request->file("{$campo}_archivo");
+                if ($archivo) {
+                    $mime = $archivo->getClientMimeType();
+                    $registro->documento = $mime === 'application/pdf'
+                        ? $multimedia->guardarArchivoPdf($archivo, 'pdf')
+                        : $multimedia->guardarImagen($archivo, 'documento');
+                }
+
                 $registro->save();
             }
         }, 'Permisología actualizada correctamente.', 'Error al actualizar la permisología.');
+    }
+
+    public function storeExpediente(Request $request, string $placa)
+    {
+        return FlashHelper::try(function () use ($request, $placa) {
+            $data = $request->except('vehiculo_id');
+            foreach ($data as $especificacion_id => $estado) {
+                VehiculoEspecificaciones::updateOrCreate(
+                    ['vehiculo_id' => $placa, 'especificacion_id' => $especificacion_id],
+                    ['estado' => $estado]
+                );
+            }
+        }, 'Expediente técnico actualizado correctamente.', 'Error al actualizar el expediente técnico.');
     }
 
     public function storeAccesorios(Request $request, string $placa)
