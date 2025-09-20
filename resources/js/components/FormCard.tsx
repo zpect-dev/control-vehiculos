@@ -47,12 +47,7 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                         <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />
                         {documentoActual &&
                             (/\.(pdf)$/i.test(documentoActual) ? (
-                                <a
-                                    href={`/storage/${documentoActual}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block text-sm text-blue-600 underline"
-                                >
+                                <a href={documentoActual} target="_blank" rel="noopener noreferrer" className="block text-sm text-blue-600 underline">
                                     Ver PDF actual
                                 </a>
                             ) : (
