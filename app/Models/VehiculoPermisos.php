@@ -14,11 +14,11 @@ class VehiculoPermisos extends Model
         'user_id',
         'vehiculo_id',
         'permiso_id',
+        'estado',
+        'documento',
         'fecha_expedicion',
         'fecha_vencimiento',
         'valor_texto',
-        'estado',
-        'observaciones',
     ];
 
     protected $casts = [

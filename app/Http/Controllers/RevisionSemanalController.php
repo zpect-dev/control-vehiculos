@@ -83,11 +83,10 @@ class RevisionSemanalController extends Controller
             'kilometraje_final' => 'required|numeric'
         ]);
 
-if ($validatedData['kilometraje_final'] < $revision->kilometraje_inicial) {
-    return back()->with('error', 'El kilometraje final no puede ser menor al inicial');
-}
-
-
+        if ($validatedData['kilometraje_final'] < $revision->kilometraje_inicial) {
+            return back()->with('error', 'El kilometraje final no puede ser menor al inicial');
+        }
+        
         $videoPath = $request->file('video_final')->store('uploads/videos-semanales', 'public');
         $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
         $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
