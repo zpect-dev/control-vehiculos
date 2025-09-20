@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use App\Models\VehiculoPermisos;
+use App\Services\Multimedia;
 use Carbon\Carbon;
 
 class PermisologiaController extends Controller
@@ -54,6 +55,14 @@ class PermisologiaController extends Controller
                     $expedicion = $request->input("{$campo}_expedicion");
                     $vencimiento = $request->input("{$campo}_vencimiento");
 
+                    $multimedia = new Multimedia;
+
+                    if ($request->documento->getClientMimeType() !== 'application/pdf') {
+                        $documento = $multimedia->guardarArchivoPdf($request->documento, 'pdf');
+                    } else {
+                        $documento = $multimedia->guardarImagen($request->documento, 'documento');
+                    }
+
                     if ($expedicion && $vencimiento && $vencimiento < $expedicion) {
                         continue;
                     }
@@ -72,6 +81,7 @@ class PermisologiaController extends Controller
                                 'fecha_expedicion' => $expedicion,
                                 'fecha_vencimiento' => $vencimiento,
                                 'valor_texto' => null,
+                                'documento' => $documento
                             ]
                         );
 
@@ -108,6 +118,7 @@ class PermisologiaController extends Controller
                         'fecha_vencimiento' => $permiso->fecha_vencimiento,
                         'valor_texto' => $permiso->valor_texto,
                         'estado' => $permiso->estado,
+                        'documento' => $permiso->documento
                     ];
                 });
 

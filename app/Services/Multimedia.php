@@ -11,7 +11,8 @@ class Multimedia
     protected $rutasGuardado = [
         'diario' => 'uploads/fotos-diarias',
         'asignacion' => 'uploads/fotos-asignaciones',
-        'documentos' => 'uploads/fotos-documentos'
+        'documentos' => 'uploads/fotos-documentos',
+        'pdf' => 'uploads/pdf-documentos'
     ];
 
     public function guardarImagen($image, $tipo)
@@ -27,10 +28,25 @@ class Multimedia
         $targetPath = $this->rutasGuardado[$tipo];
         $respuesta = Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
 
-        if(!$respuesta){
+        return $respuesta ? $nameImage : false;
+    }
+
+    public function guardarArchivoPdf($archivo, $tipo)
+    {
+        if ($archivo->getClientMimeType() !== 'application/pdf') {
             return false;
         }
 
-        return $nameImage;
+        if (!array_key_exists($tipo, $this->rutasGuardado)) {
+            return false;
+        }
+
+        $nameFile = Str::uuid() . '.pdf';
+        $targetPath = $this->rutasGuardado[$tipo];
+        $rutaCompleta = $targetPath . '/' . $nameFile;
+
+        $respuesta = Storage::disk('public')->put($rutaCompleta, file_get_contents($archivo));
+
+        return $respuesta ? $nameFile : false;
     }
 }
