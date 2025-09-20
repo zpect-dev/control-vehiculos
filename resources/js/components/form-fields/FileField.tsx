@@ -47,7 +47,7 @@ export function FileField({ id, label, value, onChange }: FileFieldProps) {
                 <input
                     type="file"
                     id={id}
-                    accept="image/*"
+                    accept="image/*,.pdf"
                     onChange={handleFileChange}
                     className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
