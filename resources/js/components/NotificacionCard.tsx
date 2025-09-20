@@ -22,6 +22,8 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                 return <UserCheck className="h-5 w-5 text-green-600" />;
             case 'observacion':
                 return <ClipboardPenLine className="h-5 w-5 text-purple-600" />;
+            case 'documentoUsuario':
+                return <CalendarClock className="h-5 w-5 text-pink-600" />;
 
             default:
                 return <AlertTriangle className="h-5 w-5 text-gray-400" />;
@@ -45,6 +47,7 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                     'border-indigo-600 bg-indigo-50 dark:bg-indigo-900': (tipo === 'cambioInput' || tipo === 'estado_item') && !leida,
                     'border-green-400 bg-green-50 dark:bg-green-800': tipo === 'reasignacion' && !leida,
                     'border-purple-600 bg-purple-50 dark:bg-purple-900': tipo === 'observacion' && !leida,
+                    'border-pink-600 bg-pink-50 dark:bg-pink-900': tipo === 'documentoUsuario' && !leida,
                 },
                 leida && 'border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800',
                 !leida && 'hover:scale-[1.02] active:scale-[0.98]',
@@ -67,13 +70,15 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                         'bg-green-200 text-green-700 dark:bg-green-700 dark:text-green-300': tipo === 'reasignacion' && !leida,
                         'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400': leida,
                         'bg-purple-50 text-purple-600 dark:bg-purple-900 dark:text-purple-400': tipo === 'observacion' && !leida,
-
+                        'bg-pink-100 text-pink-700 dark:bg-pink-800 dark:text-pink-200': tipo === 'documentoUsuario' && !leida,
                     })}
                 >
                     {tipo}
                 </span>
             </div>
-            <p className={clsx('mt-2 text-xs line-clamp-2', leida ? 'text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300')}>{descripcion}</p>
+            <p className={clsx('mt-2 line-clamp-2 text-xs', leida ? 'text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300')}>
+                {descripcion}
+            </p>
             <div className={clsx('mt-2 text-right text-[11px]', leida ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500 dark:text-gray-400')}>
                 {new Date(created_at).toLocaleString('es-VE', {
                     day: '2-digit',

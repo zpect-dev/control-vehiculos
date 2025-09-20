@@ -57,6 +57,7 @@ export type UsuarioAsignado = {
 };
 
 export interface Notificacion {
+    data: any;
     id: number;
     titulo: string;
     descripcion: string;
@@ -64,6 +65,7 @@ export interface Notificacion {
     leida: boolean;
     created_at: string;
     vehiculo_id?: number;
+    usuario_id?: number;
 }
 
 interface RevisionSemanalData {

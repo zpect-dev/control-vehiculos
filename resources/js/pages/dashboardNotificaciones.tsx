@@ -53,17 +53,20 @@ export default function DashboardNotificaciones() {
                     onSuccess: () => {
                         setNotificaciones((prev) => prev.filter((n) => n.id !== id));
 
-                        const destino = !vehiculo_id
-                            ? '/dashboard'
-                            : tipo === 'nivelFluido' || tipo === 'chequeoOmitido'
-                              ? `/fichaTecnica/${vehiculo_id}/revisionFluidos`
-                              : tipo === 'revisionSemanal'
-                                ? `/fichaTecnica/${vehiculo_id}/revisionSemanal`
-                                : ['permiso', 'cambioInput', 'estado_item', 'reasignacion'].includes(tipo)
-                                  ? `/fichaTecnica/${vehiculo_id}`
-                                  : tipo === 'observacion'
-                                    ? `/fichaTecnica/${vehiculo_id}/observaciones`
-                                    : '/dashboard';
+                        const destino =
+                            tipo === 'documentoUsuario' && notificacion.usuario_id
+                                ? `/perfil/${notificacion.usuario_id}`
+                                : !vehiculo_id
+                                  ? '/dashboard'
+                                  : tipo === 'nivelFluido' || tipo === 'chequeoOmitido'
+                                    ? `/fichaTecnica/${vehiculo_id}/revisionFluidos`
+                                    : tipo === 'revisionSemanal'
+                                      ? `/fichaTecnica/${vehiculo_id}/revisionSemanal`
+                                      : ['permiso', 'cambioInput', 'estado_item', 'reasignacion'].includes(tipo)
+                                        ? `/fichaTecnica/${vehiculo_id}`
+                                        : tipo === 'observacion'
+                                          ? `/fichaTecnica/${vehiculo_id}/observaciones`
+                                          : '/dashboard';
 
                         router.visit(destino);
                         router.visit(destino, {

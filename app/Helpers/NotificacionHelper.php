@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Events\ChequeoOmitido;
+use App\Events\DocumentoUsuarioPorVencer;
 use App\Events\EventoCambioInputs;
 use App\Events\EventoAsignacionUsuario;
 use App\Events\EventoNivelBajo;
@@ -146,5 +147,23 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
         broadcast(new ObservacionAgregada($placa, $userName, $contenido, $estado))->toOthers();
+    }
+
+    /**
+     * Emite y guarda una notificación de documento personal por vencer.
+     */
+    public static function emitirDocumentoUsuarioPorVencer(int $usuario, string $userName, string $documento, string $fechaVencimiento): void
+    {
+        $admin = User::role('admin')->first();
+
+        Notificacion::create([
+            'titulo' => 'Documento por Vencer',
+            'descripcion' => "El documento '{$documento}' del usuario '{$userName}' vence el {$fechaVencimiento}.",
+            'tipo' => 'documentoUsuario',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
+
+        broadcast(new DocumentoUsuarioPorVencer($usuario, $userName, $documento, $fechaVencimiento))->toOthers();
     }
 }

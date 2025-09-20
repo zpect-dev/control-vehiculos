@@ -151,7 +151,10 @@ export default function NotificacionRealtime() {
         channel.bind('observacion.agregada', (data: any) => {
             toast.info(`Nueva observación registrada`, {
                 description: (
-                    <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}/observaciones`)}>
+                    <div
+                        className="flex cursor-pointer flex-col gap-1 text-left"
+                        onClick={() => router.visit(`/fichaTecnica/${data.placa}/observaciones`)}
+                    >
                         <span className="text-sm font-semibold text-purple-700">
                             <strong>{data.userName}</strong> agregó una observación al vehículo <strong>{data.placa}</strong>
                         </span>
@@ -162,6 +165,21 @@ export default function NotificacionRealtime() {
                             Contenido: <em>{data.contenido}</em>
                         </span>
                         <span className="text-xs text-gray-500 italic">Haz clic para ver el historial de observaciones.</span>
+                    </div>
+                ),
+                duration: 15000,
+            });
+        });
+
+        channel.bind('documento.usuario.por.vencer', (data: any) => {
+            toast.warning(`Documento personal por vencer`, {
+                description: (
+                    <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/perfil/${data.usuario}`)}>
+                        <span className="text-sm font-semibold text-pink-700">
+                            El documento <strong>{data.documento}</strong> de <strong>{data.userName}</strong> vence el{' '}
+                            <strong>{data.fechaVencimiento}</strong>
+                        </span>
+                        <span className="text-xs text-gray-500 italic">Haz clic para revisar el perfil del usuario.</span>
                     </div>
                 ),
                 duration: 15000,

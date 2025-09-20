@@ -47,7 +47,7 @@ class DashboardController extends Controller
 
             foreach ($vehiculos as $vehiculo) {
                 $revision = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
-                    ->whereBetween('fecha_creacion', [$inicioSemana, $finalSemana])
+                    ->whereBetween('created_at', [$inicioSemana, $finalSemana])
                     ->first();
 
                 $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
