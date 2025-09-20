@@ -160,7 +160,7 @@ class NotificacionHelper
             'titulo' => 'Documento por Vencer',
             'descripcion' => "El documento '{$documento}' del usuario '{$userName}' vence el {$fechaVencimiento}.",
             'tipo' => 'documentoUsuario',
-            'usuario_id' => $admin->id,
+            'usuario_id' => $usuario,
             'solo_admin' => true,
         ]);
 
