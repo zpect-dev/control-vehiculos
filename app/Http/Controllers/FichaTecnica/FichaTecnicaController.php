@@ -52,8 +52,7 @@ class FichaTecnicaController extends Controller
                 $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
                 $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
             }
-            $basePath = '/storage/uploads/pdf-documentos/';
-            $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = $basePath . $permiso->documento;
+            $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = $permiso->documento;
         }
 
         $users = $isAdmin ? User::select('id', 'name')->get() : [];

@@ -47,11 +47,20 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                         <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />
                         {documentoActual &&
                             (/\.(pdf)$/i.test(documentoActual) ? (
-                                <a href={documentoActual} target="_blank" rel="noopener noreferrer" className="block text-sm text-blue-600 underline">
+                                <a
+                                    href={`/storage/uploads/pdf-documentos/${documentoActual}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block text-sm text-blue-600 underline"
+                                >
                                     Ver PDF actual
                                 </a>
                             ) : (
-                                <img src={`/storage/${documentoActual}`} alt="Documento actual" className="max-h-48 rounded border" />
+                                <img
+                                    src={`/storage/uploads/fotos-documentos/${documentoActual}`}
+                                    alt="Documento actual"
+                                    className="max-h-48 rounded border"
+                                />
                             ))}
                         {documentoActual && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">Al subir un nuevo archivo, se reemplazará el documento actual.</p>

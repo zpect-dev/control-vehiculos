@@ -44,7 +44,7 @@ class PermisologiaController extends Controller
                     if ($mime === 'application/pdf') {
                         $documento = $multimedia->guardarArchivoPdf($archivo, 'pdf');
                     } else {
-                        $documento = $multimedia->guardarImagen($archivo, 'documento');
+                        $documento = $multimedia->guardarImagen($archivo, 'documentos');
                     }
                 }
 
