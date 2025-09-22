@@ -8,7 +8,6 @@ export default function Asignaciones() {
     return (
         <AppLayout>
             <Head title={`Historial de Asignaciones - ${vehiculo.placa}`} />
-
             <div className="min-h-screen bg-gray-100 px-4 py-10 dark:bg-gray-900">
                 <h1 className="mb-6 text-center text-3xl font-bold text-gray-800 dark:text-gray-100">Historial de Asignaciones</h1>
 
