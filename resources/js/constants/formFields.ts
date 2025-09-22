@@ -27,8 +27,8 @@ export const expedienteTecnicoFields: Record<'CARRO' | 'MOTO', Field[]> = {
 
 // Campos para el formulario de Permisologia
 export const permisologiaFields: Field[] = [
-    { id: 'titulo', label: 'Título del Vehículo', type: 'text' },
-    { id: 'carnet', label: 'Carnet de Circulación', type: 'text' },
+    { id: 'titulo', label: 'Título del Vehículo', type: 'date' },
+    { id: 'titulo_archivo', label: 'Título del Vehículo', type: 'file' },
 
     { id: 'seguro', label: 'Seguro RCV', type: 'date' },
     { id: 'seguro_archivo', label: 'Documento de Seguro RCV', type: 'file' },

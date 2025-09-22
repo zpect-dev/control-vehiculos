@@ -44,16 +44,12 @@ class FichaTecnicaController extends Controller
             if (!$config) continue;
 
             $campo = $config['campo'];
-            $tipo = $config['tipo'];
 
-            if ($tipo === 'text') {
-                $permisosPorVehiculo[$vehiculo->placa][$campo] = $permiso->valor_texto;
-            } else {
-                $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
-                $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
-            }
+            $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
+            $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
             $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = $permiso->documento;
         }
+
 
         $users = $isAdmin ? User::select('id', 'name')->get() : [];
 
@@ -82,38 +78,33 @@ class FichaTecnicaController extends Controller
 
             foreach ($this->mapaPermisos() as $permiso_id => $config) {
                 $campo = $config['campo'];
-                $tipo = $config['tipo'];
 
                 $registro = VehiculoPermisos::firstOrNew([
                     'vehiculo_id' => $placa,
                     'permiso_id' => $permiso_id,
                 ]);
 
-                if ($tipo === 'text') {
-                    $registro->valor_texto = array_key_exists($campo, $data) ? $data[$campo] : null;
-                } else {
-                    $expedicion = $data["{$campo}_expedicion"] ?? null;
-                    $vencimiento = $data["{$campo}_vencimiento"] ?? null;
+                $expedicion = $data["{$campo}_expedicion"] ?? null;
+                $vencimiento = $data["{$campo}_vencimiento"] ?? null;
 
-                    $registro->fecha_expedicion = $expedicion;
-                    $registro->fecha_vencimiento = $vencimiento;
+                $registro->fecha_expedicion = $expedicion;
+                $registro->fecha_vencimiento = $vencimiento;
 
-                    if ($vencimiento) {
-                        $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
-                        $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
-                        $clave = "permiso_alertado_{$placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
+                if ($vencimiento) {
+                    $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
+                    $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+                    $clave = "permiso_alertado_{$placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
 
-                        if (!session()->has($clave)) {
-                            session()->put($clave, true);
+                    if (!session()->has($clave)) {
+                        session()->put($clave, true);
 
-                            if ($diasRestantes < 0 || $diasRestantes <= 15) {
-                                broadcast(new EventoPermisoPorVencer(
-                                    $placa,
-                                    $usuario,
-                                    ucfirst($campo),
-                                    $vencimientoCarbon->toDateString()
-                                ))->toOthers();
-                            }
+                        if ($diasRestantes < 0 || $diasRestantes <= 15) {
+                            broadcast(new EventoPermisoPorVencer(
+                                $placa,
+                                $usuario,
+                                ucfirst($campo),
+                                $vencimientoCarbon->toDateString()
+                            ))->toOthers();
                         }
                     }
                 }
@@ -182,15 +173,14 @@ class FichaTecnicaController extends Controller
     private function mapaPermisos(): array
     {
         return [
-            1 => ['campo' => 'titulo', 'tipo' => 'text'],
-            2 => ['campo' => 'carnet', 'tipo' => 'text'],
-            3 => ['campo' => 'seguro', 'tipo' => 'date'],
-            4 => ['campo' => 'roct', 'tipo' => 'date'],
-            5 => ['campo' => 'permisoRotReg', 'tipo' => 'date'],
-            6 => ['campo' => 'permisoRotNac', 'tipo' => 'date'],
-            7 => ['campo' => 'salvoconducto', 'tipo' => 'date'],
-            8 => ['campo' => 'permisoAliMed', 'tipo' => 'date'],
-            9 => ['campo' => 'trimestres', 'tipo' => 'date'],
+            1 => ['campo' => 'titulo', 'tipo' => 'date'],
+            2 => ['campo' => 'seguro', 'tipo' => 'date'],
+            3 => ['campo' => 'roct', 'tipo' => 'date'],
+            4 => ['campo' => 'permisoRotReg', 'tipo' => 'date'],
+            5 => ['campo' => 'permisoRotNac', 'tipo' => 'date'],
+            6 => ['campo' => 'salvoconducto', 'tipo' => 'date'],
+            7 => ['campo' => 'permisoAliMed', 'tipo' => 'date'],
+            8 => ['campo' => 'trimestres', 'tipo' => 'date'],
         ];
     }
 }

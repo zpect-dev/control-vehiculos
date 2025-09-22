@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { PageProps } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 
 export default function Asignaciones() {
     const { vehiculo, historial } = usePage<PageProps>().props;
@@ -17,18 +17,18 @@ export default function Asignaciones() {
                         historial.map((registro) => (
                             <div
                                 key={registro.id}
-                                className="flex flex-col justify-between gap-6 rounded-lg border bg-white p-6 shadow-sm sm:flex-row dark:bg-gray-800"
+                                className="flex flex-row justify-between gap-6 rounded-lg border bg-white p-6 shadow-sm dark:bg-gray-800"
                             >
                                 <div className="flex-1">
-                                    <div className="mb-2 text-sm break-words text-gray-600 dark:text-gray-300">
+                                    <div className="mb-2 text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-semibold">Vehículo:</span> {registro.vehiculo?.placa}
                                     </div>
 
-                                    <div className="text-sm break-words text-gray-600 dark:text-gray-300">
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-semibold">Asignado a:</span> {registro.user?.name}
                                     </div>
 
-                                    <div className="text-sm break-words text-gray-600 dark:text-gray-300">
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-semibold">Asignado por:</span> {registro.admin?.name}
                                     </div>
 
@@ -44,11 +44,12 @@ export default function Asignaciones() {
                                 </div>
 
                                 {registro.foto_kilometraje && (
-                                    <div className="w-full flex-shrink-0 sm:w-48">
+                                    <div className="w-48 flex-shrink-0">
+                                        {' '}
                                         <img
                                             src={`/storage/${registro.foto_kilometraje}`}
                                             alt="Foto de kilometraje"
-                                            className="aspect-video w-full rounded-md object-cover shadow-md"
+                                            className="w-full rounded-md object-cover shadow-md"
                                         />
                                     </div>
                                 )}

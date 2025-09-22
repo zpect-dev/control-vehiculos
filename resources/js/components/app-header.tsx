@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CalendarRange, Car, Droplets, Eye, History, Menu, SquareUserRound } from 'lucide-react';
+import { Bell, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, SquareUserRound } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -33,6 +33,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
               { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
               { title: 'Observaciones', href: `/fichaTecnica/${placaActual}/observaciones`, icon: Eye },
+              { title: 'Gasolina', href: `/fichaTecnica/${placaActual}/gasolina`, icon: Fuel },
               { title: 'Asignaciones', href: `/fichaTecnica/${placaActual}/asignaciones`, icon: History },
           ]
         : [];
@@ -104,6 +105,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </Link>
                             )}
                             {auth.user.is_admin && (
+                                <Link href="/gasolina" prefetch>
+                                    <Fuel className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
+                            {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch>
                                     <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
@@ -144,6 +150,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             {auth.user.is_admin && (
                                 <Link href="/perfiles" prefetch className="flex items-center justify-start">
                                     <SquareUserRound />
+                                </Link>
+                            )}
+                            {auth.user.is_admin && (
+                                <Link href="/gasolina" prefetch>
+                                    <Fuel className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
                             )}
                             {auth.user.is_admin && (

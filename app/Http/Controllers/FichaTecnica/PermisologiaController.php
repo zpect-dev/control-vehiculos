@@ -19,103 +19,73 @@ class PermisologiaController extends Controller
             $usuario = $request->user()->name;
 
             $mapaPermisos = [
-                'titulo' => ['id' => 1, 'tipo' => 'text'],
-                'carnet' => ['id' => 2, 'tipo' => 'text'],
-                'seguro' => ['id' => 3, 'tipo' => 'date'],
-                'roct' => ['id' => 4, 'tipo' => 'date'],
-                'permisoRotReg' => ['id' => 5, 'tipo' => 'date'],
-                'permisoRotNac' => ['id' => 6, 'tipo' => 'date'],
-                'salvoconducto' => ['id' => 7, 'tipo' => 'date'],
-                'permisoAliMed' => ['id' => 8, 'tipo' => 'date'],
-                'trimestres' => ['id' => 9, 'tipo' => 'date'],
+                'titulo' => 1,
+                'seguro' => 2,
+                'roct' => 3,
+                'permisoRotReg' => 4,
+                'permisoRotNac' => 5,
+                'salvoconducto' => 6,
+                'permisoAliMed' => 7,
+                'trimestres' => 8,
             ];
 
             $multimedia = new Multimedia;
 
-            foreach ($mapaPermisos as $campo => $config) {
-                $permisoId = $config['id'];
-                $tipo = $config['tipo'];
+            foreach ($mapaPermisos as $campo => $permisoId) {
+                $expedicion = $request->input("{$campo}_expedicion");
+                $vencimiento = $request->input("{$campo}_vencimiento");
+
+                if ($expedicion && $vencimiento && $vencimiento < $expedicion) {
+                    continue;
+                }
 
                 $archivo = $request->file("{$campo}_archivo");
                 $documento = null;
 
                 if ($archivo) {
                     $mime = $archivo->getClientMimeType();
-                    if ($mime === 'application/pdf') {
-                        $documento = $multimedia->guardarArchivoPdf($archivo, 'pdf');
-                    } else {
-                        $documento = $multimedia->guardarImagen($archivo, 'documentos');
-                    }
+                    $documento = $mime === 'application/pdf'
+                        ? $multimedia->guardarArchivoPdf($archivo, 'pdf')
+                        : $multimedia->guardarImagen($archivo, 'documentos');
                 }
 
-                if ($tipo === 'text') {
-                    $valor = $request->input($campo);
-                    if ($valor !== null && $valor !== '') {
-                        $datos = [
-                            'valor_texto' => $valor,
-                            'estado' => true,
-                            'fecha_expedicion' => null,
-                            'fecha_vencimiento' => null,
-                        ];
-                        if ($documento) {
-                            $datos['documento'] = $documento;
-                        }
+                if ($expedicion || $vencimiento) {
+                    $estado = $vencimiento ? now()->lt($vencimiento) : true;
 
-                        VehiculoPermisos::updateOrCreate(
-                            [
-                                'user_id' => $request->user()->id,
-                                'vehiculo_id' => $vehiculo->placa,
-                                'permiso_id' => $permisoId,
-                            ],
-                            $datos
-                        );
-                    }
-                } else {
-                    $expedicion = $request->input("{$campo}_expedicion");
-                    $vencimiento = $request->input("{$campo}_vencimiento");
-
-                    if ($expedicion && $vencimiento && $vencimiento < $expedicion) {
-                        continue;
+                    $datos = [
+                        'estado' => $estado,
+                        'fecha_expedicion' => $expedicion,
+                        'fecha_vencimiento' => $vencimiento,
+                        'valor_texto' => null,
+                    ];
+                    if ($documento) {
+                        $datos['documento'] = $documento;
                     }
 
-                    if ($expedicion || $vencimiento) {
-                        $estado = $vencimiento ? now()->lt($vencimiento) : true;
+                    VehiculoPermisos::updateOrCreate(
+                        [
+                            'user_id' => $request->user()->id,
+                            'vehiculo_id' => $vehiculo->placa,
+                            'permiso_id' => $permisoId,
+                        ],
+                        $datos
+                    );
 
-                        $datos = [
-                            'estado' => $estado,
-                            'fecha_expedicion' => $expedicion,
-                            'fecha_vencimiento' => $vencimiento,
-                            'valor_texto' => null,
-                        ];
-                        if ($documento) {
-                            $datos['documento'] = $documento;
-                        }
+                    if ($vencimiento) {
+                        $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
+                        $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+                        $clave = "permiso_alertado_{$vehiculo->placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
 
-                        VehiculoPermisos::updateOrCreate(
-                            [
-                                'user_id' => $request->user()->id,
-                                'vehiculo_id' => $vehiculo->placa,
-                                'permiso_id' => $permisoId,
-                            ],
-                            $datos
-                        );
+                        if (!session()->has($clave)) {
+                            session()->put($clave, true);
 
-                        if ($vencimiento) {
-                            $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
-                            $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
-                            $clave = "permiso_alertado_{$vehiculo->placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
-
-                            if (!session()->has($clave)) {
-                                session()->put($clave, true);
-
-                                if ($diasRestantes <= 15) {
-                                    NotificacionHelper::emitirPermisoPorVencer(
-                                        $vehiculo->placa,
-                                        $usuario,
-                                        ucfirst($campo),
-                                        $vencimientoCarbon->toDateString()
-                                    );
-                                }
+                            if ($diasRestantes <= 15) {
+                                NotificacionHelper::emitirPermisoPorVencer(
+                                    $vehiculo->placa,
+                                    $usuario,
+                                    ucfirst($campo),
+                                    $vencimientoCarbon->toDateString()
+                                );
                             }
                         }
                     }
@@ -130,7 +100,7 @@ class PermisologiaController extends Controller
                     return [
                         'fecha_expedicion' => $permiso->fecha_expedicion,
                         'fecha_vencimiento' => $permiso->fecha_vencimiento,
-                        'valor_texto' => $permiso->valor_texto,
+                        'valor_texto' => null,
                         'estado' => $permiso->estado,
                         'documento' => $permiso->documento,
                     ];

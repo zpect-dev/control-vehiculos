@@ -61,7 +61,9 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
 
-    // Ruta para el perfil
+    // Ruta para la Gasolina
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/{gasolina}', [GasolinaController::class, 'show'])->name('gasolina.show');
+
 
 });
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -83,6 +85,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Editar Observacion
     Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
+
+    // Rutas para Gasolina
+    Route::get('gaolina', [GasolinaController::class, 'index'])->name('gasolina.index');
+
+
+    
 });
 
 // Configuración y autenticación
