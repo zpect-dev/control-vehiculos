@@ -12,7 +12,7 @@ export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarc
                     'text-red-600': tipo === 'nivelFluido',
                     'text-yellow-600': tipo === 'revisionSemanal' || tipo === 'permiso',
                     'text-blue-600': tipo === 'cambioInput' || tipo === 'estado_item',
-                    'text-green-600': tipo === 'reasignacion',
+                    'text-[#49af4e]': tipo === 'reasignacion',
                     'text-purple-600': tipo === 'observacion',
                     'text-pink-600': tipo === 'documentoUsuario',
                 })}

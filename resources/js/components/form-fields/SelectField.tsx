@@ -16,7 +16,7 @@ export function SelectField({ id, label, value, options = [], onChange }: Select
             <p className="text-sm font-semibold text-gray-100 dark:text-gray-800">{label}</p>
             <select
                 id={id}
-                value={value}
+                value={typeof value === "string" || typeof value === "number" ? value : value === null ? "" : undefined}
                 onChange={(e) => onChange(id, e.target.value)}
                 className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-[#49af4e] focus:ring-2 focus:ring-[#49af4e] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >

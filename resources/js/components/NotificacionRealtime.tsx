@@ -1,8 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { accesoriosFields, piezasRevisadasFields } from '@/constants/formFields';
+import { Field } from '@/hooks/useFormLogic';
 import { router, usePage } from '@inertiajs/react';
 import Pusher from 'pusher-js';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+
+function tieneUsuarioAsignado(data: any): boolean {
+    const usuario = data.usuario || data.userName || data.nuevoUsuario;
+    return typeof usuario === 'string' && usuario.trim().length > 0;
+}
+
+function getCampoLabel(formType: string, tipoVehiculo: 'CARRO' | 'MOTO', fieldId: string): string {
+    const sources: Record<string, Record<'CARRO' | 'MOTO', Field[]>> = {
+        Accesorios: accesoriosFields,
+        Piezas: piezasRevisadasFields,
+    };
+
+    const normalizedFormType = formType.charAt(0).toUpperCase() + formType.slice(1).toLowerCase();
+    const fields = sources[normalizedFormType]?.[tipoVehiculo];
+    const match = fields?.find((f) => f.id === String(fieldId));
+    return match?.label ?? `Campo ${fieldId}`;
+}
+
+function getEstadoLabel(value: number | string): string {
+    const estados: Record<string, string> = {
+        '0': 'BUENO',
+        '1': 'MALO',
+        '2': 'NO POSEE',
+    };
+
+    return estados[String(value)] ?? `Valor ${value}`;
+}
 
 export default function NotificacionRealtime() {
     const { auth } = usePage<{ auth: { user: { id: number; name: string; is_admin: boolean } } }>().props;
@@ -17,16 +46,22 @@ export default function NotificacionRealtime() {
         });
         const channel = pusher.subscribe('admin.dashboard');
 
-        // Notificacion sobre el cambio del input de MALO y NO POSEE
-
+        // Cambio crítico en formulario
         channel.bind('input.changed', (data: any) => {
-            const estado = data.value === 1 ? 'MALO' : data.value === 2 ? 'NO POSEE' : 'BUENO';
+            if (!tieneUsuarioAsignado(data)) return;
+
+            const campo = getCampoLabel(data.formType, data.tipoVehiculo, data.field);
+            const estado = getEstadoLabel(data.value);
+            console.log('formType:', data.formType);
+            console.log('tipoVehiculo:', data.tipoVehiculo);
+            console.log('field:', data.field);
+            console.log('campo:', campo);
 
             toast.warning(`Cambio crítico registrado`, {
                 description: (
                     <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}`)}>
                         <span className="text-sm font-semibold text-blue-700">
-                            <strong>{data.userName}</strong> marcó el campo <strong>{data.field}</strong> como <strong>{estado}</strong>
+                            <strong>{data.userName}</strong> marcó el campo <strong>{campo}</strong> como <strong>{estado}</strong>
                         </span>
                         <span className="text-xs text-gray-700">
                             Vehículo afectado: <strong>{data.placa}</strong>
@@ -39,12 +74,12 @@ export default function NotificacionRealtime() {
                         <span className="text-xs text-gray-500 italic">Este cambio fue registrado y notificado automáticamente.</span>
                     </div>
                 ),
+
                 duration: 15000,
             });
         });
 
-        // Notificacion sobre la REASIGNACION DE VEHICULO A UN USUARIO
-
+        // Reasignación de vehículo
         channel.bind('asignacion.usuario', (data: any) => {
             toast.info(`Reasignación de vehículo`, {
                 description: (
@@ -59,9 +94,10 @@ export default function NotificacionRealtime() {
             });
         });
 
-        // Notificacion sobre el CHEQUEO DIARIO DESPUES DE LAS 9AM
-
+        // Chequeo omitido
         channel.bind('chequeo.omitido', (data: any) => {
+            if (!tieneUsuarioAsignado(data)) return;
+
             toast.error(`Chequeo diario omitido`, {
                 description: (
                     <div
@@ -81,9 +117,10 @@ export default function NotificacionRealtime() {
             });
         });
 
-        // Notificacion sobre el NIVEL DE FLUIDO BAJO
-
+        // Nivel de fluido bajo
         channel.bind('nivel.bajo', (data: any) => {
+            if (!tieneUsuarioAsignado(data)) return;
+
             toast.error(`Nivel de fluido crítico`, {
                 description: (
                     <div
@@ -106,9 +143,10 @@ export default function NotificacionRealtime() {
             });
         });
 
-        // Notificacion sobre los PERMISOS QUE ESTEN A 15 DIAS DE VENCERCE
-
+        // Permiso por vencer
         channel.bind('permiso.por.vencer', (data: any) => {
+            if (!tieneUsuarioAsignado(data)) return;
+
             toast.warning(`Permiso por vencer`, {
                 description: (
                     <div className="flex cursor-pointer flex-col gap-1 text-left" onClick={() => router.visit(`/fichaTecnica/${data.placa}`)}>
@@ -126,8 +164,10 @@ export default function NotificacionRealtime() {
             });
         });
 
-        // Notificacion para VIDEO SEMANAL NO SUBIDO ANTES DE LAS 10 AM LOS SABADOS
+        // Video semanal omitido
         channel.bind('video.semanal.omitido', (data: any) => {
+            if (!tieneUsuarioAsignado(data)) return;
+
             toast.error(`Video semanal no subido`, {
                 description: (
                     <div
@@ -147,8 +187,10 @@ export default function NotificacionRealtime() {
             });
         });
 
-        // Notificación sobre nueva observación agregada
+        // Observación agregada
         channel.bind('observacion.agregada', (data: any) => {
+            if (!tieneUsuarioAsignado(data)) return;
+
             toast.info(`Nueva observación registrada`, {
                 description: (
                     <div
@@ -171,6 +213,7 @@ export default function NotificacionRealtime() {
             });
         });
 
+        // Documento personal por vencer
         channel.bind('documento.usuario.por.vencer', (data: any) => {
             toast.warning(`Documento personal por vencer`, {
                 description: (

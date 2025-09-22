@@ -152,7 +152,7 @@ export default function fichaTecnica({
 
                 <div className="space-y-4">
                     <FichaSeccion
-                        title="Expediente Técnico del Vehículo"
+                        title="Expediente Técnico"
                         fields={expedienteTecnicoFields[tipoVehiculo]}
                         formType="expediente"
                         expediente={expedientesTecnicos[placa] || {}}

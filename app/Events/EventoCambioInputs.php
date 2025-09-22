@@ -17,14 +17,28 @@ class EventoCambioInputs implements ShouldBroadcast
     public string $placa;
     public string $userName;
     public ?string $formType;
+    public string $tipoVehiculo;
 
-    public function __construct(string $field, string|int $value, string $placa, string $userName, ?string $formType = null)
+    public function __construct(string $field, string|int $value, string $placa, string $userName, string $tipoVehiculo, ?string $formType = null)
     {
         $this->field = $field;
         $this->value = $value;
         $this->formType = $formType;
         $this->placa = $placa;
         $this->userName = $userName;
+        $this->tipoVehiculo = $tipoVehiculo;
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'field' => $this->field,
+            'value' => $this->value,
+            'placa' => $this->placa,
+            'userName' => $this->userName,
+            'formType' => $this->formType,
+            'tipoVehiculo' => $this->tipoVehiculo,
+        ];
     }
 
     public function broadcastOn(): array

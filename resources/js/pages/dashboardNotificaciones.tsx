@@ -91,7 +91,7 @@ export default function DashboardNotificaciones() {
 
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Notificaciones</h1>
-                    {flash?.success && <p className="mt-2 animate-pulse font-semibold text-green-600 dark:text-green-400">{flash.success}</p>}
+                    {flash?.success && <p className="mt-2 animate-pulse font-semibold text-[#49af4e] dark:text-green-400">{flash.success}</p>}
                 </div>
 
                 <div className="mb-6 flex justify-center">

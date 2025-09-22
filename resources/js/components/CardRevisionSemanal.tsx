@@ -60,7 +60,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
 
             {/* Estado visual */}
             {ambosCompletados && (
-                <div className="mb-4 flex items-center gap-2 text-green-600 dark:text-green-400">
+                <div className="mb-4 flex items-center gap-2 text-[#49af4e] dark:text-[#4eb953]">
                     <CircleCheck />
                     <span>Semana completada</span>
                 </div>
@@ -77,7 +77,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
                 ) : puedeSubirInicial ? (
                     <button
                         onClick={() => setTipoRevision('inicial')}
-                        className="flex items-center gap-2 rounded-full bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                        className="flex items-center gap-2 rounded-full bg-[#49af4e] px-4 py-2 text-white hover:bg-green-700"
                     >
                         Subir video
                     </button>
@@ -97,7 +97,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
                 ) : puedeSubirFinal ? (
                     <button
                         onClick={() => setTipoRevision('final')}
-                        className="flex items-center gap-2 rounded-full bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                        className="flex items-center gap-2 rounded-full bg-[#49af4e] px-4 py-2 text-white hover:bg-green-700"
                     >
                         Subir video
                     </button>

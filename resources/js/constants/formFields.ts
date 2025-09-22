@@ -632,16 +632,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
         },
     ],
     MOTO: [
-        // {
-        //     id: '1',
-        //     label: 'Aire Acondicionado',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '1',
             label: 'Caucho Delantero',
@@ -652,26 +642,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '3',
-        //     label: 'Caucho Delantero Izq.',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '4',
-        //     label: 'Caucho Tracero Der.',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '2',
             label: 'Caucho Tracero',
@@ -682,46 +652,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '6',
-        //     label: 'Cepillos Limpia Parabrisas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '7',
-        //     label: 'Cerraduras de Puertas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '8',
-        //     label: 'Cinturones de Segurida',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '9',
-        //     label: 'Espejo Interior de Cabina',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '3',
             label: 'Espejo Retovisor Der.',
@@ -772,16 +702,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '15',
-        //     label: 'Estado del Parachoques',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '8',
             label: 'Estado de la Pintura',
@@ -822,16 +742,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '20',
-        //     label: 'Gomas de las Puertas y Ventanas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '12',
             label: 'Luces de los Cruces Delanteros',
@@ -872,16 +782,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '25',
-        //     label: 'Luces de los Retroceso',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '16',
             label: 'Luces Delanteras Altas',
@@ -922,76 +822,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '30',
-        //     label: 'Luces Internas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '31',
-        //     label: 'Luces Testigo',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '32',
-        //     label: 'Manijas de las Puertas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '33',
-        //     label: 'Manijas de las Ventanas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '34',
-        //     label: 'Vidrios Laterales Delanteros',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '35',
-        //     label: 'Vidrios Laterales Traceros',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '36',
-        //     label: 'Vidrio Parabrisas',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '20',
             label: 'Pito',
@@ -1002,16 +832,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '21',
-        //     label: 'Revisión de Esparragos',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '21',
             label: 'Tablero',
@@ -1022,26 +842,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
                 { value: '2', label: 'No posee' },
             ],
         },
-        // {
-        //     id: '40',
-        //     label: 'Tapetes',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '22',
-        //     label: 'Tapicería',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
     ],
 };
 

@@ -19,7 +19,7 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
             case 'estado_item':
                 return <ClipboardPenLine className="h-5 w-5 text-blue-600" />;
             case 'reasignacion':
-                return <UserCheck className="h-5 w-5 text-green-600" />;
+                return <UserCheck className="h-5 w-5 text-[#49af4e]" />;
             case 'observacion':
                 return <ClipboardPenLine className="h-5 w-5 text-purple-600" />;
             case 'documentoUsuario':

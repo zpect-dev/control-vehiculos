@@ -20,7 +20,7 @@ export default function ObservacionCard({ observacion, isAdmin = false, onResolv
                         type="checkbox"
                         checked={observacion.resuelto}
                         onChange={() => onResolver?.(observacion.id)}
-                        className="mr-2 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        className="mr-2 h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-green-500"
                     />
                     Marcar como resuelta
                 </label>

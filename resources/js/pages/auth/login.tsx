@@ -89,7 +89,7 @@ export default function Login({ status }: LoginProps) {
                 )}
             </Form>
 
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+            {status && <div className="mb-4 text-center text-sm font-medium text-[#49af4e]">{status}</div>}
         </AuthLayout>
     );
 }

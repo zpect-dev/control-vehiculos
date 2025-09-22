@@ -148,7 +148,7 @@ export default function PerfilUsuario() {
                                 type="submit"
                                 disabled={submitting}
                                 className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 ${
-                                    submitting ? 'cursor-not-allowed bg-gray-400' : 'bg-green-600 hover:scale-105 hover:bg-green-700'
+                                    submitting ? 'cursor-not-allowed bg-gray-400' : 'bg-[#49af4e] hover:scale-105 hover:bg-green-700'
                                 }`}
                             >
                                 {submitting ? (

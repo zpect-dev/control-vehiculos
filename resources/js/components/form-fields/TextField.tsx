@@ -11,8 +11,11 @@ export function TextField({ id, label, value, placeholder, type = 'text', onChan
     const safeValue = typeof value === 'string' ? value : '';
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
             <label htmlFor={id} className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                {label}
+            </label>
+            <label htmlFor={id} className="text-sm font-semibold text-gray-100 dark:text-gray-800">
                 {label}
             </label>
             <input

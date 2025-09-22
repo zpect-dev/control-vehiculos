@@ -5,7 +5,6 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
 import { X } from 'lucide-react';
 
-
 export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, onSuccess }: ModalAsignacionUserProps) {
     const fields = getAsignacionFields(users);
 

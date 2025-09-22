@@ -13,9 +13,134 @@ use App\Events\ObservacionAgregada;
 use App\Events\VideoSemanalOmitido;
 use App\Models\Notificacion;
 use App\Models\User;
+use App\Models\Vehiculo;
 
 class NotificacionHelper
 {
+
+    private static function vehiculoTieneUsuario(string $placa): bool
+    {
+        $vehiculo = Vehiculo::find($placa);
+        return $vehiculo && $vehiculo->user_id;
+    }
+
+    private static function mapCampo(string $formType, string $tipoVehiculo, string $fieldId): string
+    {
+        $normalized = ucfirst(strtolower($formType));
+
+        return match ($normalized) {
+            'Accesorios' => self::mapAccesorio($tipoVehiculo, $fieldId),
+            'Piezas' => self::mapPieza($tipoVehiculo, $fieldId),
+            default => "Campo {$fieldId}",
+        };
+    }
+
+    private static function mapAccesorio(string $tipoVehiculo, string $fieldId): string
+    {
+        $map = [
+            'CARRO' => [
+                '1' => 'Caja de Herramienta',
+                '2' => 'Conos de seguridad',
+                '3' => 'Cuña',
+                '4' => 'Extintor',
+                '5' => 'Gato',
+                '6' => 'Llave de cruz',
+                '7' => 'Linterna',
+                '8' => 'Repuesto',
+            ],
+            'MOTO' => [
+                '1' => 'Caja de Herramienta',
+                '2' => 'Linterna',
+            ],
+        ];
+
+        return $map[$tipoVehiculo][$fieldId] ?? "Campo {$fieldId}";
+    }
+
+    private static function mapEstado(string|int $value): string
+    {
+        return match ((string) $value) {
+            '0' => 'BUENO',
+            '1' => 'MALO',
+            '2' => 'NO POSEE',
+            default => "Valor {$value}",
+        };
+    }
+
+    private static function mapPieza(string $tipoVehiculo, string $fieldId): string
+    {
+        $map = [
+            'CARRO' => [
+                '1' => 'Aire Acondicionado',
+                '2' => 'Caucho Delantero Der.',
+                '3' => 'Caucho Delantero Izq.',
+                '4' => 'Caucho Tracero Der.',
+                '5' => 'Caucho Tracero Izq.',
+                '6' => 'Cepillos Limpia Parabrisas',
+                '7' => 'Cerraduras de Puertas',
+                '8' => 'Cinturones de Seguridad',
+                '9' => 'Espejo Interior de Cabina',
+                '10' => 'Espejo Retovisor Der.',
+                '11' => 'Espejo Retovisor Izq.',
+                '12' => 'Estado de la Batería',
+                '13' => 'Estado de los Bornes de Batería',
+                '14' => 'Estado de la Carrocería',
+                '15' => 'Estado del Parachoques',
+                '16' => 'Estado de la Pintura',
+                '17' => 'Estado del Guardapolvos',
+                '18' => 'Estados de los Recipientes de Fluidos',
+                '19' => 'Estado del Sistema de Enfriamiento',
+                '20' => 'Gomas de las Puertas y Ventanas',
+                '21' => 'Luces de los Cruces Delanteros',
+                '22' => 'Luces de los Cruces Traceros',
+                '23' => 'Luces de los Frenos',
+                '24' => 'Luces de Neblina',
+                '25' => 'Luces de los Retroceso',
+                '26' => 'Luces Delanteras Altas',
+                '27' => 'Luces Delanteras Bajas',
+                '28' => 'Luces Intermitentes Delanteras',
+                '29' => 'Luces Intermitentes Traceras',
+                '30' => 'Luces Internas',
+                '31' => 'Luces Testigo',
+                '32' => 'Manijas de las Puertas',
+                '33' => 'Manijas de las Ventanas',
+                '34' => 'Vidrios Laterales Delanteros',
+                '35' => 'Vidrios Laterales Traceros',
+                '36' => 'Vidrio Parabrisas',
+                '37' => 'Pito',
+                '38' => 'Revisión de Esparragos',
+                '39' => 'Tablero',
+                '40' => 'Tapetes',
+                '41' => 'Tapicería',
+            ],
+            'MOTO' => [
+                '1' => 'Caucho Delantero',
+                '2' => 'Caucho Tracero',
+                '3' => 'Espejo Retovisor Der.',
+                '4' => 'Espejo Retovisor Izq.',
+                '5' => 'Estado de la Batería',
+                '6' => 'Estado de los Bornes de Batería',
+                '7' => 'Estado de la Carrocería',
+                '8' => 'Estado de la Pintura',
+                '9' => 'Estado del Guardapolvos',
+                '10' => 'Estados de los Recipientes de Fluidos',
+                '11' => 'Estado del Sistema de Enfriamiento',
+                '12' => 'Luces de los Cruces Delanteros',
+                '13' => 'Luces de los Cruces Traceros',
+                '14' => 'Luces de los Frenos',
+                '15' => 'Luces Exploradoras',
+                '16' => 'Luces Delanteras Altas',
+                '17' => 'Luces Delanteras Bajas',
+                '18' => 'Luces Intermitentes Delanteras',
+                '19' => 'Luces Intermitentes Traceras',
+                '20' => 'Pito',
+                '21' => 'Tablero',
+            ],
+        ];
+
+        return $map[$tipoVehiculo][$fieldId] ?? "Pieza {$fieldId}";
+    }
+
 
     /**
      * Emite y guarda una notificación de cambio de inputs
@@ -23,18 +148,28 @@ class NotificacionHelper
 
     public static function emitirCambioCritico(string $field, int|string $value, string $formType, string $placa, string $userName): void
     {
-        broadcast(new EventoCambioInputs($field, $value, $formType, $placa, $userName))->toOthers();
+        $vehiculo = Vehiculo::find($placa);
+        if (!$vehiculo || !$vehiculo->user_id) {
+            return;
+        }
+
+        $tipoVehiculo = strtoupper($vehiculo->tipo ?? 'CARRO');
+        $campo = self::mapCampo($formType, $tipoVehiculo, $field);
+        $estado = self::mapEstado($value);
+
+        broadcast(new EventoCambioInputs($field, $value, $placa, $userName, $tipoVehiculo, $formType))->toOthers();
 
         $admin = User::role('admin')->first();
 
         Notificacion::create([
             'titulo' => 'Cambio crítico en formulario',
             'vehiculo_id' => $placa,
-            'descripcion' => "El campo '{$field}' del formulario '{$formType}' para el vehículo '{$placa}' fue modificado por {$userName}. Nuevo valor: '{$value}'",
+            'descripcion' => "{$userName} marcó el campo '{$campo}' como '{$estado}' en el formulario '{$formType}' del vehículo '{$placa}'.",
             'tipo' => 'cambioInput',
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
+
         broadcast(new NotificacionPush($admin->id))->toOthers();
     }
 
@@ -64,6 +199,8 @@ class NotificacionHelper
      */
     public static function emitirNivelBajo(string $placa, string $userName, string $campo, string $formulario): void
     {
+        if (!self::vehiculoTieneUsuario($placa)) return;
+
         $admin = User::role('admin')->first();
 
         Notificacion::create([
@@ -74,14 +211,18 @@ class NotificacionHelper
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
+
         broadcast(new EventoNivelBajo($placa, $userName, $campo, $formulario))->toOthers();
     }
+
 
     /**
      * Emite y guarda una notificación de chequeo omitido.
      */
     public static function emitirChequeoOmitido(string $placa, string $userName, string $fecha): void
     {
+        if (!self::vehiculoTieneUsuario($placa)) return;
+
         $admin = User::role('admin')->first();
 
         Notificacion::create([
@@ -92,32 +233,40 @@ class NotificacionHelper
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
+
         broadcast(new ChequeoOmitido($placa, $userName, $fecha))->toOthers();
     }
+
 
     /**
      * Emite y guarda una notificación de permiso por vencer.
      */
     public static function emitirPermisoPorVencer(string $placa, string $userName, string $permiso, string $fechaVencimiento): void
     {
+        if (!self::vehiculoTieneUsuario($placa)) return;
+
         $admin = User::role('admin')->first();
 
         Notificacion::create([
             'titulo' => 'Permiso por Vencer',
             'vehiculo_id' => $placa,
-            'descripcion' => "El permiso '{$placa}' del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
+            'descripcion' => "El permiso '{$permiso}' del vehículo '{$placa}' vence pronto, el {$fechaVencimiento}. Responsable: '{$userName}'.",
             'tipo' => 'permiso',
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
+
         broadcast(new EventoPermisoPorVencer($placa, $userName, $permiso, $fechaVencimiento))->toOthers();
     }
+
 
     /**
      * Emite y guarda una notificación de video semanal omitido.
      */
     public static function emitirVideoSemanalOmitido(string $placa, string $userName, string $semana): void
     {
+        if (!self::vehiculoTieneUsuario($placa)) return;
+
         $admin = User::role('admin')->first();
 
         Notificacion::create([
@@ -128,8 +277,10 @@ class NotificacionHelper
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
+
         broadcast(new VideoSemanalOmitido($placa, $userName, $semana))->toOthers();
     }
+
 
     /**
      * Emite y guarda una notificación cuando se agrega una observación.
