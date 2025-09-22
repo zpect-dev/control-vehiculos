@@ -31,6 +31,15 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'La cédula es obligatoria.',
+            'email.numeric' => 'La cédula debe contener solo números.',
+            'password.required' => 'La contraseña es obligatoria.',
+        ];
+    }
+
     /**
      * Attempt to authenticate the request's credentials.
      *
@@ -44,7 +53,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'Las credenciales no son válidas. Verifica tu cédula y contraseña.',
             ]);
         }
 
@@ -81,7 +90,7 @@ class LoginRequest extends FormRequest
     {
         return $this->string('email')
             ->lower()
-            ->append('|'.$this->ip())
+            ->append('|' . $this->ip())
             ->transliterate()
             ->value();
     }

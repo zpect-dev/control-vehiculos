@@ -34,7 +34,14 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|numeric|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'email.required' => 'La cédula es obligatoria.',
+            'email.numeric' => 'La cédula debe contener solo números.',
+            'email.unique' => 'Ya existe un usuario con esta cédula.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden. Verifica que ambas sean iguales.',
         ]);
+
 
         $user = User::create([
             'name' => $request->name,
