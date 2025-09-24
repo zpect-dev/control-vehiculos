@@ -12,7 +12,8 @@ class Multimedia
         'diario' => 'uploads/fotos-diarias',
         'asignacion' => 'uploads/fotos-asignaciones',
         'documentos' => 'uploads/fotos-documentos',
-        'pdf' => 'uploads/pdf-documentos'
+        'pdf' => 'uploads/pdf-documentos',
+        'auditorias' => 'uploads/auditorias'
     ];
 
     public function guardarImagen($image, $tipo)

@@ -8,6 +8,7 @@ use Inertia\Inertia;
 
 // Controladores
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FacturasController;
 use App\Http\Controllers\FichaTecnica\FichaTecnicaController;
 use App\Http\Controllers\FichaTecnica\ExpedienteTecnicoController;
 use App\Http\Controllers\FichaTecnica\PermisologiaController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\FichaTecnica\PiezasController;
 use App\Http\Controllers\ObservacionesController;
 use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
+use App\Http\Controllers\SurtidosController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehiculoController;
 
@@ -31,6 +33,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard principal (muestra las cards de vehículos)
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+//Rutas Factura
+Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class, 'index'])->name('facturas.index');
+Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
+Route::post('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'store'])->name('facturas.store');
 
 Route::get('perfil/{user}', [UsersController::class, 'show'])->name('perfil.show');
 Route::patch('perfil/{user}', [UsersController::class, 'update'])->name('perfil.update');
@@ -61,12 +68,15 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
 
-    // Ruta para la Gasolina
-    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/{gasolina}', [GasolinaController::class, 'show'])->name('gasolina.show');
-
-
+    // Rutas gasolina
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolian/{surtido}', [SurtidosController::class, 'show'])->name('surtidos.show');
+    Route::post('fichaTecnica/{vehiculo:placa}/gasolian/save', [SurtidosController::class, 'store'])->name('surtidos.store');
+    Route::patch('fichaTecnica/{vehiculo:placa}/gasolian/{surtido}/edit', [SurtidosController::class, 'update'])->name('surtidos.update');
 });
 Route::middleware(['auth', 'admin'])->group(function () {
+    // Rutas gasolina
+    Route::get('gasolina', [SurtidosController::class, 'index'])->name('surtidos.index');
+
     // Visualizar perfil
     Route::get('perfiles', [UsersController::class, 'index'])->name('perfil.index');
 
@@ -85,11 +95,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Editar Observacion
     Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
-
-    // Rutas para Gasolina
-    Route::get('gaolina', [GasolinaController::class, 'index'])->name('gasolina.index');
-
-
     
 });
 

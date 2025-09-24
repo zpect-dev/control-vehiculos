@@ -29,7 +29,7 @@ class ConsultaSQL
         // Especificaciones
         $especificaciones = DB::table('especificaciones')->pluck('especificacion');
         $columnasEspecificaciones = $especificaciones->map(function ($especificacion) {
-            return "MAX(CASE WHEN es.especificacion = '$especificacion' THEN ve.estado ELSE NULL END) AS 'especificacion_estado_$especificacion'";
+            return "MAX(CASE WHEN es.especificacion = '$especificacion' THEN ve.estado ELSE NULL END) AS 'especificacion_$especificacion'";
         })->implode(', ');
 
         $todasLasColumnas = collect([
@@ -39,53 +39,56 @@ class ConsultaSQL
             $columnasEspecificaciones
         ])->filter()->implode(', ');
 
-        $consultaSQL = "SELECT
-        v.placa, v.tipo, v.modelo, u.name AS responsable, $todasLasColumnas
+        $consultaSQL = "WITH ultimos_accesorios AS (
+            SELECT va.* FROM vehiculo_accesorios va
+            INNER JOIN (
+                SELECT vehiculo_id, accesorio_id, MAX(fecha_verificacion) AS max_fecha
+                FROM vehiculo_accesorios
+                GROUP BY vehiculo_id, accesorio_id
+            ) va2 ON va.vehiculo_id = va2.vehiculo_id AND va.accesorio_id = va2.accesorio_id AND (va.fecha_verificacion = va2.max_fecha OR va.fecha_verificacion IS NULL)
+        ),
+        ultimas_piezas AS (
+            SELECT vp.* FROM vehiculo_piezas vp
+            INNER JOIN (
+                SELECT vehiculo_id, pieza_id, MAX(fecha_verificacion) AS max_fecha
+                FROM vehiculo_piezas
+                GROUP BY vehiculo_id, pieza_id
+            ) vp2 ON vp.vehiculo_id = vp2.vehiculo_id AND vp.pieza_id = vp2.pieza_id AND (vp.fecha_verificacion = vp2.max_fecha OR vp.fecha_verificacion IS NULL)
+        ),
+        ultimos_permisos AS (
+            SELECT vpms.* FROM vehiculo_permisos vpms
+            INNER JOIN (
+                SELECT vehiculo_id, permiso_id, MAX(fecha_vencimiento) AS max_fecha
+                FROM vehiculo_permisos
+                GROUP BY vehiculo_id, permiso_id
+            ) vpms2 ON vpms.vehiculo_id = vpms2.vehiculo_id AND vpms.permiso_id = vpms2.permiso_id AND (vpms.fecha_vencimiento = vpms2.max_fecha OR vpms.fecha_vencimiento IS NULL)
+        ),
+        ultimas_especificaciones AS (
+            SELECT ve.* FROM vehiculo_especificaciones ve
+            INNER JOIN (
+                SELECT vehiculo_id, especificacion_id, MAX(fecha_verificacion) AS max_fecha
+                FROM vehiculo_especificaciones
+                GROUP BY vehiculo_id, especificacion_id
+            ) ve2 ON ve.vehiculo_id = ve2.vehiculo_id AND ve.especificacion_id = ve2.especificacion_id AND (ve.fecha_verificacion = ve2.max_fecha OR ve.fecha_verificacion IS NULL)
+        )
+        SELECT
+            v.placa, v.tipo, v.modelo, u.name AS responsable, $todasLasColumnas
         FROM vehiculos v
         JOIN users u ON v.user_id = u.id
         -- Accesorios
-        LEFT JOIN vehiculo_accesorios va ON v.placa = va.vehiculo_id
+        LEFT JOIN ultimos_accesorios va ON v.placa = va.vehiculo_id
         LEFT JOIN accesorios a ON va.accesorio_id = a.id
         -- Piezas
-        LEFT JOIN vehiculo_piezas vp ON v.placa = vp.vehiculo_id
+        LEFT JOIN ultimas_piezas vp ON v.placa = vp.vehiculo_id
         LEFT JOIN piezas pz ON vp.pieza_id = pz.id
         -- Permisos
-        LEFT JOIN vehiculo_permisos vpms ON v.placa = vpms.vehiculo_id
+        LEFT JOIN ultimos_permisos vpms ON v.placa = vpms.vehiculo_id
         LEFT JOIN permisos pm ON vpms.permiso_id = pm.id
         -- Especificaciones
-        LEFT JOIN vehiculo_especificaciones ve ON v.placa = ve.vehiculo_id
+        LEFT JOIN ultimas_especificaciones ve ON v.placa = ve.vehiculo_id
         LEFT JOIN especificaciones es ON ve.especificacion_id = es.id
         WHERE v.user_id = ? AND v.placa = ?
-        AND (
-            va.fecha_verificacion IS NULL OR va.fecha_verificacion = (
-                SELECT MAX(va2.fecha_verificacion)
-                FROM vehiculo_accesorios va2
-                WHERE va2.accesorio_id = va.accesorio_id AND va2.vehiculo_id = va.vehiculo_id
-            )
-        )
-        AND (
-            vp.fecha_verificacion IS NULL OR vp.fecha_verificacion = (
-                SELECT MAX(vp2.fecha_verificacion)
-                FROM vehiculo_piezas vp2
-                WHERE vp2.pieza_id = vp.pieza_id AND vp2.vehiculo_id = vp.vehiculo_id
-            )
-        )
-        AND (
-            vpms.fecha_vencimiento IS NULL OR vpms.fecha_vencimiento = (
-                SELECT MAX(vpms2.fecha_vencimiento)
-                FROM vehiculo_permisos vpms2
-                WHERE vpms2.permiso_id = vpms.permiso_id AND vpms2.vehiculo_id = vpms.vehiculo_id
-            )
-        )
-        AND (
-            ve.fecha_verificacion IS NULL OR ve.fecha_verificacion = (
-                SELECT MAX(ve2.fecha_verificacion)
-                FROM vehiculo_especificaciones ve2
-                WHERE ve2.especificacion_id = ve.especificacion_id AND ve2.vehiculo_id = ve.vehiculo_id
-            )
-        )
-        GROUP BY
-        v.placa, v.tipo, v.modelo, u.name";
+        GROUP BY v.placa, v.tipo, v.modelo, u.name";
 
         return DB::select($consultaSQL, [$userId, $placa]);
     }

@@ -60,7 +60,7 @@ class RevisionDiariaController extends Controller
                 'fluidos.*.dia' => 'required|string',
                 'fluidos.*.nivel_fluido' => 'required|string',
                 'fluidos.*.revisado' => 'required|string',
-                'fluidos.*.imagen' => 'required|file|image|max:5120',
+                'fluidos.*.imagen' => 'required|image|max:5120',
             ]);
 
             $datos = [];

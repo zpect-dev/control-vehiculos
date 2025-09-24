@@ -99,17 +99,15 @@ return [
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
-            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+            'host' => '192.168.4.20',
+            'port' => 1433,
+            'database' => 'VEHI24', // ← este es el nombre real de la base
+            'username' => 'profit',
+            'password' => 'profit',
+            //'encrypt' => false,
+            'trust_server_certificate' => true,
+            'charset' => 'utf8',
+            'collation' => 'SQL_Latin1_General_CP1_CI_AS',
         ],
 
     ],
