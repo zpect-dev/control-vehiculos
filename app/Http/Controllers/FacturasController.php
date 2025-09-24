@@ -91,4 +91,8 @@ class FacturasController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+    
+    public function update(Request $request, FacturaAuditoria $factura){
+        
+    }
 }

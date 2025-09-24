@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('imagen');
             $table->timestamps();
 
-            $table->foreign('admin_id')->references('id')->on('users');
             $table->foreign('fact_num')->references('fact_num')->on('auditoria_facturas');
         });
     }
