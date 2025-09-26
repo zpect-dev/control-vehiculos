@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Checkbox } from '../ui/checkbox';
 
-export default function ModalDetalleFactura({ factura, vehiculo, renglones, auditados, isAdmin, onClose, visible }: ModalDetalleFacturaProps) {
+export default function ModalDetalleFactura({ factura, vehiculo, renglones, auditados, onClose, visible }: ModalDetalleFacturaProps) {
     if (!visible || typeof document === 'undefined') return null;
 
     const badgeEstado = (estado: boolean) => (
@@ -210,56 +210,51 @@ export default function ModalDetalleFactura({ factura, vehiculo, renglones, audi
                     </div>
                 </div>
                 {/* Sección Admin */}
-                {isAdmin && (
-                    <>
-                        <div className="my-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Marcar Aprobado</label>
-                                <div className="flex items-center gap-3 rounded-lg border bg-gray-100 p-3 shadow-sm dark:bg-gray-200">
-                                    <Checkbox id="aprobado" name="aprobado" />
-                                    <span className="text-md font-medium text-gray-900 dark:text-gray-800">Aprobado</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Supervisor</label>
-                                <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">—</div>
-                            </div>
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Descontar o Cubre Empresa</label>
-                                <select
-                                    className="w-full rounded-lg border bg-gray-50 p-3 font-medium text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-400"
-                                    disabled
-                                >
-                                    <option>—</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
-                                <select
-                                    className="w-full rounded-lg border bg-gray-50 p-3 font-medium text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-400"
-                                    disabled
-                                >
-                                    <option>—</option>
-                                </select>
+                <>
+                    <div className="my-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Marcar Aprobado</label>
+                            <div className="flex items-center gap-3 rounded-lg border bg-gray-100 p-3 shadow-sm dark:bg-gray-200">
+                                <Checkbox id="aprobado" name="aprobado" />
+                                <span className="text-md font-medium text-gray-900 dark:text-gray-800">Aprobado</span>
                             </div>
                         </div>
-
-                        <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del supervisor</h3>
-                        <textarea
-                            className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
-                            rows={4}
-                            placeholder="Escribe aquí..."
-                        />
-                        <div className="flex items-center justify-end">
-                            <button
-                                type="submit"
-                                className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Supervisor</label>
+                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">—</div>
+                        </div>
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Descontar o Cubre Empresa</label>
+                            <select
+                                className="w-full rounded-lg border bg-gray-50 p-3 font-medium text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-400"
+                                disabled
                             >
-                                Guardar
-                            </button>
+                                <option>—</option>
+                            </select>
                         </div>
-                    </>
-                )}
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
+                            <select
+                                className="w-full rounded-lg border bg-gray-50 p-3 font-medium text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-400"
+                                disabled
+                            >
+                                <option>—</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del supervisor</h3>
+                    <textarea
+                        className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
+                        rows={4}
+                        placeholder="Escribe aquí..."
+                    />
+                    <div className="flex items-center justify-end">
+                        <button type="submit" className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]">
+                            Guardar
+                        </button>
+                    </div>
+                </>
             </div>
         </div>
     );

@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use App\Models\RenglonFactura;
 use App\Models\FacturaAuditoria;
 use App\Models\RenglonAuditoria;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\FlashHelper;
+use App\Models\User;
 
 class FacturasController extends Controller
 {
@@ -63,8 +65,7 @@ class FacturasController extends Controller
             });
 
         $facturaAuditada = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
-
-        $conductor = Vehiculo::where('placa', $factura->co_cli)->with('usuario:id,name')->first();
+        $conductor = $facturaAuditada ? User::where('id', $facturaAuditada->user_id)->first()->name : Vehiculo::where('placa', $factura->co_cli)->with('usuario:id,name')->first()->name;
 
         $renglones = $auditados->isNotEmpty()
             ? $auditados
@@ -95,14 +96,15 @@ class FacturasController extends Controller
                 'descripcion' => $factura->descripcion_limpia,
                 'observaciones_res' => $facturaAuditada->observaciones_res ?? null,
                 'observaciones_admin' => $facturaAuditada->observaciones_admin ?? null,
-                'aprobado' => $facturaAuditada->aprobado ?? null,
-                'cubre' => $facturaAuditada->cubre ?? null,
+                'aprobado' => $facturaAuditada->aprobado ?? false,
+                'cubre' => $factura->cubre ? 'Descontar' : 'Cubre',
+                'usuario_cubre' => User::where('id', $facturaAuditada->cubre_usuario)->first()->name ?? 'Empresa',
             ],
             'renglones' => $renglones,
             'auditados' => $auditados->isNotEmpty(),
             'vehiculo' => [
                 'placa' => $factura->co_cli,
-                'conductor' => optional($conductor->usuario)->name,
+                'conductor' => $conductor,
             ]
         ]);
     }
@@ -123,19 +125,18 @@ class FacturasController extends Controller
                     throw new \Exception("La imagen de {$co_art} no es válida");
                 }
             }
-
             $request->validate([
                 'observacion' => 'nullable|string',
                 'imagenes.*' => 'image|max:5120',
             ]);
-
-            $auditoria = FacturaAuditoria::create([
+            
+            FacturaAuditoria::create([
                 'fact_num' => $factura->fact_num,
                 'vehiculo_id' => $factura->co_cli,
                 'user_id' => $request->user()->id,
                 'observaciones_res' => $request->input('observacion'),
             ]);
-
+            
             $datos = [];
             $multimedia = new Multimedia;
 
@@ -164,6 +165,24 @@ class FacturasController extends Controller
 
     public function update(Request $request, FacturaAuditoria $factura)
     {
-        // Puedes aplicar FlashHelper aquí también cuando implementes la lógica
+        $validatedData = $request->validate([
+            'aprobado' => 'required|boolean',
+            'observaciones_admin' => 'nullable'
+        ]);
+
+        $fechaEmis = Carbon::parse(Factura::where('fact_num', $factura->fact_num)->first()->fec_emis);
+        $fechaAudi = Carbon::parse($factura->created_at);
+
+        $diasDiff = $fechaEmis->diffInDays($fechaAudi);
+
+        if($diasDiff > 5){
+            $factura->cubre = true;
+            $factura->cubre_usuario = $factura->user_id;
+        }
+
+        $factura->aprobado = $validatedData['aprobado'];
+        $factura->observaciones_admin = $validatedData['observaciones_admin'];
+
+        $factura->save();
     }
 }

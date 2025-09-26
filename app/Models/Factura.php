@@ -36,11 +36,14 @@ class Factura extends Model
 
     public function getDescripcionLimpiaAttribute()
     {
-        return trim(preg_replace('/[\x00-\x1F\x7F].*/u', '', $this->descrip));
+        $limpio = trim(preg_replace('/[\x00-\x1F\x7F].*/u', '', $this->descrip));
+        return trim(preg_replace('/D\/.*/u', '', $limpio));
     }
 
     public function getComentarioLimpioAttribute()
-    {
-        return trim(preg_replace('/[\x00-\x1F\x7F].*/u', '', $this->comentario));
+    {   
+        
+        $limpio = trim(preg_replace('/[\x00-\x1F\x7F].*/u', '', $this->comentario));
+        return trim(preg_replace('/D\/.*/u', '', $limpio));
     }
 }
