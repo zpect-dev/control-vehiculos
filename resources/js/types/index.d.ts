@@ -124,6 +124,20 @@ interface TextFieldProps {
     onChange: (id: string, value: string) => void;
 }
 
+export interface ModalAsignacionUserProps {
+    isOpen: boolean;
+    onClose: () => void;
+    vehiculo: {
+        placa: string;
+        modelo: string;
+    };
+    users: {
+        id: string | number;
+        name: string;
+    }[];
+    onSuccess?: (usuario: { id: string | number; name: string }) => void;
+}
+
 // Revisiones
 
 export interface RevisionSemanalData {

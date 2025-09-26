@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CalendarRange, Car, Droplets, Eye, History, Menu, ReceiptText, SquareUserRound } from 'lucide-react';
+import { Bell, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -34,9 +34,16 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
               { title: 'Observaciones', href: `/fichaTecnica/${placaActual}/observaciones`, icon: Eye },
               { title: 'Facturas', href: `/fichaTecnica/${placaActual}/facturas`, icon: ReceiptText },
+              { title: 'Gasolina', href: `/fichaTecnica/${placaActual}/gasolina`, icon: Fuel },
               { title: 'Asignaciones', href: `/fichaTecnica/${placaActual}/asignaciones`, icon: History },
           ]
         : [];
+
+    const getHeaderTitle = () => {
+        if (isDashboard) return 'Control de Vehículos';
+        if (placaActual) return 'Dashboard';
+        return 'Control de Vehículos';
+    };
 
     return (
         <>
@@ -104,11 +111,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <SquareUserRound className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
                             )}
-                            {/* {auth.user.is_admin && (
+                            {auth.user.is_admin && (
                                 <Link href="/gasolina" prefetch>
                                     <Fuel className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
-                            )} */}
+                            )}
                             {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch>
                                     <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
@@ -119,12 +126,12 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     {/* Desktop Menu */}
                     <div className="hidden w-full items-center justify-between lg:flex">
                         <Link href="/dashboard" prefetch className="flex items-center">
-                            <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                            <h2 className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">{getHeaderTitle()}</h2>
                         </Link>
                         <div className="flex flex-1 justify-center">
                             {!isDashboard && (
                                 <NavigationMenu>
-                                    <NavigationMenuList className="flex items-center space-x-1">
+                                    <NavigationMenuList className="flex items-center">
                                         {vehiculoNavItems.map((item, index) => (
                                             <NavigationMenuItem key={index}>
                                                 <Link
@@ -137,7 +144,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             : 'text-gray-600 dark:text-gray-400',
                                                     )}
                                                 >
-                                                    {item.icon && <Icon iconNode={item.icon} className="mr-2 h-5 w-5" />}
+                                                    {item.icon && <Icon iconNode={item.icon} className="mr-1 h-5 w-5" />}
                                                     {item.title}
                                                 </Link>
                                             </NavigationMenuItem>
@@ -152,11 +159,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <SquareUserRound />
                                 </Link>
                             )}
-                            {/* {auth.user.is_admin && (
+                            {auth.user.is_admin && (
                                 <Link href="/gasolina" prefetch>
-                                    <Fuel className="h-6 w-6 text-gray-800 dark:text-white" />
+                                    <Fuel className="flex items-center justify-start" />
                                 </Link>
-                            )} */}
+                            )}
                             {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch className="flex items-center justify-start">
                                     <Bell />
@@ -173,7 +180,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                         </Avatar>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56" align="end">
+                                <DropdownMenuContent className="w-56" align="center">
                                     <UserMenuContent user={auth.user} />
                                 </DropdownMenuContent>
                             </DropdownMenu>
