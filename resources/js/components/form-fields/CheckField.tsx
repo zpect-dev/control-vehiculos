@@ -1,9 +1,4 @@
-interface CheckFieldProps {
-    id: string;
-    label: string;
-    checked: boolean;
-    onChange: (id: string, value: boolean) => void;
-}
+import { CheckFieldProps } from "@/types";
 
 export function CheckField({ id, label, checked, onChange }: CheckFieldProps) {
     return (

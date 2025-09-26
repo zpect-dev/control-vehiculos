@@ -2,21 +2,16 @@ import GrupoNotificaciones from '@/components/GrupoNotificaciones';
 import NotificacionRealtime from '@/components/NotificacionRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import AppLayout from '@/layouts/app-layout';
-import { FlashProps, Notificacion } from '@/types';
+import { Notificacion } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function DashboardNotificaciones() {
-    const {
-        notificaciones: rawNotificaciones = [],
-        modo,
-        flash,
-    } = usePage<{
+    const { notificaciones: rawNotificaciones = [], modo } = usePage<{
         notificaciones: Notificacion[];
         modo: string;
-        flash: FlashProps;
     }>().props;
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -91,7 +86,6 @@ export default function DashboardNotificaciones() {
 
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Notificaciones</h1>
-                    {flash?.success && <p className="mt-2 animate-pulse font-semibold text-[#49af4e] dark:text-green-400">{flash.success}</p>}
                 </div>
 
                 <div className="mb-6 flex justify-center">

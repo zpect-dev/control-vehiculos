@@ -189,7 +189,7 @@ export default function fichaTecnica({
                             vehiculo={vehiculoActual}
                             users={users}
                             isAdmin={isAdmin}
-                            onSuccess={(nuevoUsuario) => {
+                            onSuccess={(nuevoUsuario: any) => {
                                 setVehiculoActual((prev: any) => ({ ...prev, usuario: nuevoUsuario }));
                             }}
                         />

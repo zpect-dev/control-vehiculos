@@ -18,18 +18,28 @@ class Multimedia
 
     public function guardarImagen($image, $tipo)
     {
-        $nameImage = Str::uuid() . '.' . $image->extension();
-        $serverImage = ImageManager::gd()->read($image);
-        $serverImage->cover(1200, 800);
+        try {
+            if (!array_key_exists($tipo, $this->rutasGuardado)) {
+                return false;
+            }
 
-        if(!array_key_exists($tipo, $this->rutasGuardado)){
+            $nameImage = Str::uuid() . '.' . $image->extension();
+            $serverImage = ImageManager::gd()->read($image);
+            $serverImage->cover(1200, 800);
+
+            $targetPath = $this->rutasGuardado[$tipo];
+            $encoded = $serverImage->encode();
+
+            if (!$encoded) {
+                return false;
+            }
+
+            $respuesta = Storage::disk('public')->put($targetPath . '/' . $nameImage, $encoded);
+
+            return $respuesta ? $nameImage : false;
+        } catch (\Exception $e) {
             return false;
         }
-
-        $targetPath = $this->rutasGuardado[$tipo];
-        $respuesta = Storage::disk('public')->put($targetPath . '/' . $nameImage, $serverImage->encode());
-
-        return $respuesta ? $nameImage : false;
     }
 
     public function guardarArchivoPdf($archivo, $tipo)

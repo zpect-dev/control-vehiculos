@@ -1,10 +1,4 @@
-interface DateFieldProps {
-    id: string;
-    label: string;
-    expedicion: string | boolean | File | null;
-    vencimiento: string | boolean | File | null;
-    onChange: (id: string, value: string) => void;
-}
+import { DateFieldProps } from "@/types";
 
 export function DateField({ id, label, expedicion, vencimiento, onChange }: DateFieldProps) {
     const exp = typeof expedicion === 'string' ? expedicion : '';

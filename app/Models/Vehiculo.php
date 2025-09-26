@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Vehiculo extends Model
 {
@@ -27,10 +26,11 @@ class Vehiculo extends Model
     /**
      * Relación con el usuario propietario.
      */
-    public function usuario(): BelongsTo
+    public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
 
     /**
      * Relación con las especificaciones técnicas.

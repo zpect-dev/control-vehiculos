@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Field } from '@/hooks/useFormLogic';
-import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
-    user: User;
+    user: UserInterface;
 }
 
 export interface BreadcrumbItem {
@@ -12,24 +11,16 @@ export interface BreadcrumbItem {
     href: string;
 }
 
-export interface Vehiculo {
-    placa: string;
-    tipo: 'CARRO' | 'MOTO';
-    modelo: string;
-    usuario?: UsuarioAsignado | null;
-    observaciones_no_resueltas?: number;
+export interface NavItem {
+    title: string;
+    href: string;
+    icon?: LucideIcon | null;
+    isActive?: boolean;
 }
 
 export interface NavGroup {
     title: string;
     items: NavItem[];
-}
-
-export interface NavItem {
-    title: string;
-    href: NonNullable<InertiaLinkProps['href']>;
-    icon?: LucideIcon | null;
-    isActive?: boolean;
 }
 
 export interface SharedData {
@@ -40,223 +31,43 @@ export interface SharedData {
     [key: string]: any;
 }
 
-export interface UserInterface {
-    id: number;
-    name: string;
-    email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
-    is_admin?: boolean;
+export interface FlashMessageProps {
+    mensaje?: string | null;
+    duracion?: number;
+    isError?: boolean;
 }
 
-export type UsuarioAsignado = {
-    id: string | number;
-    name: string;
-};
-
-export interface Notificacion {
-    data: any;
-    id: number;
-    titulo: string;
-    descripcion: string;
-    tipo: string;
-    leida: boolean;
-    created_at: string;
-    vehiculo_id?: number;
-    usuario_id?: number;
-}
-
-interface RevisionSemanalData {
-    video: string;
-}
-
-interface RevisionSemanalProps {
-    vehiculo: Vehiculo;
-    revisionSemanal?: RevisionSemanalData | null;
-    inicio: string;
-    final: string;
-}
-
-type VehiculoProps = {
-    surtidos: any;
-    placa: string;
-    modelo: string;
-};
-
-type UserProps = {
-    id: number;
-    name: string;
-};
-
-type AsignacionProps = {
-    id: number;
-    vehiculo: VehiculoProps;
-    user: UserProps;
-    admin: UserProps;
-    kilometraje: number;
-    foto_kilometraje?: string;
-    fecha_asignacion?: string;
-};
-
-type PageProps = {
-    vehiculo: VehiculoProps;
-    historial: AsignacionProps[];
-};
-
-type VehiculoProps = {
-    id: number;
-    placa: string;
-    modelo: string;
-};
-
-type UserProps = {
-    id: number;
-    name: string;
-    role?: string;
-};
-
-type ObservacionProps = {
-    id: number;
-    observacion: string;
-    resuelto: boolean;
-    fecha_creacion: string;
-    fecha_resolucion?: string;
-    tipo?: string;
-    user: UserProps;
-    admin?: UserProps;
-};
-
-type PagePropsObs = {
-    vehiculo: VehiculoProps;
-    observaciones: ObservacionProps[];
-    flash: { success?: string };
-    isAdmin: boolean;
-};
-
-interface RevisionFluidosProps {
-    vehiculoId: number | string;
-    vehiculo: any;
-}
-
-interface RevisionFluido {
-    id: number;
-    tipo: string;
-    nivel_fluido: string | number;
-    imagen: string | null;
-    revisado: boolean;
-    fecha_creacion: string;
-}
-
-type FlashProps = {
-    success?: string;
-    [key: string]: any;
-};
-
-interface FlashPropsCont {
+export interface FlashPropsCont {
     flash?: {
         success?: string;
         error?: string;
     };
 }
 
-interface Notificacion {
-    id: number;
-    titulo: string;
-    descripcion: string;
-    tipo: string;
-    leida: boolean;
-    created_at: string;
-    vehiculo_id?: number;
+export interface PageProps {
+    vehiculo: VehiculoData;
+    historial: AsignacionHistorial[];
+    [key: string]: any;
 }
 
-interface Usuario {
+//  Formularios y UI
+
+export interface Field {
     name: string;
+    label: string;
+    type: string;
+    required?: boolean;
+    options?: string[];
 }
 
-interface Vehiculo {
-    placa: string;
-    modelo: string;
-    usuario?: Usuario;
-    imagen_url?: string;
-}
-
-type UserProps = {
-    id: number;
-    name: string;
-};
-
-type ObservacionProps = {
-    id: number;
-    observacion: string;
-    resuelto: boolean;
-    fecha_creacion: string;
-    fecha_resolucion?: string;
-    tipo?: string;
-    user: UserProps;
-    admin?: UserProps;
-};
-
-type Props = {
-    observacion: ObservacionProps;
-    isAdmin?: boolean;
-    onResolver?: (id: number) => void;
-};
-
-type Notificacion = {
-    id: number;
-    titulo: string;
-    descripcion: string;
-    tipo: string;
-    leida: boolean;
-    created_at: string;
-    vehiculo_id?: number;
-};
-
-type PropsNoti = {
-    notificacion: Notificacion;
-    modo: 'admin' | 'user';
-    onMarcarLeida?: (noti: Notificacion) => void;
-};
-
-type PropsGrupoNoti = {
-    tipo: string;
-    notificaciones: Notificacion[];
-    modo: 'admin' | 'user';
-    onMarcarLeida: (noti: Notificacion) => void;
-};
-
-interface FichaSeccionFluidosProps {
-    title: string;
-    fields: Field[];
-    expediente: Record<string | number, string | boolean | File | null>;
-    onSubmit: (formData: Record<string, string | boolean | File | null>) => void;
-}
-
-interface FormCardProps {
-    title?: string;
-    fields: Field[];
-    buttonText?: string;
-    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido';
-    onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
-    expediente?: Record<string | number, string | boolean | File | null>;
-}
-
-interface FlashMessageProps {
-    mensaje?: string | null;
-    duracion?: number;
-    isError?: boolean;
-}
-
-interface FichaSeccionFluidosProps {
+export interface FichaSeccionFluidosProps {
     title: string;
     fields: Field[];
     expediente: Record<string, string | boolean | File | null>;
     onSubmit: (formData: Record<string, string | boolean | File | null>) => void;
 }
 
-interface FichaSeccionProps {
+export interface FichaSeccionProps {
     title: string;
     fields: Field[];
     options?: string[];
@@ -265,41 +76,55 @@ interface FichaSeccionProps {
     onSubmit: (data: Record<string, string | boolean | File | null>) => void;
 }
 
-interface AsignacionUserProps {
-    vehiculo: Vehiculo;
-    users: UsuarioAsignado[];
-    isAdmin: boolean;
-    onSuccess?: (user: UsuarioAsignado) => void;
+export interface FormCardProps {
+    title?: string;
+    fields: Field[];
+    buttonText?: string;
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido';
+    onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
+    expediente?: Record<string | number, string | boolean | File | null>;
 }
 
-interface ModalAsignacionUserProps {
-    isOpen: boolean;
-    onClose: () => void;
-    vehiculo: Vehiculo;
-    users: User[];
-    isAdmin: boolean;
-    onSuccess?: (user: UsuarioAsignado) => void;
+interface DateFieldProps {
+    id: string;
+    label: string;
+    expedicion: string | boolean | File | null;
+    vencimiento: string | boolean | File | null;
+    onChange: (id: string, value: string) => void;
 }
 
-export interface UsuarioBasico {
-  id: number;
-  name: string;
-  email: string;
-  zona?: string;
-  foto_cedula?: string;
-  vencimiento_cedula?: string;
-  foto_licencia?: string;
-  vencimiento_licencia?: string;
-  foto_certificado_medico?: string;
-  vencimiento_certificado_medico?: string;
-  foto_seguro_civil?: string;
-  vencimiento_seguro_civil?: string;
-  foto_carnet_circulacion?: string;
-  vencimiento_carnet_circulacion?: string;
-  foto_solvencia?: string;
-  vencimiento_solvencia?: string;
+interface CheckFieldProps {
+    id: string;
+    label: string;
+    checked: boolean;
+    onChange: (id: string, value: boolean) => void;
 }
 
+interface FileFieldProps {
+    id: string;
+    label: string;
+    value?: File | string | null;
+    onChange: (id: string, file: File | null) => void;
+}
+
+interface SelectFieldProps {
+    id: string;
+    label: string;
+    value: string | boolean | File | null;
+    options?: { value: string; label: string }[];
+    onChange: (id: string, value: string) => void;
+}
+
+interface TextFieldProps {
+    id: string;
+    label: string;
+    value: string | boolean | File | null;
+    placeholder?: string;
+    type?: string;
+    onChange: (id: string, value: string) => void;
+}
+
+// Revisiones
 
 export interface RevisionSemanalData {
     id: number;
@@ -313,16 +138,230 @@ export interface RevisionSemanalData {
     updated_at: string;
 }
 
+export interface RevisionSemanalProps {
+    vehiculo: VehiculoData;
+    revisionSemanal?: RevisionSemanalData | null;
+    inicio: string;
+    final: string;
+}
+
+export interface RevisionFluido {
+    id: number;
+    tipo: string;
+    nivel_fluido: string | number;
+    imagen: string | null;
+    revisado: boolean;
+    fecha_creacion: string;
+}
+
+export interface RevisionFluidosProps {
+    vehiculoId: number | string;
+    vehiculo: any;
+}
+
+// Notificaciones
+
+export interface Notificacion {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    tipo: string;
+    leida: boolean;
+    created_at: string;
+    vehiculo_id?: number;
+    usuario_id?: number;
+}
+
+export type PropsNoti = {
+    notificacion: Notificacion;
+    modo: 'admin' | 'user';
+    onMarcarLeida?: (noti: Notificacion) => void;
+};
+
+export type PropsGrupoNoti = {
+    tipo: string;
+    notificaciones: Notificacion[];
+    modo: 'admin' | 'user';
+    onMarcarLeida: (noti: Notificacion) => void;
+};
+
+// Usuarios
+
+export interface UsuarioAsignado {
+    id: string | number;
+    name: string;
+}
+
+export interface UsuarioBasico {
+    id: number;
+    name: string;
+    email: string;
+    zona?: string;
+    foto_cedula?: string;
+    vencimiento_cedula?: string;
+    foto_licencia?: string;
+    vencimiento_licencia?: string;
+    foto_certificado_medico?: string;
+    vencimiento_certificado_medico?: string;
+    foto_seguro_civil?: string;
+    vencimiento_seguro_civil?: string;
+    foto_carnet_circulacion?: string;
+    vencimiento_carnet_circulacion?: string;
+    foto_solvencia?: string;
+    vencimiento_solvencia?: string;
+}
+
+export interface UserInterface {
+    id: number;
+    name: string;
+    email: string;
+    avatar?: string;
+    email_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
+    is_admin?: boolean;
+}
+
+// Vehículos
+
+export type VehiculoBase = {
+    placa: string;
+    modelo: string;
+};
+
+export type VehiculoConductor = VehiculoBase & {
+    conductor: string;
+};
+
+export type VehiculoCompleto = VehiculoConductor & {
+    tipo: 'CARRO' | 'MOTO';
+    usuario?: UsuarioAsignado | null;
+    imagen_url?: string;
+    observaciones_no_resueltas?: number;
+};
+
 export interface VehiculoData {
     placa: string;
     modelo: string;
     usuario?: { name: string } | null;
 }
 
+// Facturas
 
-export interface RevisionSemanalProps {
+export type Factura = {
+    fact_num: string;
+    fec_emis: string;
+    co_cli: string;
+    tot_bruto: number;
+    tot_neto: number;
+    descripcion: string;
+    descripcion_limpia?: string;
+    revisado: boolean;
+};
+export type DetalleFactura = {
+    id: number;
+    servicio: { nombreServicio: string };
+    cantidad: number;
+    precioUnit: string;
+    subtotal: string;
+    imagen?: string | null;
+};
+
+export type AuditoriaProps = {
+    vehiculo: VehiculoConductor;
+    facturas: Factura[];
+    isAdmin?: boolean;
+};
+
+export type TablaFacturasProps = {
+    facturas: Factura[];
+    vehiculo: VehiculoConductor;
+    isAdmin: boolean;
+};
+
+export type FilaFacturaProps = {
+    factura: Factura;
+    vehiculo: VehiculoConductor;
+    index: number;
+    isAdmin?: boolean;
+};
+
+export type ModalDetalleFacturaProps = {
+    factura: FacturaModalData;
+    renglones: Renglon[];
+    auditados: boolean;
+    vehiculo: {
+        placa: string;
+        conductor: string;
+    };
+    visible: boolean;
+    onClose: () => void;
+    isAdmin?: boolean;
+};
+
+export type FacturaModalData = {
+    observaciones_res: string;
+    observacion_res: string;
+    descripcion: string;
+    fact_num: string;
+    fec_emis: string;
+    co_cli: string;
+    tot_bruto: number;
+    tot_neto: number;
+    descripcion_limpia?: string;
+    revisado: boolean;
+};
+
+export type Renglon = {
+    imagen_url: any;
+    fact_num: string;
+    total_art: number;
+    reng_neto: number;
+    co_art: string;
+    repuesto?: {
+        art_des?: string;
+    };
+};
+
+export type FacturaShowProps = {
+    factura: FacturaModalData;
+    vehiculo: {
+        placa: string;
+        conductor: string;
+    };
+    renglones: Renglon[];
+    auditados: boolean;
+};
+
+// Observaciones
+
+export interface Observacion {
+    user: any;
+    tipo: any;
+    admin: any;
+    fecha_creacion: any;
+    id: number;
+    observacion: string;
+    resuelto: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ObsProps {
+    observacion: Observacion;
+    isAdmin?: boolean;
+    onResolver?: (id: number) => void;
+}
+
+export interface PagePropsObs {
     vehiculo: VehiculoData;
-    revisionSemanal?: RevisionSemanalData | null;
-    inicio: string;
-    final: string;
+    observaciones: Observacion[];
+    isAdmin?: boolean;
+    [key: string]: any;
+}
+
+export interface ObservacionCardProps {
+    observacion: Observacion;
+    isAdmin?: boolean;
+    onResolver: (id: number) => void;
 }

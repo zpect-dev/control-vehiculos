@@ -28,6 +28,19 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
     });
     const [isEditing, setIsEditing] = useState(false);
     const [hasFechasInvalidas, setHasFechasInvalidas] = useState(false);
+    const [hasCamposIncompletos, setHasCamposIncompletos] = useState(false);
+    useEffect(() => {
+        const incompletos = fields.some((field) => {
+            const value = formValues[field.id];
+
+            if (field.type === 'checkbox') return false; // opcional
+            if (field.type === 'file') return !(value instanceof File || typeof value === 'string');
+            if (field.type === 'select') return typeof value !== 'string' || value.trim() === '';
+            return typeof value === 'string' ? value.trim() === '' : value == null;
+        });
+
+        setHasCamposIncompletos(incompletos);
+    }, [formValues, fields]);
 
     useEffect(() => {
         const isValid = initialData && typeof initialData === 'object' && !Array.isArray(initialData);
@@ -51,5 +64,5 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
         setFormValues((prev) => ({ ...prev, [id]: value }));
     };
 
-    return { formValues, isEditing, hasFechasInvalidas, handleChange };
+    return { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange };
 }

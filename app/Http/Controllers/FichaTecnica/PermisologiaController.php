@@ -20,13 +20,13 @@ class PermisologiaController extends Controller
 
             $mapaPermisos = [
                 'titulo' => 1,
-                'seguro' => 2,
-                'roct' => 3,
-                'permisoRotReg' => 4,
-                'permisoRotNac' => 5,
-                'salvoconducto' => 6,
-                'permisoAliMed' => 7,
-                'trimestres' => 8,
+                'seguro' => 3,
+                'roct' => 4,
+                'permisoRotReg' => 5,
+                'permisoRotNac' => 6,
+                'salvoconducto' => 7,
+                'permisoAliMed' => 8,
+                'trimestres' => 9,
             ];
 
             $multimedia = new Multimedia;

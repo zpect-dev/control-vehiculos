@@ -3,7 +3,7 @@
 import FichaSeccionFluidos from '@/components/FichaSeccionFluidos';
 import { fluidosPorRevisarFields } from '@/constants/formFields';
 import AppLayout from '@/layouts/app-layout';
-import { FlashProps, RevisionFluido, RevisionFluidosProps } from '@/types';
+import { RevisionFluido, RevisionFluidosProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -12,7 +12,6 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
     const diasSemanaTexto = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
     const { modo, revisionDiaria, vehiculo } = usePage<{
-        flash: FlashProps;
         modo: string;
         revisionDiaria?: Record<string, RevisionFluido[]>;
         vehiculo: { tipo: 'CARRO' | 'MOTO'; modelo: string };
@@ -117,8 +116,8 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
                 <div className="mb-10 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                         {esAdmin
-                            ? `Revisión Semanal de Fluidos - ${vehiculo?.modelo}`
-                            : `Revisión de Fluidos - ${vehiculo?.modelo} - ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
+                            ? `Revisión Semanal de Fluidos ${vehiculo?.modelo}`
+                            : `Revisión de Fluidos ${vehiculo?.modelo} ${diasSemanaTexto[diasSemana.indexOf(diaActual)]}`}
                     </h1>
                 </div>
 

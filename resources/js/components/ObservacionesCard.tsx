@@ -1,11 +1,11 @@
-import { Props } from '@/types';
+import { ObsProps } from '@/types';
 
-export default function ObservacionCard({ observacion, isAdmin = false, onResolver }: Props) {
+export default function ObservacionCard({ observacion, isAdmin = false, onResolver }: ObsProps) {
     const estadoColor = observacion.resuelto ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
 
     const fechaCreacion = observacion.fecha_creacion ? new Date(observacion.fecha_creacion).toLocaleDateString() : 'Sin fecha';
 
-    const fechaResolucion = observacion.fecha_resolucion ? new Date(observacion.fecha_resolucion).toLocaleDateString() : null;
+    const fechaResolucion = observacion.fecha_creacion ? new Date(observacion.fecha_creacion).toLocaleDateString() : null;
 
     return (
         <div className="rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-800">

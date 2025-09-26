@@ -1,7 +1,7 @@
-import { Vehiculo } from '@/types';
+import { VehiculoCompleto } from '@/types';
 import { router } from '@inertiajs/react';
 
-export default function VehiculoCard({ vehiculo }: { vehiculo: Vehiculo }) {
+export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto }) {
     const { observaciones_no_resueltas = 0 } = vehiculo;
 
     return (

@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 
 export default function Asignaciones() {
     const { vehiculo, historial } = usePage<PageProps>().props;

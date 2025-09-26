@@ -174,13 +174,13 @@ class FichaTecnicaController extends Controller
     {
         return [
             1 => ['campo' => 'titulo', 'tipo' => 'date'],
-            2 => ['campo' => 'seguro', 'tipo' => 'date'],
-            3 => ['campo' => 'roct', 'tipo' => 'date'],
-            4 => ['campo' => 'permisoRotReg', 'tipo' => 'date'],
-            5 => ['campo' => 'permisoRotNac', 'tipo' => 'date'],
-            6 => ['campo' => 'salvoconducto', 'tipo' => 'date'],
-            7 => ['campo' => 'permisoAliMed', 'tipo' => 'date'],
-            8 => ['campo' => 'trimestres', 'tipo' => 'date'],
+            3 => ['campo' => 'seguro', 'tipo' => 'date'],
+            4 => ['campo' => 'roct', 'tipo' => 'date'],
+            5 => ['campo' => 'permisoRotReg', 'tipo' => 'date'],
+            6 => ['campo' => 'permisoRotNac', 'tipo' => 'date'],
+            7 => ['campo' => 'salvoconducto', 'tipo' => 'date'],
+            8 => ['campo' => 'permisoAliMed', 'tipo' => 'date'],
+            9 => ['campo' => 'trimestres', 'tipo' => 'date'],
         ];
     }
 }

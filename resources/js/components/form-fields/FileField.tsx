@@ -1,11 +1,5 @@
+import { FileFieldProps } from '@/types';
 import { useEffect, useState } from 'react';
-
-interface FileFieldProps {
-    id: string;
-    label: string;
-    value?: File | string | null;
-    onChange: (id: string, file: File | null) => void;
-}
 
 export function FileField({ id, label, value, onChange }: FileFieldProps) {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);

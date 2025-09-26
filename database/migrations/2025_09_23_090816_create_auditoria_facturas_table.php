@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('auditoria_facturas', function (Blueprint $table) {
             $table->id();
-            $table->string('fact_num');
+            $table->string('fact_num')->unique();
             $table->string('vehiculo_id');
             $table->foreignId('user_id')->constrained();
             $table->unsignedBigInteger('admin_id')->nullable();

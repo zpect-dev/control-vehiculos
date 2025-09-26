@@ -2,7 +2,6 @@ import NotificacionCard from '@/components/NotificacionCard';
 import type { PropsGrupoNoti } from '@/types';
 import clsx from 'clsx';
 
-
 export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarcarLeida }: PropsGrupoNoti) {
     return (
         <div className="mb-10">

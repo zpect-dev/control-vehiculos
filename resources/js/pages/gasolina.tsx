@@ -15,17 +15,15 @@ export default function Gasolina() {
             <ModalRegistroSurtido isOpen={modalOpen} onClose={() => setModalOpen(false)} />
 
             <div className="min-h-screen bg-gray-100 px-4 py-10 dark:bg-gray-900">
-<div className="mb-6 flex flex-col items-center justify-center text-center">
-    <h1 className="mb-4 text-3xl font-bold text-gray-800 dark:text-gray-100">
-        Surtido Detallado de Gasolina
-    </h1>
-    <button
-        onClick={() => setModalOpen(true)}
-        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
-    >
-        Nuevo surtido
-    </button>
-</div>
+                <div className="mb-6 flex flex-col items-center justify-center text-center">
+                    <h1 className="mb-4 text-3xl font-bold text-gray-800 dark:text-gray-100">Surtido Detallado de Gasolina</h1>
+                    <button
+                        onClick={() => setModalOpen(true)}
+                        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
+                    >
+                        Nuevo surtido
+                    </button>
+                </div>
 
                 {/* Filtros */}
                 <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

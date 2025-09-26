@@ -55,7 +55,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
     };
 
     return (
-        <div className="rounded-lg border bg-white p-6 shadow-md dark:bg-gray-800">
+        <div className="rounded-lg border bg-gray-100 p-6 shadow-md dark:bg-gray-800">
             <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal</h3>
 
             {/* Estado visual */}

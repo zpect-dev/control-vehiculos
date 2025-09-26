@@ -7,7 +7,7 @@ import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
-    const { formValues, isEditing, hasFechasInvalidas, handleChange } = useFormLogic(expediente, fields);
+    const { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange } = useFormLogic(expediente, fields);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -100,9 +100,9 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                 <div className="flex justify-end">
                     <button
                         type="submit"
-                        disabled={hasFechasInvalidas}
+                        disabled={hasFechasInvalidas || hasCamposIncompletos}
                         className={`w-full rounded-full px-6 py-3 text-base font-semibold shadow-md transition-transform duration-200 md:w-auto ${
-                            hasFechasInvalidas
+                            hasFechasInvalidas || hasCamposIncompletos
                                 ? 'cursor-not-allowed bg-gray-400 text-white'
                                 : 'bg-[#49af4e] text-white hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none'
                         }`}

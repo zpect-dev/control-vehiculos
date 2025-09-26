@@ -1,11 +1,4 @@
-interface TextFieldProps {
-    id: string;
-    label: string;
-    value: string | boolean | File | null;
-    placeholder?: string;
-    type?: string;
-    onChange: (id: string, value: string) => void;
-}
+import { TextFieldProps } from '@/types';
 
 export function TextField({ id, label, value, placeholder, type = 'text', onChange }: TextFieldProps) {
     const safeValue = typeof value === 'string' ? value : '';

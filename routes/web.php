@@ -37,7 +37,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 //Rutas Factura
 Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class, 'index'])->name('facturas.index');
 Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
-Route::post('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'store'])->name('facturas.store');
+Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store');
+
 
 Route::get('perfil/{user}', [UsersController::class, 'show'])->name('perfil.show');
 Route::patch('perfil/{user}', [UsersController::class, 'update'])->name('perfil.update');
@@ -51,7 +52,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::post('fichaTecnica/{vehiculo:placa}/permisologia', [PermisologiaController::class, 'store'])->name('permisos.store');
     Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
     Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
-    
+
     // Revisión de Fluidos
     Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
     Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
@@ -68,10 +69,8 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
 
-    // Rutas gasolina
-    Route::get('fichaTecnica/{vehiculo:placa}/gasolian/{surtido}', [SurtidosController::class, 'show'])->name('surtidos.show');
-    Route::post('fichaTecnica/{vehiculo:placa}/gasolian/save', [SurtidosController::class, 'store'])->name('surtidos.store');
-    Route::patch('fichaTecnica/{vehiculo:placa}/gasolian/{surtido}/edit', [SurtidosController::class, 'update'])->name('surtidos.update');
+    // Ruta para la Gasolina
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/{gasolina}', [SurtidosController::class, 'show'])->name('gasolina.show');
 });
 Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas gasolina
@@ -95,7 +94,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Editar Observacion
     Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
-    
 });
 
 // Configuración y autenticación

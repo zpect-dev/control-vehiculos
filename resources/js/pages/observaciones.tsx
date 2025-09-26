@@ -1,6 +1,6 @@
 import ObservacionCard from '@/components/ObservacionesCard';
 import AppLayout from '@/layouts/app-layout';
-import { PagePropsObs } from '@/types';
+import { Observacion, PagePropsObs } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 
@@ -15,13 +15,12 @@ export default function Observaciones() {
         e.preventDefault();
         post(`/observaciones/${vehiculo.placa}/save`, {
             preserveScroll: true,
-            preserveState:false,
+            preserveState: false,
             onSuccess: () => reset(),
         });
     };
 
     const resolverObservacion = (id: number) => {
-
         router.patch(
             `/observaciones/${vehiculo.placa}/${id}/edit`,
             {
@@ -64,7 +63,7 @@ export default function Observaciones() {
                                     id="observacion"
                                     value={data.observacion}
                                     onChange={(e) => setData('observacion', e.target.value)}
-                                    className={`w-full rounded  px-3 py-2 bg-white dark:bg-gray-800 dark:text-gray-300 shadow focus:outline-none ${
+                                    className={`w-full rounded bg-white px-3 py-2 shadow focus:outline-none dark:bg-gray-800 dark:text-gray-300 ${
                                         errors.observacion ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                     rows={3}
@@ -91,7 +90,7 @@ export default function Observaciones() {
 
                         {observaciones.length > 0 ? (
                             <div className="space-y-4">
-                                {observaciones.map((obs) => (
+                                {observaciones.map((obs: Observacion) => (
                                     <ObservacionCard key={obs.id} observacion={obs} isAdmin={isAdmin} onResolver={resolverObservacion} />
                                 ))}
                             </div>

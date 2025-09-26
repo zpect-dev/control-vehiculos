@@ -19,8 +19,13 @@ class FacturaAuditoria extends Model
         'cubre',
     ];
 
-        public function renglones()
+    public function renglones()
     {
         return $this->hasMany(RenglonAuditoria::class, 'fact_num', 'fact_num');
+    }
+
+    public function supervisor()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

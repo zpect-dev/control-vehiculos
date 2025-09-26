@@ -9,7 +9,7 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal = null, inic
             <Head title={`Revisión Semanal - ${vehiculo.modelo}`} />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
                 <div className="mb-5 text-center">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Revisión Semanal - {vehiculo.modelo}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Revisión Semanal {vehiculo.modelo}</h1>
                 </div>
 
                 <div className="mx-auto mb-10 max-w-5xl">
@@ -24,7 +24,7 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal = null, inic
 
                     <div className="pb-4">
                         {/* Card de Detalles del Vehículo */}
-                        <div className="rounded-lg border bg-white p-4 shadow-md dark:bg-gray-700">
+                        <div className="rounded-lg border bg-gray-100 p-4 shadow-md dark:bg-gray-700">
                             <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Detalles del Vehículo</h3>
                             <div className="space-y-2 text-gray-700 dark:text-gray-300">
                                 <p>
