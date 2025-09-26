@@ -1,103 +1,62 @@
-import ModalRegistroSurtido from '@/components/modal/ModalRegistrarSurtido';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-import { Search } from 'lucide-react';
-import { useState } from 'react';
+import { Head, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 
-export default function Gasolina() {
-    const [modalOpen, setModalOpen] = useState(false);
+export default function Asignaciones() {
+    const { vehiculo, historial } = usePage<PageProps>().props;
 
     return (
         <AppLayout>
-            <Head title="Historial de Gasolina" />
-
-            {/* Modal visual */}
-            <ModalRegistroSurtido isOpen={modalOpen} onClose={() => setModalOpen(false)} />
-
+            <Head title={`Historial de Asignaciones - ${vehiculo.placa}`} />
             <div className="min-h-screen bg-gray-100 px-4 py-10 dark:bg-gray-900">
-                <div className="mb-6 flex flex-col items-center justify-center text-center">
-                    <h1 className="mb-4 text-3xl font-bold text-gray-800 dark:text-gray-100">Surtido Detallado de Gasolina</h1>
-                    <button
-                        onClick={() => setModalOpen(true)}
-                        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
-                    >
-                        Nuevo surtido
-                    </button>
-                </div>
+                <h1 className="mb-6 text-center text-3xl font-bold text-gray-800 dark:text-gray-100">Historial de Asignaciones</h1>
 
-                {/* Filtros */}
-                <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Filtrar por placa</label>
-                        <input type="text" placeholder="Ej: ABC123" className="rounded-md border px-3 py-2 text-sm" />
-                    </div>
+                <div className="mx-auto max-w-6xl space-y-6">
+                    {historial.length > 0 ? (
+                        historial.map((registro) => (
+                            <div
+                                key={registro.id}
+                                className="flex flex-row justify-between gap-6 rounded-lg border bg-white p-6 shadow-sm dark:bg-gray-800"
+                            >
+                                <div className="flex-1">
+                                    <div className="mb-2 text-sm text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold">Vehículo:</span> {registro.vehiculo?.placa}
+                                    </div>
 
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Fecha desde</label>
-                        <input type="date" className="rounded-md border px-3 py-2 text-sm" />
-                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold">Asignado a:</span> {registro.user?.name}
+                                    </div>
 
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Fecha hasta</label>
-                        <input type="date" className="rounded-md border px-3 py-2 text-sm" />
-                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold">Asignado por:</span> {registro.admin?.name}
+                                    </div>
 
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Sede</label>
-                        <select className="rounded-md border px-3 py-2 text-sm">
-                            <option value="">Todas las sedes</option>
-                            <option value="San Cristóbal">San Cristóbal</option>
-                            <option value="Rubio">Rubio</option>
-                            <option value="La Fría">La Fría</option>
-                        </select>
-                    </div>
-                </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                                        <span className="font-semibold">Kilometraje:</span> {registro.kilometraje} km
+                                    </div>
 
-                <button className="mb-6 rounded bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]">Aplicar filtros</button>
+                                    {registro.fecha_asignacion && (
+                                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                                            <span className="font-semibold">Fecha:</span> {new Date(registro.fecha_asignacion).toLocaleDateString()}
+                                        </div>
+                                    )}
+                                </div>
 
-                {/* Tabla */}
-                <div className="overflow-x-auto rounded-lg shadow">
-                    <table className="min-w-full table-auto border-collapse bg-white dark:bg-gray-800">
-                        <thead className="bg-gray-200 dark:bg-gray-700">
-                            <tr className="text-left text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                <th className="px-4 py-2">N°</th>
-                                <th className="px-4 py-2">Fecha</th>
-                                <th className="px-4 py-2">Vehículo</th>
-                                <th className="px-4 py-2">Sede</th>
-                                <th className="px-4 py-2">Precio</th>
-                                <th className="px-4 py-2">Km Inicial</th>
-                                <th className="px-4 py-2">Km Final</th>
-                                <th className="px-4 py-2">Recorrido Km</th>
-                                <th className="px-4 py-2">Litros</th>
-                                <th className="px-4 py-2">Total $</th>
-                                <th className="px-4 py-2">Observaciones</th>
-                                <th className="px-4 py-2">Detallado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[...Array(5)].map((_, index) => (
-                                <tr key={index} className="border-b text-sm text-gray-600 dark:text-gray-300">
-                                    <td className="px-4 py-2">{index + 1}</td>
-                                    <td className="px-4 py-2">2025-09-22</td>
-                                    <td className="px-4 py-2">Toyota Corolla</td>
-                                    <td className="px-4 py-2">San Cristóbal</td>
-                                    <td className="px-4 py-2">$0.50</td>
-                                    <td className="px-4 py-2">12000</td>
-                                    <td className="px-4 py-2">12250</td>
-                                    <td className="px-4 py-2">250</td>
-                                    <td className="px-4 py-2">20</td>
-                                    <td className="px-4 py-2">$10.00</td>
-                                    <td className="px-4 py-2">Sin observaciones</td>
-                                    <td className="px-4 py-2">
-                                        <button className="flex items-center gap-1 rounded bg-[#49af4e] p-2 text-xs font-semibold text-white hover:bg-[#47a84c]">
-                                            <Search className="h-4 w-4" />
-                                            Ver detalle
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                {registro.foto_kilometraje && (
+                                    <div className="w-48 flex-shrink-0">
+                                        {' '}
+                                        <img
+                                            src={`/storage/${registro.foto_kilometraje}`}
+                                            alt="Foto de kilometraje"
+                                            className="w-full rounded-md object-cover shadow-md"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center text-gray-500 dark:text-gray-400">No hay asignaciones registradas para este vehículo.</div>
+                    )}
                 </div>
             </div>
         </AppLayout>
