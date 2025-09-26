@@ -1,7 +1,7 @@
 import { RevisionSemanalData, VehiculoData } from '@/types';
 import { router } from '@inertiajs/react';
-import { useState } from 'react';
 import { CircleCheck } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
     vehiculo: VehiculoData;
@@ -56,9 +56,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
 
     return (
         <div className="rounded-lg border bg-white p-6 shadow-md dark:bg-gray-800">
-            <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
-                Revisión Semanal
-            </h3>
+            <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal</h3>
 
             {/* Estado visual */}
             {ambosCompletados && (
@@ -73,11 +71,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
                 <h4 className="text-md mb-2 font-semibold text-gray-800 dark:text-white">Video de los Lunes</h4>
                 {revisionSemanal?.video_inicial ? (
                     <>
-                        <video
-                            controls
-                            src={`/storage/uploads/videos-semanales/${revisionSemanal.video_inicial}`}
-                            className="mb-2 w-full rounded-md"
-                        />
+                        <video controls src={revisionSemanal.video_inicial} className="mb-2 w-full rounded-md" />
                         <p className="text-sm text-gray-600 dark:text-gray-400">Kilometraje: {revisionSemanal.kilometraje_inicial}</p>
                     </>
                 ) : puedeSubirInicial ? (
@@ -97,7 +91,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
                 <h4 className="text-md mb-2 font-semibold text-gray-800 dark:text-white">Video de los Fines de Semana</h4>
                 {revisionSemanal?.video_final ? (
                     <>
-                        <video controls src={`/storage/uploads/videos-semanales/${revisionSemanal.video_final}`} className="mb-2 w-full rounded-md" />
+                        <video controls src={revisionSemanal.video_final} className="mb-2 w-full rounded-md" />
                         <p className="text-sm text-gray-600 dark:text-gray-400">Kilometraje: {revisionSemanal.kilometraje_final}</p>
                     </>
                 ) : puedeSubirFinal ? (

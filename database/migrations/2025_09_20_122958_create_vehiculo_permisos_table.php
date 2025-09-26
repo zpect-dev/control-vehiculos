@@ -17,11 +17,10 @@ return new class extends Migration
             $table->string('vehiculo_id');
             $table->foreignId('permiso_id')->constrained('permisos')->onDelete('cascade');
             $table->boolean('estado')->default(true);
-            $table->string('observaciones')->nullable();
+            $table->string('documento')->nullable();
             $table->date('fecha_expedicion')->nullable();
             $table->date('fecha_vencimiento')->nullable();
             $table->string('valor_texto')->nullable();
-            $table->dateTime('fecha_verificacion')->useCurrent();
 
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onDelete('cascade');
         });
