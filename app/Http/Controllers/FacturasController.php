@@ -65,8 +65,9 @@ class FacturasController extends Controller
             });
 
         $facturaAuditada = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
-        $conductor = $facturaAuditada ? User::where('id', $facturaAuditada->user_id)->first()->name : Vehiculo::where('placa', $factura->co_cli)->with('usuario:id,name')->first()->name;
-
+        $vehiculo = Vehiculo::where('placa', $factura->co_cli)->first();
+        $conductor = User::find($facturaAuditada?->user_id ?? $vehiculo->user_id)?->name ?? 'Desconocido';
+        
         $renglones = $auditados->isNotEmpty()
             ? $auditados
             : RenglonFactura::with('repuesto')
@@ -97,8 +98,8 @@ class FacturasController extends Controller
                 'observaciones_res' => $facturaAuditada->observaciones_res ?? null,
                 'observaciones_admin' => $facturaAuditada->observaciones_admin ?? null,
                 'aprobado' => $facturaAuditada->aprobado ?? false,
-                'cubre' => $factura->cubre ? 'Descontar' : 'Cubre',
-                'usuario_cubre' => User::where('id', $facturaAuditada->cubre_usuario)->first()->name ?? 'Empresa',
+                'cubre' => $facturaAuditada?->cubre ? 'Descontar' : 'Cubre',
+                'usuario_cubre' => User::find($facturaAuditada?->cubre_usuario)->name ?? 'Empresa',
             ],
             'renglones' => $renglones,
             'auditados' => $auditados->isNotEmpty(),
