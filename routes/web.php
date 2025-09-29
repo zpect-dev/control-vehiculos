@@ -32,6 +32,10 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard principal (muestra las cards de vehículos)
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Rutas perfil
+    Route::get('perfil/{user}', [UsersController::class, 'show'])->name('perfil.show');
+    Route::patch('perfil/{user}', [UsersController::class, 'update'])->name('perfil.update');
 });
 
 //Rutas Factura
@@ -39,9 +43,8 @@ Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class,
 Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
 Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store');
 
+Route::get('gasolina', [SurtidosController::class, 'test']);
 
-Route::get('perfil/{user}', [UsersController::class, 'show'])->name('perfil.show');
-Route::patch('perfil/{user}', [UsersController::class, 'update'])->name('perfil.update');
 
 Route::middleware(['auth', 'acceso'])->group(function () {
     // Ficha Técnica
@@ -70,11 +73,11 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
 
     // Ruta para la Gasolina
-    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/{gasolina}', [SurtidosController::class, 'show'])->name('gasolina.show');
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'index'])->name('gasolina.index');
 });
 Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas gasolina
-    Route::get('gasolina', [SurtidosController::class, 'index'])->name('surtidos.index');
+    Route::post('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'store'])->name('surtidos.store');
 
     // Visualizar perfil
     Route::get('perfiles', [UsersController::class, 'index'])->name('perfil.index');

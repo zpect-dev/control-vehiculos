@@ -1,29 +1,44 @@
 <?php
 
 namespace App\Services;
-use Carbon\Carbon;
 
-use Illuminate\Support\Str;
+use App\Helpers\ProfitLogger;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
-
 
 class Gasolina 
 {   
     protected $TASA_GASOLINA = 0.5;
-    // public function surtidoIdeal($anterior, $actual){
-    //     return ($anterior - $actual) * 0.15;
-    // }
+    
+    public function registrarFacturaConRenglon($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $cant_litros){
+        DB::connection('sqlsrv')->beginTransaction();
+        try {
+            $fact_num = DB::connection('sqlsrv')->select("
+                SELECT ISNULL(MAX(fact_num), 0) + 1 AS nuevo
+                FROM factura WITH (UPDLOCK, HOLDLOCK)
+                WHERE fact_num <> 9446
+            ")[0]->nuevo;
 
-    // $columnas = DB::connection('sqlsrv')->select("
-    //     SELECT COLUMN_NAME, COLUMN_DEFAULT
-    //     FROM INFORMATION_SCHEMA.COLUMNS
-    //     WHERE TABLE_NAME = 'factura'
-    // ");
+            $num_doc = DB::connection('sqlsrv')->select("
+                SELECT ISNULL(MAX(num_doc), 0) + 1 AS nuevo
+                FROM reng_fac WITH (UPDLOCK, HOLDLOCK)
+            ")[0]->nuevo;
 
-    //co_art = 00000006                      
-    //co_trans = 000002   
-    //forma_pag = 000001                   
+            $datosFactura = $this->construir_factura($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $fact_num);
+            $datosRenglon = $this->construir_renglon($fact_num, $cant_litros, $num_doc);
+
+            DB::connection('sqlsrv')->table('factura')->insert($datosFactura);
+            DB::connection('sqlsrv')->table('reng_fac')->insert($datosRenglon);
+            DB::connection('sqlsrv')->table('pistas')->insert(ProfitLogger::pista('FACTURA', $fact_num, 'I', 'VEHIC24'));
+            DB::connection('sqlsrv')->commit();
+
+            return $datosFactura['fact_num'];
+        } catch (\Exception $e) {
+            DB::connection('sqlsrv')->rollBack();
+            throw $e;
+        }
+    }
 
     public function co_ven($cedula){
         $co_ven = DB::connection('sqlsrv')->select("
@@ -33,25 +48,7 @@ class Gasolina
         return $co_ven[0]->co_ven;
     }
 
-    public function fact_num(){
-        $nuevo_num = DB::connection('sqlsrv')
-            ->table('factura')
-            ->where('fact_num', '<>', 9446)
-            ->max('fact_num');
-
-        return $nuevo_num + 1;
-    }
-
-    public function num_doc(){
-        $nuevo_num = DB::connection('sqlsrv')
-            ->table('reng_fac')
-            ->max('num_doc');
-
-        return $nuevo_num + 1;
-    }
-
-    public function insertar_factura($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $cant_litros){
-        $fact_num = $this->fact_num();
+    public function construir_factura($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $fact_num){
         $factura = [
             "fact_num" => $fact_num,
             "contrib" => 1,
@@ -103,7 +100,7 @@ class Gasolina
             "campo6" => "",
             "campo7" => "",
             "campo8" => "",
-            "co_us_in" => "VEHI06",
+            "co_us_in" => "VEHI99",
             "fe_us_in" => Carbon::today()->format('d-m-Y H:i:s'),
             "co_us_mo" => "",
             "fe_us_mo" => Carbon::today()->format('d-m-Y H:i:s'),
@@ -134,35 +131,17 @@ class Gasolina
             "ptovta" => 0,
             "telefono" => "",
         ];
-
-        $renglon = $this->insertar_renglon($fact_num, $cant_litros);
-
-        $respuesta = $this->registrarFacturaConRenglon($factura, $renglon);
-
-        dd($respuesta);
+        return $factura;
     }
 
-    public function registrarFacturaConRenglon($datosFactura, $datosRenglon){
-        DB::connection('sqlsrv')->beginTransaction();
-        try {
-            DB::connection('sqlsrv')->table('factura')->insert($datosFactura);
-            DB::connection('sqlsrv')->table('reng_fac')->insert($datosRenglon);
-            DB::connection('sqlsrv')->commit();
-            return $datosFactura['fact_num'];
-        } catch (\Exception $e) {
-            DB::connection('sqlsrv')->rollBack();
-            throw $e;
-        }
-    }
-
-    public function insertar_renglon($fact_num, $cant_litros){
+    public function construir_renglon($fact_num, $cant_litros, $num_doc){
         $renglon = [
             "fact_num" => $fact_num,
             "reng_num" => 1,
             "dis_cen" => "",
             "tipo_doc" => "E",
             "reng_doc" => 1,
-            "num_doc" => $this->num_doc(),
+            "num_doc" => $num_doc,
             "co_art" => "AMP00417",
             "co_alma" => "01",
             "total_art" => $cant_litros,
