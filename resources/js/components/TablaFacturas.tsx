@@ -1,12 +1,23 @@
-import { FacturaModalData, FacturaShowProps, Renglon, TablaFacturasProps } from '@/types';
+import { Factura, FacturaModalData, FacturaShowProps, Renglon, TablaFacturasProps } from '@/types';
 
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { FilaFactura } from '../components/FilaFactura';
 import ModalDetalleFactura from './modal/ModalDetalleFactura';
 
-export function TablaFacturas({ facturas, vehiculo, isAdmin }: TablaFacturasProps) {
+export function TablaFacturas({ facturas: facturasIniciales, vehiculo, isAdmin }: TablaFacturasProps) {
+    const [facturas, setFacturas] = useState<Factura[]>(facturasIniciales);
+    const actualizarEstadoFactura = (facturaNum: string, aprobado: boolean) => {
+  setFacturas((prev) =>
+    prev.map((f) =>
+      f.fact_num === facturaNum ? { ...f, aprobado } : f
+    )
+  );
+};
+
+
     const [showModal, setShowModal] = useState(false);
+
     const [modalData, setModalData] = useState<{
         factura: FacturaModalData;
         vehiculo: { placa: string; conductor: string };
@@ -75,6 +86,7 @@ export function TablaFacturas({ facturas, vehiculo, isAdmin }: TablaFacturasProp
                     auditados={modalData.auditados}
                     isAdmin={isAdmin}
                     visible={showModal}
+                    onActualizarEstado={actualizarEstadoFactura}
                 />
             )}
         </div>

@@ -10,7 +10,9 @@ use Carbon\Carbon;
 use App\Models\RevisionesSemanales;
 use App\Models\RevisionesDiarias;
 use App\Helpers\NotificacionHelper;
+use App\Models\Factura;
 use App\Models\User;
+use App\Models\FacturaAuditoria;
 
 class DashboardController extends Controller
 {
@@ -27,7 +29,31 @@ class DashboardController extends Controller
                 }
             ])
             ->get()
-            : Vehiculo::with('usuario')->withCount('observaciones')->where('user_id', $user->id)->get();
+            : Vehiculo::with('usuario')
+            ->withCount('observaciones')
+            ->where('user_id', $user->id)
+            ->get();
+
+        foreach ($vehiculos as $vehiculo) {
+            $auditoriasPendientes = FacturaAuditoria::where('vehiculo_id', $vehiculo->placa)
+                ->where(function ($q) {
+                    $q->whereNull('aprobado')->orWhere('aprobado', false);
+                })
+                ->whereNull('observaciones_admin')
+                ->count();
+
+            $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
+
+            $facturas = Factura::where('co_cli', $vehiculo->placa)->get();
+            $auditoriasPendientes = 0;
+            foreach ($facturas as $factura) {
+                $auditado = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
+                if (!$auditado) {
+                    $auditoriasPendientes++;
+                }
+            }
+            $vehiculo->factura_pendiente = $auditoriasPendientes;
+        }
 
         $notificaciones = $modo === 'admin'
             ? Notificacion::where('usuario_id', $user->id)
@@ -105,5 +131,4 @@ class DashboardController extends Controller
             ],
         ]);
     }
-
 }

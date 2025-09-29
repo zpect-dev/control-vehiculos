@@ -1,16 +1,15 @@
 import { ObsProps } from '@/types';
 
 export default function ObservacionCard({ observacion, isAdmin = false, onResolver }: ObsProps) {
+
     const estadoColor = observacion.resuelto ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
-
     const fechaCreacion = observacion.fecha_creacion ? new Date(observacion.fecha_creacion).toLocaleDateString() : 'Sin fecha';
-
-    const fechaResolucion = observacion.fecha_creacion ? new Date(observacion.fecha_creacion).toLocaleDateString() : null;
+    const fechaResolucion = observacion.fecha_resolucion ? new Date(observacion.fecha_resolucion).toLocaleDateString() : null;
 
     return (
         <div className="rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-800">
             <div className="flex items-start justify-between">
-                <div className="line-clamp-2' max-h-48 overflow-y-auto">
+                <div className="line-clamp-2 max-h-48 overflow-y-auto">
                     <p className="break-words whitespace-pre-line text-gray-800 dark:text-gray-100">{observacion.observacion}</p>
                 </div>
             </div>

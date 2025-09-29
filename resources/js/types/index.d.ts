@@ -252,6 +252,8 @@ export type VehiculoCompleto = VehiculoConductor & {
     usuario?: UsuarioAsignado | null;
     imagen_url?: string;
     observaciones_no_resueltas?: number;
+    imagenes_factura_pendientes?: number;
+    factura_pendiente?: number;
 };
 
 export interface VehiculoData {
@@ -261,8 +263,8 @@ export interface VehiculoData {
 }
 
 // Facturas
-
 export type Factura = {
+    aprobado: any;
     fact_num: string;
     fec_emis: string;
     co_cli: string;
@@ -287,10 +289,29 @@ export type AuditoriaProps = {
     isAdmin?: boolean;
 };
 
+export interface AuditoriaAdminProps {
+    aprobado: boolean;
+    setAprobado: (value: boolean) => void;
+    observacionesAdmin: string;
+    setObservacionesAdmin: (value: string) => void;
+    onSubmit: () => void;
+    supervisor?: string;
+    cubre?: boolean;
+    cubreUsuario?: string;
+}
+
+export interface AuditoriaAdminState {
+    aprobado: boolean;
+    observacionesAdmin: string;
+    cubre: boolean;
+    cubreUsuario: string;
+}
+
 export type TablaFacturasProps = {
     facturas: Factura[];
     vehiculo: VehiculoConductor;
     isAdmin: boolean;
+    aprobado: boolean;
 };
 
 export type FilaFacturaProps = {
@@ -311,9 +332,18 @@ export type ModalDetalleFacturaProps = {
     visible: boolean;
     onClose: () => void;
     isAdmin?: boolean;
+    supervisor?: string;
+    cubre?: boolean;
+    cubre_usuario?: string;
+    onActualizarEstado?: (facturaNum: string, aprobado: boolean) => void;
 };
 
 export type FacturaModalData = {
+    cubre_usuario: any;
+    cubre: boolean;
+    supervisor: string;
+    observaciones_admin: string;
+    aprobado: boolean;
     observaciones_res: string;
     observacion_res: string;
     descripcion: string;
@@ -345,11 +375,13 @@ export type FacturaShowProps = {
     };
     renglones: Renglon[];
     auditados: boolean;
+    aprobado: boolean;
 };
 
 // Observaciones
 
 export interface Observacion {
+    fecha_resolucion: any;
     user: any;
     tipo: any;
     admin: any;

@@ -229,6 +229,30 @@ export default function NotificacionRealtime() {
             });
         });
 
+        // Imagen agregada a factura
+        channel.bind('imagen.factura.subida', (data: any) => {
+            if (!tieneUsuarioAsignado(data)) return;
+
+            toast.info(`Imágenes subidas a factura`, {
+                description: (
+                    <div
+                        className="flex cursor-pointer flex-col gap-1 text-left"
+                        onClick={() => router.visit(`/fichaTecnica/${data.placa}/facturas`)}
+                    >
+                        <span className="text-sm font-semibold text-shadow-teal-700">
+                            <strong>{data.userName}</strong> subió {data.cantidad} imagen{data.cantidad > 1 ? 'es' : ''} en la factura{' '}
+                            <strong>#{data.factNum}</strong> del vehículo <strong>{data.placa}</strong>
+                        </span>
+                        <span className="text-xs text-gray-700">
+                            Estado: <strong>{data.estado ?? 'Pendiente de revisión'}</strong>
+                        </span>
+                        <span className="text-xs text-gray-500 italic">Haz clic para ver la auditoría visual.</span>
+                    </div>
+                ),
+                duration: 15000,
+            });
+        });
+
         return () => {
             channel.unbind_all();
             channel.unsubscribe();

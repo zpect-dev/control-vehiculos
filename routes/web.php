@@ -42,6 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class, 'index'])->name('facturas.index');
 Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
 Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store');
+Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update');
+
 
 Route::get('gasolina', [SurtidosController::class, 'test']);
 

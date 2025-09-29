@@ -14,6 +14,7 @@ export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarc
                     'text-[#49af4e]': tipo === 'reasignacion',
                     'text-purple-600': tipo === 'observacion',
                     'text-pink-600': tipo === 'documentoUsuario',
+                    'text-teal-700': tipo === 'auditoria',
                 })}
             >
                 {tipo}

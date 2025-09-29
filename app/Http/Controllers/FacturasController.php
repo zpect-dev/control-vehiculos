@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificacionHelper;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 use App\Models\Factura;
 use App\Models\Vehiculo;
 use App\Services\Multimedia;
@@ -30,7 +32,6 @@ class FacturasController extends Controller
                     'co_cli' => trim($factura->co_cli),
                     'tot_bruto' => $factura->tot_bruto,
                     'tot_neto' => $factura->tot_neto,
-                    'revisado' => trim($factura->revisado),
                     'descripcion' => $factura->descripcion_limpia,
                 ];
             });
@@ -48,9 +49,14 @@ class FacturasController extends Controller
 
     public function show(Request $request, Factura $factura)
     {
-        $auditados = RenglonAuditoria::where('fact_num', $factura->fact_num)
-            ->get()
-            ->map(function ($r) {
+        $vehiculo = Vehiculo::with('usuario:id,name')->where('placa', $factura->co_cli)->first();
+        $facturaAuditada = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
+
+        $renglones = RenglonAuditoria::where('fact_num', $factura->fact_num)->get();
+        $auditados = $renglones->isNotEmpty();
+
+        $renglones = $auditados
+            ? $renglones->map(function ($r) {
                 return [
                     'fact_num' => $r->fact_num,
                     'total_art' => $r->total_art,
@@ -62,14 +68,7 @@ class FacturasController extends Controller
                         'art_des' => isset($r->repuesto) ? mb_convert_encoding($r->repuesto->art_des, 'UTF-8', 'auto') : null,
                     ],
                 ];
-            });
-
-        $facturaAuditada = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
-        $vehiculo = Vehiculo::where('placa', $factura->co_cli)->first();
-        $conductor = User::find($facturaAuditada?->user_id ?? $vehiculo->user_id)?->name ?? 'Desconocido';
-        
-        $renglones = $auditados->isNotEmpty()
-            ? $auditados
+            })
             : RenglonFactura::with('repuesto')
             ->select('fact_num', 'reng_num', 'co_art', 'total_art', 'reng_neto')
             ->where('fact_num', $factura->fact_num)
@@ -86,6 +85,12 @@ class FacturasController extends Controller
                 ];
             });
 
+        $supervisor = User::find($facturaAuditada?->admin_id)?->name ?? '—';
+        $conductor = User::find($facturaAuditada?->user_id)?->name ?? '—';
+        $usuarioQuePaga = $facturaAuditada?->cubre
+            ? User::find($facturaAuditada?->cubre_usuario)?->name ?? '—'
+            : 'Empresa';
+
         return Inertia::render('facturas', [
             'factura' => [
                 'fact_num' => $factura->fact_num,
@@ -93,16 +98,16 @@ class FacturasController extends Controller
                 'co_cli' => trim($factura->co_cli),
                 'tot_bruto' => $factura->tot_bruto,
                 'tot_neto' => $factura->tot_neto,
-                'revisado' => trim($factura->revisado),
                 'descripcion' => $factura->descripcion_limpia,
                 'observaciones_res' => $facturaAuditada->observaciones_res ?? null,
                 'observaciones_admin' => $facturaAuditada->observaciones_admin ?? null,
                 'aprobado' => $facturaAuditada->aprobado ?? false,
-                'cubre' => $facturaAuditada?->cubre ? 'Descontar' : 'Cubre',
-                'usuario_cubre' => User::find($facturaAuditada?->cubre_usuario)->name ?? 'Empresa',
+                'supervisor' => $supervisor,
+                'cubre' => $facturaAuditada->cubre ?? true,
+                'cubre_usuario' => $usuarioQuePaga,
             ],
             'renglones' => $renglones,
-            'auditados' => $auditados->isNotEmpty(),
+            'auditados' => $auditados,
             'vehiculo' => [
                 'placa' => $factura->co_cli,
                 'conductor' => $conductor,
@@ -126,18 +131,19 @@ class FacturasController extends Controller
                     throw new \Exception("La imagen de {$co_art} no es válida");
                 }
             }
+
             $request->validate([
                 'observacion' => 'nullable|string',
                 'imagenes.*' => 'image|max:5120',
             ]);
-            
+
             FacturaAuditoria::create([
                 'fact_num' => $factura->fact_num,
                 'vehiculo_id' => $factura->co_cli,
                 'user_id' => $request->user()->id,
                 'observaciones_res' => $request->input('observacion'),
             ]);
-            
+
             $datos = [];
             $multimedia = new Multimedia;
 
@@ -160,30 +166,58 @@ class FacturasController extends Controller
 
             RenglonAuditoria::insert($datos);
 
+            NotificacionHelper::emitirImagenFacturaSubida(
+                $factura->co_cli,
+                $request->user()->name,
+                $factura->fact_num,
+                count($imagenes)
+            );
+
             DB::commit();
         }, 'Auditoría registrada con éxito.', 'Error al registrar la auditoría.');
     }
 
-    public function update(Request $request, FacturaAuditoria $factura)
+    public function updateAuditoria(Request $request, FacturaAuditoria $factura)
     {
-        $validatedData = $request->validate([
-            'aprobado' => 'required|boolean',
-            'observaciones_admin' => 'nullable'
+        $request->merge([
+            'aprobado' => filter_var($request->input('aprobado'), FILTER_VALIDATE_BOOLEAN),
         ]);
 
-        $fechaEmis = Carbon::parse(Factura::where('fact_num', $factura->fact_num)->first()->fec_emis);
-        $fechaAudi = Carbon::parse($factura->created_at);
+        return FlashHelper::try(function () use ($request, $factura) {
 
-        $diasDiff = $fechaEmis->diffInDays($fechaAudi);
+            $validatedData = $request->validate([
+                'aprobado' => 'required|boolean',
+                'observaciones_admin' => 'nullable|string',
+                'cubre' => 'nullable|boolean',
+                'cubre_usuario' => 'nullable|integer',
+            ]);
 
-        if($diasDiff > 5){
-            $factura->cubre = true;
-            $factura->cubre_usuario = $factura->user_id;
-        }
+            if ($request->has('cubre')) {
+                $factura->cubre = $validatedData['cubre'];
+            }
 
-        $factura->aprobado = $validatedData['aprobado'];
-        $factura->observaciones_admin = $validatedData['observaciones_admin'];
+            if ($request->has('cubre_usuario')) {
+                $factura->cubre_usuario = $validatedData['cubre_usuario'];
+            }
 
-        $factura->save();
+            if (!isset($factura->cubre) || !isset($factura->cubre_usuario)) {
+                $facturaOriginal = Factura::where('fact_num', $factura->fact_num)->firstOrFail();
+                $fechaEmis = Carbon::parse($facturaOriginal->fec_emis);
+                $fechaAudi = Carbon::parse($factura->created_at);
+                $diasDiff = $fechaEmis->diffInDays($fechaAudi);
+
+                if ($diasDiff > 5) {
+                    $factura->cubre = true;
+                    $factura->cubre_usuario = $factura->user_id;
+                    Log::debug('💸 Cubre empresa activado por antigüedad', ['usuario' => $factura->user_id]);
+                }
+            }
+
+            $factura->aprobado = $validatedData['aprobado'];
+            $factura->observaciones_admin = $validatedData['observaciones_admin'];
+            $factura->admin_id = $request->user()->id;
+
+            $factura->save();
+        }, 'Auditoría actualizada correctamente.', 'Error al actualizar la auditoría.');
     }
 }

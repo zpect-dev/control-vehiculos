@@ -59,9 +59,11 @@ export default function DashboardNotificaciones() {
                                       ? `/fichaTecnica/${vehiculo_id}/revisionSemanal`
                                       : ['permiso', 'cambioInput', 'estado_item', 'reasignacion'].includes(tipo)
                                         ? `/fichaTecnica/${vehiculo_id}`
-                                        : tipo === 'observacion'
-                                          ? `/fichaTecnica/${vehiculo_id}/observaciones`
-                                          : '/dashboard';
+                                        : tipo === 'auditoria'
+                                          ? `/fichaTecnica/${vehiculo_id}/facturas`
+                                          : tipo === 'observacion'
+                                            ? `/fichaTecnica/${vehiculo_id}/observaciones`
+                                            : '/dashboard';
 
                         router.visit(destino);
                         router.visit(destino, {

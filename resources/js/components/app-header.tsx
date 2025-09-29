@@ -112,11 +112,6 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </Link>
                             )}
                             {auth.user.is_admin && (
-                                <Link href="/gasolina" prefetch>
-                                    <Fuel className="h-6 w-6 text-gray-800 dark:text-white" />
-                                </Link>
-                            )}
-                            {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch>
                                     <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
@@ -157,11 +152,6 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             {auth.user.is_admin && (
                                 <Link href="/perfiles" prefetch className="flex items-center justify-start">
                                     <SquareUserRound />
-                                </Link>
-                            )}
-                            {auth.user.is_admin && (
-                                <Link href="/gasolina" prefetch>
-                                    <Fuel className="flex items-center justify-start" />
                                 </Link>
                             )}
                             {auth.user.is_admin && (

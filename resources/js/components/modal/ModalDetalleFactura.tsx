@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { ModalDetalleFacturaProps } from '@/types';
+import { AuditoriaAdminState, ModalDetalleFacturaProps } from '@/types';
 import { formatFecha } from '@/utils/formatDate';
 import { formatCantidad, formatPrecio } from '@/utils/formatNumbers';
 import { router } from '@inertiajs/react';
@@ -8,14 +8,31 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Checkbox } from '../ui/checkbox';
 
-export default function ModalDetalleFactura({ factura, vehiculo, renglones, auditados, onClose, visible }: ModalDetalleFacturaProps) {
+export default function ModalDetalleFactura({
+    factura,
+    vehiculo,
+    renglones,
+    auditados,
+    onClose,
+    visible,
+    onActualizarEstado,
+}: ModalDetalleFacturaProps) {
     if (!visible || typeof document === 'undefined') return null;
 
     const badgeEstado = (estado: boolean) => (
         <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-            {estado ? 'Aprobado' : 'Pendiente'}
+            {estado ? 'APROBADO' : 'PENDIENTE'}
         </span>
     );
+
+    const [adminState, setAdminState] = useState<AuditoriaAdminState>({
+        aprobado: factura.aprobado ?? false,
+        observacionesAdmin: factura.observaciones_admin ?? '',
+        cubre: factura.cubre,
+        cubreUsuario: factura.cubre_usuario ? factura.cubre_usuario : '-',
+    });
+    console.log(factura.aprobado);
+
     const handleSubmitAuditoria = () => {
         const hayImagenes = Object.values(imagenes).some((file) => file instanceof File);
 
@@ -26,7 +43,6 @@ export default function ModalDetalleFactura({ factura, vehiculo, renglones, audi
         const formData = new FormData();
         formData.append('fact_num', factura.fact_num);
         formData.append('observacion', observacionConductor);
-
         Object.entries(imagenes).forEach(([co_art, file]) => {
             if (file) formData.append(`imagenes[${co_art}]`, file);
         });
@@ -41,6 +57,27 @@ export default function ModalDetalleFactura({ factura, vehiculo, renglones, audi
             },
             onFinish: () => {
                 console.log('Petición finalizada');
+            },
+        });
+    };
+
+    const handleAdminSubmit = () => {
+        const formData = new FormData();
+        formData.append('_method', 'PATCH');
+        formData.append('aprobado', String(adminState.aprobado));
+        formData.append('observaciones_admin', adminState.observacionesAdmin);
+
+        console.log('🧾 Enviando auditoría admin:', {
+            aprobado: adminState.aprobado,
+            observaciones_admin: adminState.observacionesAdmin,
+        });
+
+        router.post(`/fichaTecnica/facturas/${factura.fact_num}/auditoria`, formData, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                onActualizarEstado?.(factura.fact_num, true);
+                onClose();
             },
         });
     };
@@ -72,7 +109,7 @@ export default function ModalDetalleFactura({ factura, vehiculo, renglones, audi
                 {/* Datos principales */}
                 <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-2">
                     <div>
-                        <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Conductor</p>
+                        <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Subido por:</p>
                         <div className="rounded-lg border bg-gray-100 p-3 font-medium text-gray-900 shadow-sm dark:bg-gray-200">
                             {vehiculo.conductor}
                         </div>
@@ -90,7 +127,7 @@ export default function ModalDetalleFactura({ factura, vehiculo, renglones, audi
                     <div>
                         <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Revisado</p>
                         <div className="rounded-lg border bg-gray-100 p-3 font-medium text-gray-900 shadow-sm dark:bg-gray-200">
-                            {typeof factura?.revisado === 'boolean' ? badgeEstado(factura.revisado) : '—'}
+                            {factura.aprobado ? badgeEstado(factura.aprobado) : '—'}
                         </div>
                     </div>
                     <div className="col-span-2">
@@ -215,42 +252,52 @@ export default function ModalDetalleFactura({ factura, vehiculo, renglones, audi
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Marcar Aprobado</label>
                             <div className="flex items-center gap-3 rounded-lg border bg-gray-100 p-3 shadow-sm dark:bg-gray-200">
-                                <Checkbox id="aprobado" name="aprobado" />
+                                <Checkbox
+                                    id="aprobado"
+                                    name="aprobado"
+                                    checked={adminState.aprobado}
+                                    onCheckedChange={(value) => setAdminState((prev) => ({ ...prev, aprobado: Boolean(value) }))}
+                                />
+
                                 <span className="text-md font-medium text-gray-900 dark:text-gray-800">Aprobado</span>
                             </div>
                         </div>
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Supervisor</label>
-                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">—</div>
+                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
+                                {factura.supervisor}
+                            </div>
                         </div>
                         <div>
-                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Descontar o Cubre Empresa</label>
-                            <select
-                                className="w-full rounded-lg border bg-gray-50 p-3 font-medium text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-400"
-                                disabled
-                            >
-                                <option>—</option>
-                            </select>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">¿Cubre empresa?</label>
+                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
+                                {adminState.cubre ? 'No' : 'Sí'}
+                            </div>
                         </div>
+
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
-                            <select
-                                className="w-full rounded-lg border bg-gray-50 p-3 font-medium text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-400"
-                                disabled
-                            >
-                                <option>—</option>
-                            </select>
+                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
+                                {adminState.cubre ? adminState.cubreUsuario : 'Empresa'}
+                            </div>
                         </div>
                     </div>
 
                     <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del supervisor</h3>
                     <textarea
+                        value={adminState.observacionesAdmin}
+                        onChange={(e) => setAdminState((prev) => ({ ...prev, observacionesAdmin: e.target.value }))}
                         className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
                         rows={4}
                         placeholder="Escribe aquí..."
                     />
+
                     <div className="flex items-center justify-end">
-                        <button type="submit" className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]">
+                        <button
+                            type="button"
+                            onClick={handleAdminSubmit}
+                            className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                        >
                             Guardar
                         </button>
                     </div>

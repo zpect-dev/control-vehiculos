@@ -24,7 +24,8 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                 return <ClipboardPenLine className="h-5 w-5 text-purple-600" />;
             case 'documentoUsuario':
                 return <CalendarClock className="h-5 w-5 text-pink-600" />;
-
+            case 'auditoria':
+                return <ClipboardPenLine className="h-5 w-5 text-shadow-teal-700" />;
             default:
                 return <AlertTriangle className="h-5 w-5 text-gray-400" />;
         }
@@ -48,6 +49,8 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                     'border-green-400 bg-green-50 dark:bg-green-800': tipo === 'reasignacion' && !leida,
                     'border-purple-600 bg-purple-50 dark:bg-purple-900': tipo === 'observacion' && !leida,
                     'border-pink-600 bg-pink-50 dark:bg-pink-900': tipo === 'documentoUsuario' && !leida,
+                    'border-teal-600 bg-teal-50 dark:bg-teal-900': tipo === 'auditoria' && !leida,
+
                 },
                 leida && 'border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800',
                 !leida && 'hover:scale-[1.02] active:scale-[0.98]',
@@ -71,6 +74,8 @@ export default function NotificacionCard({ notificacion, onMarcarLeida }: PropsN
                         'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400': leida,
                         'bg-purple-50 text-purple-600 dark:bg-purple-900 dark:text-purple-400': tipo === 'observacion' && !leida,
                         'bg-pink-100 text-pink-700 dark:bg-pink-800 dark:text-pink-200': tipo === 'documentoUsuario' && !leida,
+                        'bg-teal-100 text-teal-700 dark:bg-teal-800 dark:text-teal-200': tipo === 'auditoria' && !leida,
+
                     })}
                 >
                     {tipo}

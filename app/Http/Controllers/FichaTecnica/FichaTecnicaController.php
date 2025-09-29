@@ -5,6 +5,7 @@ namespace App\Http\Controllers\FichaTecnica;
 use App\Events\EventoPermisoPorVencer;
 use App\Helpers\FlashHelper;
 use App\Http\Controllers\Controller;
+use App\Models\FacturaAuditoria;
 use App\Models\Vehiculo;
 use App\Models\VehiculoAccesorios;
 use App\Models\VehiculoEspecificaciones;
@@ -49,6 +50,14 @@ class FichaTecnicaController extends Controller
             $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
             $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = $permiso->documento;
         }
+        $auditoriasPendientes = FacturaAuditoria::where('vehiculo_id', $vehiculo->placa)
+            ->where(function ($q) {
+                $q->whereNull('aprobado')->orWhere('aprobado', false);
+            })
+            ->whereNull('observaciones_admin')
+            ->count();
+
+        $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
 
         $users = $isAdmin ? User::select('id', 'name')->get() : [];

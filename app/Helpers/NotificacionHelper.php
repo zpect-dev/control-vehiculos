@@ -8,6 +8,7 @@ use App\Events\EventoCambioInputs;
 use App\Events\EventoAsignacionUsuario;
 use App\Events\EventoNivelBajo;
 use App\Events\EventoPermisoPorVencer;
+use App\Events\ImagenFacturaSubida;
 use App\Events\NotificacionPush;
 use App\Events\ObservacionAgregada;
 use App\Events\VideoSemanalOmitido;
@@ -317,4 +318,24 @@ class NotificacionHelper
 
         broadcast(new DocumentoUsuarioPorVencer($usuario, $userName, $documento, $fechaVencimiento))->toOthers();
     }
+
+        /**
+     * Emite y guarda una notificación de Imagen de factura subida por usuario.
+     */
+    public static function emitirImagenFacturaSubida(string $placa, string $userName, string $factNum, int $cantidad): void
+{
+    $admin = User::role('admin')->first();
+
+    Notificacion::create([
+        'titulo' => 'Imágenes subidas a factura',
+        'vehiculo_id' => $placa,
+        'descripcion' => "El usuario '{$userName}' subió la imagen a la factura #{$factNum} del vehículo '{$placa}'.",
+        'tipo' => 'auditoria',
+        'usuario_id' => $admin->id,
+        'solo_admin' => true,
+    ]);
+
+    broadcast(new ImagenFacturaSubida($placa, $userName, $factNum, $cantidad))->toOthers();
+}
+
 }

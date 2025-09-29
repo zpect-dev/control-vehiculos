@@ -25,7 +25,7 @@ class SurtidosController extends Controller
 
     public function index(Request $request, Vehiculo $vehiculo)
     {
-        $registros = Surtido::where('vechiculo_id', $vehiculo->placa)->latest()->paginate(10);
+        $registros = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->paginate(10);
 
         return Inertia::render('gasolina', [
             'registros' => $registros

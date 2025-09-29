@@ -3,7 +3,13 @@ import { formatFecha } from '@/utils/formatDate';
 import { Search } from 'lucide-react';
 
 export function FilaFactura({ factura, onOpenModal }: FilaFacturaProps & { onOpenModal: (facturaNum: string) => void }) {
-    const estado = factura.revisado ? 'Aprobado' : 'Pendiente';
+    const badgeEstado = (estado: boolean) => (
+        <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+            {estado ? 'APROBADO' : 'PENDIENTE'}
+        </span>
+    );
+
+    console.log('Estado de la factura:', factura);
 
     return (
         <tr className="border-b text-sm text-gray-600 dark:text-gray-300">
@@ -15,7 +21,7 @@ export function FilaFactura({ factura, onOpenModal }: FilaFacturaProps & { onOpe
             <td className="max-w-[130px] truncate px-4 py-2" title={factura.descripcion}>
                 {factura.descripcion}
             </td>
-            <td className="px-4 py-2">{estado}</td>
+            <td className="px-4 py-2"> {factura.aprobado ? badgeEstado(factura.aprobado) : '—'}</td>
             <td className="px-4 py-2">
                 <button
                     onClick={() => onOpenModal(factura.fact_num)}

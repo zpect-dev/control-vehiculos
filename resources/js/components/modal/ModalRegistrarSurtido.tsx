@@ -17,8 +17,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose }: { isOpen: bool
 
                     {/* Placa */}
                     <div className="mb-4">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Placa del vehículo</label>
-                        <input type="text" placeholder="Ej: ABC123" className="w-full rounded border px-3 py-2 text-sm" />
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">32TOAD</label>
                     </div>
 
                     {/* Datos simulados del vehículo */}
@@ -29,25 +28,11 @@ export default function ModalRegistroSurtido({ isOpen, onClose }: { isOpen: bool
                         <p>
                             <strong>Modelo:</strong> Toyota Corolla
                         </p>
-                        <p>
-                            <strong>Ubicación:</strong> San Cristóbal
-                        </p>
-                        <p>
-                            <strong>Placa:</strong> ABC123
-                        </p>
                     </div>
 
                     {/* Campos editables */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Sede</label>
-                            <select className="w-full rounded border px-3 py-2 text-sm">
-                                <option value="">Seleccionar</option>
-                                <option value="Bomba">Bomba</option>
-                                <option value="Sede Principal">Sede Principal</option>
-                                <option value="Revendida">Revendida</option>
-                            </select>
-                        </div>
+
 
                         <div>
                             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Litros surtidos</label>
