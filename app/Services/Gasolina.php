@@ -43,7 +43,7 @@ class Gasolina
     public function co_ven($cedula){
         $co_ven = DB::connection('sqlsrv')->select("
             SELECT co_ven FROM vendedor WHERE cedula=?
-        ", [$cedula]);
+        ", [$cedula]) ?? 'N/A';
 
         return $co_ven[0]->co_ven;
     }
