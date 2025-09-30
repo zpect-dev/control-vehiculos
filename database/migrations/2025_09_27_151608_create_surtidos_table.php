@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('vehiculo_id');
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('tipo_surtido');
-            $table->decimal('cant_surtida', 8, 2);
+            $table->decimal('cant_litros', 8, 2);
             $table->bigInteger('kilometraje');
             $table->bigInteger('surtido_ideal')->nullable();
             $table->text('observaciones')->nullable();

@@ -56,7 +56,7 @@ class SurtidosController extends Controller
             
             $UltimoSurtido = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
 
-            $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * 0.35 : 'N/A';
+            $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * 0.35 : 0;
 
             $usuario = User::find($vehiculo->user_id);
             $profit = new Gasolina;
@@ -72,7 +72,7 @@ class SurtidosController extends Controller
                 'vehiculo_id' => $vehiculo->placa,
                 'fact_num' => $fact_num,
                 //'tipo_surtido' => $validatedData['tipo_surtido'],
-                'cant_litros' => $validatedData['cant_litros'],
+                'cant_litros' => 20,
                 'kilometraje' => $validatedData['kilometraje'],
                 'surtido_ideal' => $surtido_ideal ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,
@@ -83,6 +83,7 @@ class SurtidosController extends Controller
             return back()->with('success', 'Surtido realizado correctamente');
         } catch (\Throwable $e) {
             DB::rollBack();
+            dd($e);
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
