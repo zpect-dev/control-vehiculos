@@ -1,12 +1,9 @@
-import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
+import NewPasswordController from '@/actions/App/Http/Controllers/Auth/NewPasswordController';
 import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 
@@ -17,10 +14,10 @@ interface LoginProps {
 
 export default function Login({ status }: LoginProps) {
     return (
-        <AuthLayout title="Accede a tu cuenta" description="Ingresa tus datos para continuar">
-            <Head title="Acceder" />
+        <AuthLayout title="Recupera tu contraseña" description="Ingresa tus datos para recuperar contraseña">
+            <Head title="Recuperar" />
 
-            <Form {...AuthenticatedSessionController.store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
+            <Form {...NewPasswordController.actualizar.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
@@ -61,13 +58,6 @@ export default function Login({ status }: LoginProps) {
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox id="remember" name="remember" tabIndex={3} />
-                                <Label htmlFor="remember" className="text-gray-600 dark:text-gray-400">
-                                    Recuérdame
-                                </Label>
-                            </div>
-
                             <Button
                                 type="submit"
                                 className="mt-4 w-full rounded-lg bg-[#49af4e] py-3 font-semibold text-white shadow-md transition-colors hover:bg-[#3d9641]"
@@ -75,22 +65,8 @@ export default function Login({ status }: LoginProps) {
                                 disabled={processing}
                             >
                                 {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                                Acceder
+                                Recuperar
                             </Button>
-                        </div>
-
-                        <div className="text-center text-sm text-muted-foreground">
-                            ¿Aún no tienes una cuenta?{' '}
-                            <TextLink href={register()} tabIndex={5} className="text-blue-600 hover:underline">
-                                Regístrate
-                            </TextLink>
-                        </div>
-
-                        <div className="text-center text-sm text-muted-foreground">
-                            Resetear contraseña{' '}
-                            <TextLink href={'reset-password'} tabIndex={5} className="text-blue-600 hover:underline">
-                                Resetear
-                            </TextLink>
                         </div>
                     </>
                 )}

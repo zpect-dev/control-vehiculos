@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
+
 class SurtidosController extends Controller
 {
     public function test(Request $request)
@@ -18,7 +19,7 @@ class SurtidosController extends Controller
         // $row = (string) Uuid::uuid4();
         // dd($row);
         $profit = new Gasolina;
-        $respuesta = $profit->registrarFacturaConRenglon(100, 'Prueba gasolina', 20, 26467562, '9338301', 'Juan Vargas', 19, 40);
+        $respuesta = $profit->registrarFacturaConRenglon(100, 'Prueba gasolina', 20, 14417896, '9338301', 'Juan Vargas', 19, 40);
         dd($respuesta);
     }
 
