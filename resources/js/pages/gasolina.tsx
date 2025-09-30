@@ -1,18 +1,46 @@
 import ModalRegistroSurtido from '@/components/modal/ModalRegistrarSurtido';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-import { Search } from 'lucide-react';
+import { VehiculoData } from '@/types';
+import { exportGasolinaExcel } from '@/utils/exportExcel';
+import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Gasolina() {
+    const { vehiculo } = usePage<{ vehiculo: VehiculoData }>().props;
+
     const [modalOpen, setModalOpen] = useState(false);
+
+    const handleExport = () => {
+        const data = [...Array(5)].map((_, index) => ({
+            factura: index + 1,
+            fecha: '2025-09-22',
+            vehiculo: vehiculo.placa,
+            precio: 0.5,
+            km_actual: 12250,
+            recorrido: 250,
+            litros: 20,
+            total: 10.0,
+            observaciones: 'Sin observaciones',
+            diferencia: -10,
+            conductor: vehiculo.usuario,
+        }));
+
+        exportGasolinaExcel(data);
+    };
 
     return (
         <AppLayout>
             <Head title="Historial de Gasolina" />
 
-            {/* Modal visual */}
-            <ModalRegistroSurtido isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+            <ModalRegistroSurtido
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                vehiculo={{
+                    placa: vehiculo.placa,
+                    modelo: vehiculo.modelo,
+                    conductor: vehiculo.usuario?.name ?? 'Sin conductor',
+                }}
+            />
 
             <div className="min-h-screen bg-white px-4 py-10 dark:bg-gray-900">
                 <div className="mb-6 flex flex-col items-center justify-center text-center">
@@ -36,6 +64,8 @@ export default function Gasolina() {
                         <input type="date" className="rounded-md border px-3 py-2 text-sm" />
                     </div>
                 </div>
+
+                {/* Botón para abrir modal */}
                 <div className="mb-6 flex flex-col items-center justify-center text-center">
                     <button
                         onClick={() => setModalOpen(true)}
@@ -44,7 +74,8 @@ export default function Gasolina() {
                         Nuevo surtido
                     </button>
                 </div>
-                {/* Tabla */}
+
+                {/* Tabla simulada */}
                 <div className="overflow-x-auto rounded-lg shadow">
                     <table className="min-w-full table-auto border-collapse bg-white dark:bg-gray-800">
                         <thead className="bg-gray-200 dark:bg-gray-700">
@@ -52,41 +83,44 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">N° Factura</th>
                                 <th className="px-4 py-2">Fecha</th>
                                 <th className="px-4 py-2">Vehículo</th>
-                                <th className="px-4 py-2">Sede</th>
                                 <th className="px-4 py-2">Precio</th>
-                                <th className="px-4 py-2">Km Inicial</th>
-                                <th className="px-4 py-2">Km Final</th>
+                                <th className="px-4 py-2">Km Actual</th>
                                 <th className="px-4 py-2">Recorrido Km</th>
                                 <th className="px-4 py-2">Litros</th>
                                 <th className="px-4 py-2">Total $</th>
                                 <th className="px-4 py-2">Observaciones</th>
-                                <th className="px-4 py-2">Detallado</th>
+                                <th className="px-4 py-2">Diferencia</th>
+                                <th className="px-4 py-2">Conductor</th>
                             </tr>
                         </thead>
                         <tbody>
                             {[...Array(5)].map((_, index) => (
-                                <tr key={index} className="border-b text-sm text-gray-600 dark:text-gray-300">
+                                <tr key={index} className="text-sm text-gray-700 dark:text-gray-300">
                                     <td className="px-4 py-2">{index + 1}</td>
                                     <td className="px-4 py-2">2025-09-22</td>
-                                    <td className="px-4 py-2">32TOAD</td>
-                                    <td className="px-4 py-2">San Cristóbal</td>
-                                    <td className="px-4 py-2">$0.50</td>
-                                    <td className="px-4 py-2">12000</td>
+                                    <td className="px-4 py-2">{vehiculo.placa}</td>
+                                    <td className="px-4 py-2">$0.5</td>
                                     <td className="px-4 py-2">12250</td>
                                     <td className="px-4 py-2">250</td>
                                     <td className="px-4 py-2">20</td>
-                                    <td className="px-4 py-2">$10.00</td>
+                                    <td className="px-4 py-2">$10.0</td>
                                     <td className="px-4 py-2">Sin observaciones</td>
-                                    <td className="px-4 py-2">
-                                        <button className="flex items-center gap-1 rounded bg-[#49af4e] p-2 text-xs font-semibold text-white hover:bg-[#47a84c]">
-                                            <Search className="h-4 w-4" />
-                                            Ver detalle
-                                        </button>
-                                    </td>
+                                    <td className="px-4 py-2">-10</td>
+                                    <td className="px-4 py-2">{vehiculo.usuario?.name ?? 'Sin conductor'}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Botón exportar */}
+                <div className="my-6 flex flex-col items-center justify-center text-center">
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
+                    >
+                        Generar Excel
+                    </button>
                 </div>
             </div>
         </AppLayout>

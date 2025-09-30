@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 export interface Field {
     id: string;
     label: string;
-    type: 'text' | 'select' | 'date' | 'file' | 'checkbox';
+    type: 'text' | 'select' | 'date' | 'file' | 'checkbox' | 'number' | 'textarea';
     placeholder?: string;
     options?: { value: string; label: string }[];
+    required: boolean;
 }
 
 export function useFormLogic<T extends Record<string, string | boolean | File | null>>(initialData: T, fields: Field[]) {
@@ -21,6 +22,9 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
                 if (field.type === 'file') {
                     return { ...acc, [field.id]: null };
                 }
+                if (field.type === 'number') {
+                    return { ...acc, [field.id]: '' };
+                }
                 return { ...acc, [field.id]: '' };
             }, {} as T);
             return defaultValues;
@@ -33,9 +37,16 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
         const incompletos = fields.some((field) => {
             const value = formValues[field.id];
 
-            if (field.type === 'checkbox') return false; // opcional
+            if (!field.required) return false;
+
+            if (field.type === 'checkbox') return false;
             if (field.type === 'file') return !(value instanceof File || typeof value === 'string');
             if (field.type === 'select') return typeof value !== 'string' || value.trim() === '';
+            if (field.type === 'number') {
+                if (typeof value === 'string') return value.trim() === '';
+                return value == null;
+            }
+
             return typeof value === 'string' ? value.trim() === '' : value == null;
         });
 

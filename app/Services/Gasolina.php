@@ -24,15 +24,12 @@ class Gasolina
                 SELECT ISNULL(MAX(num_doc), 0) + 1 AS nuevo
                 FROM reng_fac WITH (UPDLOCK, HOLDLOCK)
             ")[0]->nuevo;
-
             $datosFactura = $this->construir_factura($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $fact_num);
             $datosRenglon = $this->construir_renglon($fact_num, $cant_litros, $num_doc);
-
             DB::connection('sqlsrv')->table('factura')->insert($datosFactura);
             DB::connection('sqlsrv')->table('reng_fac')->insert($datosRenglon);
-            DB::connection('sqlsrv')->table('pistas')->insert(ProfitLogger::pista('FACTURA', $fact_num, 'I', 'VEHIC24'));
+            DB::connection('sqlsrv')->table('pistas')->insert(ProfitLogger::pista('FACTURA', $fact_num, 'I', 'VEHI24'));
             DB::connection('sqlsrv')->commit();
-
             return $datosFactura['fact_num'];
         } catch (\Exception $e) {
             DB::connection('sqlsrv')->rollBack();
@@ -44,8 +41,7 @@ class Gasolina
         $co_ven = DB::connection('sqlsrv')->select("
             SELECT co_ven FROM vendedor WHERE cedula=?
         ", [$cedula]);
-
-        return $co_ven[0]->co_ven;
+        return $co_ven[0]->co_ven ?? '999';
     }
 
     public function construir_factura($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $fact_num){

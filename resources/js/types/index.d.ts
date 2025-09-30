@@ -138,6 +138,16 @@ export interface ModalAsignacionUserProps {
     onSuccess?: (usuario: { id: string | number; name: string }) => void;
 }
 
+export interface ModalRegistroSurtidoProps {
+    isOpen: boolean;
+    onClose: () => void;
+    vehiculo: {
+        placa: string;
+        modelo: string;
+        conductor: string;
+    };
+}
+
 // Revisiones
 
 export interface RevisionSemanalData {
@@ -410,4 +420,43 @@ export interface ObservacionCardProps {
     observacion: Observacion;
     isAdmin?: boolean;
     onResolver: (id: number) => void;
+}
+
+// Gasolina
+
+export type SurtidoFieldType = 'text' | 'select' | 'date' | 'file' | 'checkbox' | 'number' | 'textarea';
+
+export interface SurtidoField {
+    id: string;
+    label: string;
+    type: SurtidoFieldType;
+    placeholder?: string;
+    options?: { value: string; label: string }[];
+    required: boolean;
+}
+
+export interface SurtidoFormData {
+    litros: string;
+    kilometraje: string;
+    observacion?: string;
+    [key: string]: string | boolean | File | null;
+}
+
+export interface SurtidoResponse {
+    surtido_ideal: number;
+    precio: number;
+}
+
+export interface GasolinaRow {
+    factura: number;
+    fecha: string;
+    vehiculo: string;
+    precio: number;
+    km_actual: number;
+    recorrido: number;
+    litros: number;
+    total: number;
+    observaciones: string;
+    diferencia: number;
+    conductor: string;
 }

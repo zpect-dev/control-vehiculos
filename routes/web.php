@@ -45,7 +45,7 @@ Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasContr
 Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update');
 
 
-Route::get('gasolina', [SurtidosController::class, 'test']);
+// Route::get('gasolina', [SurtidosController::class, 'test']);
 
 
 Route::middleware(['auth', 'acceso'])->group(function () {
