@@ -47,7 +47,6 @@ Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasCont
 
 // Route::get('gasolina', [SurtidosController::class, 'test']);
 
-
 Route::middleware(['auth', 'acceso'])->group(function () {
     // Ficha Técnica
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
