@@ -17,6 +17,7 @@ class Surtido extends Model
         'surtido_ideal',
         'observaciones',
         'precio',
-        'fact_num'
+        'fact_num',
+        'diferencia'
     ];
 }

@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useFormLogic } from '@/hooks/useFormLogic';
 import { ModalRegistroSurtidoProps, SurtidoField, SurtidoFormData } from '@/types'; // ajusta la ruta según tu estructura
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const fields: SurtidoField[] = [
     {
@@ -39,6 +40,23 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
     );
     const { litros, kilometraje, observacion } = formValues;
     const [processing, setProcessing] = useState(false);
+    const [kilometrajeAnterior, setKilometrajeAnterior] = useState<number>(0);
+    const [surtidoIdeal, setSurtidoIdeal] = useState<number | null>(null);
+    const [precioUnitario, setPrecioUnitario] = useState<number>(0.5);
+
+    console.log(kilometraje)
+
+    useEffect(() => {
+        if (isOpen) {
+            fetch(`/fichaTecnica/${vehiculo.placa}/gasolina/info`)
+                .then((res) => res.json())
+                .then((data) => {
+                    setKilometrajeAnterior(data.kilometraje_anterior);
+                    setSurtidoIdeal(data.surtido_ideal);
+                    setPrecioUnitario(data.precio_unitario);
+                });
+        }
+    }, [isOpen]);
 
     function registrarSurtido() {
         console.log('Intentando registrar surtido...');
@@ -58,7 +76,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 cant_litros: litros,
                 kilometraje,
                 observaciones: observacion,
-                precio: 0.5,
+                precio: Number(litros) * precioUnitario,
             },
             {
                 onSuccess: () => {
@@ -102,12 +120,27 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <strong>Modelo:</strong> {vehiculo.modelo}
                         </p>
                     </div>
+                    <div className="grid grid-cols-1 gap-4 text-sm font-semibold text-gray-700 sm:grid-cols-2 dark:text-gray-300">
+                        <p>
+                            <strong>Kilometraje anterior:</strong> {kilometrajeAnterior}
+                        </p>
+                        <p>
+                            <strong>Surtido ideal:</strong> {(kilometraje - kilometrajeAnterior)*0.35}
+                        </p>
+                        <p>
+                            <strong>Precio unitario:</strong> ${precioUnitario}
+                        </p>
+                        <p>
+                            <strong>Precio total:</strong> ${(Number(litros) * precioUnitario).toFixed(2)}
+                        </p>
+                    </div>
 
                     {/* Campos dinámicos */}
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {fields.map((field) => (
                             <div key={field.id} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
                                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{field.label}</label>
+
                                 {field.type === 'textarea' ? (
                                     <textarea
                                         value={formValues[field.id] as string}

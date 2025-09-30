@@ -27,8 +27,7 @@ class SurtidosController extends Controller
     {
         $vehiculo->load('usuario');
 
-        $registros = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->paginate(10);
-
+        $registros = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->get();
         return Inertia::render('gasolina', [
             'vehiculo' => [
                 'placa' => $vehiculo->placa,
@@ -40,6 +39,17 @@ class SurtidosController extends Controller
             'registros' => $registros,
         ]);
     }
+
+    public function info(Vehiculo $vehiculo)
+    {
+        $ultimo = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
+
+        return response()->json([
+            'kilometraje_anterior' => $ultimo ? $ultimo->kilometraje : null,
+            'precio_unitario' => 0.5,
+        ]);
+    } 
+
 
 
     public function store(Request $request, Vehiculo $vehiculo)
@@ -53,16 +63,17 @@ class SurtidosController extends Controller
                 'observaciones' => 'nullable',
                 'precio' => 'required|numeric|min:0'
             ]);
-            
+
             $UltimoSurtido = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
 
             $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * 0.35 : 0;
+            $diferencia = $surtido_ideal - $validatedData['cant_litros'];
 
             $usuario = User::find($vehiculo->user_id);
             $profit = new Gasolina;
             //$fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], $vehiculo->placa, $usuario->email, $request->user()->name, $surtido_ideal, $validatedData['cant_litros']);
-            $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], '10150838', $usuario->email, $request->user()->name, $surtido_ideal, $validatedData['cant_litros']);
-            
+            $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], '10150838', $usuario->email, $request->user()->name, $diferencia, $validatedData['cant_litros']);
+
             if (!is_numeric($fact_num)) {
                 throw new \Exception('No se pudo generar el número de factura');
             }
@@ -76,6 +87,7 @@ class SurtidosController extends Controller
                 'kilometraje' => $validatedData['kilometraje'],
                 'surtido_ideal' => $surtido_ideal ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,
+                'diferencia' => $diferencia,
                 'precio' => $validatedData['precio']
             ]);
 

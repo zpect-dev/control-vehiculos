@@ -75,6 +75,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
 
     // Ruta para la Gasolina
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'index'])->name('gasolina.index');
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
 });
 Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas gasolina
