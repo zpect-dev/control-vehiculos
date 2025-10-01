@@ -25,7 +25,6 @@ export default function Gasolina() {
 
     const handleExport = () => {
         exportGasolinaExcel(registros);
-        exportGasolinaExcel();
     };
 
     return (
@@ -106,7 +105,7 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">Litros</th>
                                 <th className="px-4 py-2">Total $</th>
                                 <th className="px-4 py-2">Observaciones</th>
-                                <th className="px-4 py-2">Diferencia</th>
+                                <th className="px-4 py-2">Diferencia Litros</th>
                                 <th className="px-4 py-2">Conductor</th>
                             </tr>
                         </thead>
@@ -129,7 +128,7 @@ export default function Gasolina() {
                                         <td className="px-4 py-2">{registro.litros}</td>
                                         <td className="px-4 py-2">${registro.total}</td>
                                         <td className="px-4 py-2">{registro.observaciones}</td>
-                                        <td className="px-4 py-2">{registro.diferencia}</td>
+                                        <td className="px-4 py-2">{registro.diferencia} Litros</td>
                                         <td className="px-4 py-2">{registro.conductor}</td>
                                     </tr>
                                 ))
@@ -144,7 +143,7 @@ export default function Gasolina() {
                         onClick={handleExport}
                         className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
                     >
-                        Generar Excel
+                        Generar Report en Excel
                     </button>
                 </div>
             </div>

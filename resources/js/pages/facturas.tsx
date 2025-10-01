@@ -1,6 +1,7 @@
 import { TablaFacturas } from '@/components/TablaFacturas';
 import AppLayout from '@/layouts/app-layout';
 import { AuditoriaProps } from '@/types';
+// import { exportAuditoriaExcel } from '@/utils/exportAuditoriaExcel';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -20,6 +21,10 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
               return coincideFecha && coincideBusqueda;
           })
         : [];
+
+    // const handleExport = () => {
+    //     exportAuditoriaExcel(facturasFiltradas, vehiculo);
+    // };
 
     return (
         <AppLayout>
@@ -65,7 +70,17 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
                 </div>
 
                 {/* Tabla modular */}
-                <TablaFacturas facturas={facturasFiltradas} vehiculo={vehiculo} isAdmin={!!isAdmin} aprobado={false} />
+                <TablaFacturas facturas={facturasFiltradas} vehiculo={vehiculo} isAdmin={!isAdmin} aprobado={false} />
+
+                {/* Botón exportar */}
+                {/* <div className="my-6 flex flex-col items-center justify-center text-center">
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
+                    >
+                        Generar Report en Excel
+                    </button>
+                </div> */}
             </div>
         </AppLayout>
     );

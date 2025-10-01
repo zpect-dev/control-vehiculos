@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useFormLogic } from '@/hooks/useFormLogic';
-import { ModalRegistroSurtidoProps, SurtidoField, SurtidoFormData } from '@/types'; // ajusta la ruta según tu estructura
+import { ModalRegistroSurtidoProps, SurtidoField, SurtidoFormData } from '@/types';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
 import { X } from 'lucide-react';
@@ -21,7 +21,6 @@ const fields: SurtidoField[] = [
         placeholder: 'Ej: 20',
         required: true,
     },
-
     {
         id: 'observacion',
         label: 'Observación',
@@ -36,9 +35,11 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
         {
             litros: '',
             kilometraje: '',
+            observacion: '',
         },
         fields,
     );
+
     const { litros, kilometraje, observacion } = formValues;
     const [processing, setProcessing] = useState(false);
     const [kilometrajeAnterior, setKilometrajeAnterior] = useState<number>(0);
@@ -56,15 +57,11 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
     }, [isOpen]);
 
     function registrarSurtido() {
-        console.log('Intentando registrar surtido...');
-
         if (hasCamposIncompletos) {
-            console.log('Campos incompletos:', formValues);
             alert('Por favor completa los campos requeridos');
             return;
         }
 
-        console.log('Campos completos, enviando:', formValues);
         setProcessing(true);
 
         router.post(
@@ -76,27 +73,21 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 precio: Number(litros) * precioUnitario,
             },
             {
-                onSuccess: () => {
-                    console.log('Surtido registrado con éxito');
-                    onClose();
-                },
-                onError: (errors) => {
-                    console.log('Error al registrar surtido:', errors);
-                    alert('Error al registrar el surtido');
-                },
-                onFinish: () => {
-                    console.log('Petición finalizada');
-                    setProcessing(false);
-                },
+                onSuccess: () => onClose(),
+                onError: () => alert('Error al registrar el surtido'),
+                onFinish: () => setProcessing(false),
             },
         );
     }
+    const surtidoIdeal = Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * 0.35 : 0;
+
+    const precioTotal = Number(litros) * precioUnitario;
 
     return (
         <Dialog open={isOpen} onClose={onClose} className="relative z-50">
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <DialogPanel className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-900">
+                <DialogPanel className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-900">
                     {/* Encabezado */}
                     <div className="mb-6 flex items-center justify-between border-b pb-2">
                         <DialogTitle className="text-xl font-bold text-gray-800 dark:text-white">Registrar Surtido de Gasolina</DialogTitle>
@@ -117,33 +108,39 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <strong>Modelo:</strong> {vehiculo.modelo}
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 gap-4 text-sm font-semibold text-gray-700 sm:grid-cols-2 dark:text-gray-300">
-                        <p>
-                            <strong>Kilometraje anterior:</strong> {kilometrajeAnterior}
-                        </p>
-                        <p>
-                            <strong>Surtido ideal:</strong> {(kilometraje - kilometrajeAnterior) * 0.35}
-                        </p>
-                        <p>
-                            <strong>Precio unitario:</strong> ${precioUnitario}
-                        </p>
-                        <p>
-                            <strong>Precio total:</strong> ${(Number(litros) * precioUnitario).toFixed(2)}
-                        </p>
+
+                    {/* Resumen de cálculo */}
+                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">Kilometraje anterior</p>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">{kilometrajeAnterior} Km</p>
+                        </div>
+                        <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">Surtido ideal</p>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">{surtidoIdeal.toFixed(2)} litros</p>
+                        </div>
+
+                        <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">Precio total</p>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">${precioTotal.toFixed(2)}</p>
+                        </div>
                     </div>
 
                     {/* Campos dinámicos */}
-                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {fields.map((field) => (
                             <div key={field.id} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
                                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{field.label}</label>
-
                                 {field.type === 'textarea' ? (
                                     <textarea
                                         value={formValues[field.id] as string}
                                         onChange={(e) => handleChange(field.id, e.target.value)}
                                         placeholder={field.placeholder}
-                                        className="w-full rounded border px-3 py-2 text-sm"
+                                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                                            hasCamposIncompletos && field.required && !formValues[field.id]
+                                                ? 'border-red-500'
+                                                : 'border-gray-300 dark:border-gray-700'
+                                        } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
                                         rows={3}
                                     />
                                 ) : (
@@ -152,7 +149,11 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                                         value={formValues[field.id] as string}
                                         onChange={(e) => handleChange(field.id, e.target.value)}
                                         placeholder={field.placeholder}
-                                        className="w-full rounded border px-3 py-2 text-sm"
+                                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                                            hasCamposIncompletos && field.required && !formValues[field.id]
+                                                ? 'border-red-500'
+                                                : 'border-gray-300 dark:border-gray-700'
+                                        } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
                                     />
                                 )}
                             </div>
@@ -164,9 +165,18 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                         <button
                             onClick={registrarSurtido}
                             disabled={processing}
-                            className="rounded bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4fbb55]"
+                            className="inline-flex items-center gap-2 rounded bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4fbb55] disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            {processing ? 'Registrando...' : 'Registrar surtido'}
+                            {processing ? (
+                                <>
+                                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="4" fill="none" />
+                                    </svg>
+                                    Registrando...
+                                </>
+                            ) : (
+                                'Registrar surtido'
+                            )}
                         </button>
                     </div>
                 </DialogPanel>
