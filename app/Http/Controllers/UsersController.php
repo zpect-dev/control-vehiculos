@@ -26,9 +26,6 @@ class UsersController extends Controller
             'cedula',
             'licencia',
             'certificado_medico',
-            'seguro_civil',
-            'carnet_circulacion',
-            'solvencia',
         ];
 
         $usuario = $user->toArray();
@@ -54,9 +51,6 @@ class UsersController extends Controller
                 'cedula',
                 'licencia',
                 'certificado_medico',
-                'seguro_civil',
-                'carnet_circulacion',
-                'solvencia',
             ];
 
             $rules = ['zona' => 'nullable|string'];

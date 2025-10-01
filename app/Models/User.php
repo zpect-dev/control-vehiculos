@@ -23,12 +23,6 @@ class User extends Authenticatable
         'vencimiento_licencia',
         'foto_certificado_medico',
         'vencimiento_certificado_medico',
-        'foto_seguro_civil',
-        'vencimiento_seguro_civil',
-        'foto_carnet_circulacion',
-        'vencimiento_carnet_circulacion',
-        'foto_solvencia',
-        'vencimiento_solvencia',
     ];
 
 

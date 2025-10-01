@@ -14,9 +14,6 @@ export default function PerfilUsuario() {
         { label: 'Cédula', key: 'cedula' },
         { label: 'Licencia', key: 'licencia' },
         { label: 'Certificado Médico', key: 'certificado_medico' },
-        { label: 'Seguro Civil', key: 'seguro_civil' },
-        { label: 'Carnet de Circulación', key: 'carnet_circulacion' },
-        { label: 'Solvencia', key: 'solvencia' },
     ];
 
     const handleFileChange = (key: string, file: File | null) => {
@@ -62,12 +59,12 @@ export default function PerfilUsuario() {
                 <div className="mx-auto max-w-5xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     {/* Datos personales */}
                     <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-700">
+                        <div className="rounded-lg border bg-gray-100 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-700">
                             <h2 className="mb-1 text-center text-sm font-medium text-gray-500 dark:text-gray-400">Nombre completo</h2>
                             <p className="text-center text-lg font-semibold text-gray-900 dark:text-white">{usuario.name}</p>
                         </div>
 
-                        <div className="rounded-lg border bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-700">
+                        <div className="rounded-lg border bg-gray-100 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-700">
                             <h2 className="mb-1 text-center text-sm font-medium text-gray-500 dark:text-gray-400">Cédula</h2>
                             <p className="text-center text-lg font-semibold text-gray-900 dark:text-white">{usuario.email}</p>
                         </div>
@@ -76,13 +73,11 @@ export default function PerfilUsuario() {
                     {/* Documentos */}
                     <form onSubmit={handleSubmit} encType="multipart/form-data">
                         <h2 className="mb-6 text-center text-xl font-bold text-gray-800 dark:text-white">Documentación</h2>
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             {documentos.map(({ label, key }) => {
-                                console.log(key);
                                 const foto = usuario[`foto_${key}` as keyof UsuarioBasico] as string | undefined;
                                 const vencimiento = usuario[`vencimiento_${key}` as keyof UsuarioBasico] as string | undefined;
                                 const vencido = vencimiento && new Date(vencimiento) < new Date();
-                                console.log(foto);
                                 return (
                                     <div key={key} className="rounded-lg border bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                         <div className="mb-3 flex items-center justify-between">
