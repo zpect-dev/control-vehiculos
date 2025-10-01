@@ -44,7 +44,7 @@ class DashboardController extends Controller
 
             $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
-            $facturas = Factura::where('co_cli', $vehiculo->placa)->get();
+            $facturas = Factura::where('co_cli', $vehiculo->placa)->where('anulada', 0)->whereDate('fec_emis', '>=', '2025-10-01')->get();
             $auditoriasPendientes = 0;
             foreach ($facturas as $factura) {
                 $auditado = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
