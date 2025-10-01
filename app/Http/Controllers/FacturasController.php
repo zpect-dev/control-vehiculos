@@ -25,10 +25,12 @@ class FacturasController extends Controller
     public function index(Request $request, Vehiculo $vehiculo)
     {
         $facturas = Factura::where('co_cli', $vehiculo->placa)
+            ->where('anulada', 0)
             ->latest('fact_num')
             ->get()
             ->map(function ($factura) {
                 $aprobado = DB::select('SELECT aprobado FROM auditoria_facturas WHERE fact_num=?', [trim($factura->fact_num)]);
+                //dd($aprobado[0]->aprobado);
                 return [
                     'fact_num' => $factura->fact_num,
                     'fec_emis' => $factura->fec_emis,
@@ -36,7 +38,7 @@ class FacturasController extends Controller
                     'tot_bruto' => $factura->tot_bruto,
                     'tot_neto' => $factura->tot_neto,
                     'descripcion' => $factura->descripcion_limpia,
-                    'aprobado' => $aprobado ?? false,
+                    'aprobado' => $aprobado[0]->aprobado ?? false,
                 ];
             });
 

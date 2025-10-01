@@ -8,13 +8,8 @@ import ModalDetalleFactura from './modal/ModalDetalleFactura';
 export function TablaFacturas({ facturas: facturasIniciales, vehiculo, isAdmin }: TablaFacturasProps) {
     const [facturas, setFacturas] = useState<Factura[]>(facturasIniciales);
     const actualizarEstadoFactura = (facturaNum: string, aprobado: boolean) => {
-  setFacturas((prev) =>
-    prev.map((f) =>
-      f.fact_num === facturaNum ? { ...f, aprobado } : f
-    )
-  );
-};
-
+        setFacturas((prev) => prev.map((f) => (f.fact_num === facturaNum ? { ...f, aprobado } : f)));
+    };
 
     const [showModal, setShowModal] = useState(false);
 

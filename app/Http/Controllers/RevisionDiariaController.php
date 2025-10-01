@@ -55,12 +55,12 @@ class RevisionDiariaController extends Controller
         return FlashHelper::try(function () use ($request, $vehiculo) {
             $validatedData = $request->validate([
                 'fluidos' => 'required|array',
-                'fluidos.*.tipo' => 'required|string',
-                'fluidos.*.vehiculo_id' => 'required|string|max:255',
-                'fluidos.*.dia' => 'required|string',
-                'fluidos.*.nivel_fluido' => 'required|string',
-                'fluidos.*.revisado' => 'required|string',
-                'fluidos.*.imagen' => 'required|image|max:5120',
+                'fluidos.*.tipo' => 'nullable|string',
+                'fluidos.*.vehiculo_id' => 'nullable|string|max:255',
+                'fluidos.*.dia' => 'nullable|string',
+                'fluidos.*.nivel_fluido' => 'nullable|string',
+                'fluidos.*.revisado' => 'nullable|string',
+                'fluidos.*.imagen' => 'nullable|image|max:5120',
             ]);
 
             $datos = [];

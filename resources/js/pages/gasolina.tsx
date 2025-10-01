@@ -100,7 +100,7 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">Fecha</th>
                                 <th className="px-4 py-2">Vehículo</th>
                                 <th className="px-4 py-2">Precio</th>
-                                <th className="px-4 py-2">Km Actual</th>
+                                <th className="px-4 py-2">Km</th>
                                 <th className="px-4 py-2">Surtido ideal</th>
                                 <th className="px-4 py-2">Litros</th>
                                 <th className="px-4 py-2">Total $</th>

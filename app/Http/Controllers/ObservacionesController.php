@@ -18,6 +18,7 @@ class ObservacionesController extends Controller
 
         $observaciones = $vehiculo->observaciones()
             ->with(['user', 'admin'])
+            ->latest('fecha_creacion')
             ->get();
 
         return Inertia::render('observaciones', [

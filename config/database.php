@@ -101,7 +101,7 @@ return [
             'driver' => 'sqlsrv',
             'host' => '192.168.4.20',
             'port' => 1433,
-            'database' => 'PRUEB25', // ← este es el nombre real de la base
+            'database' => 'VEHI24', // ← este es el nombre real de la base
             'username' => 'profit',
             'password' => 'profit',
             //'encrypt' => false,
