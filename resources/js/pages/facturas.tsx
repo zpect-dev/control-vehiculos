@@ -25,7 +25,7 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
     // const handleExport = () => {
     //     exportAuditoriaExcel(facturasFiltradas, vehiculo);
     // };
-
+    console.log('isAdmin en Auditoria:', isAdmin);
     return (
         <AppLayout>
             <Head title="Historial de Gastos" />
@@ -70,7 +70,7 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
                 </div>
 
                 {/* Tabla modular */}
-                <TablaFacturas facturas={facturasFiltradas} vehiculo={vehiculo} isAdmin={!isAdmin} aprobado={false} />
+                <TablaFacturas facturas={facturasFiltradas} vehiculo={vehiculo} isAdmin={isAdmin} aprobado={false} />
 
                 {/* Botón exportar */}
                 {/* <div className="my-6 flex flex-col items-center justify-center text-center">

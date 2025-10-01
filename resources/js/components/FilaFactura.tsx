@@ -9,8 +9,6 @@ export function FilaFactura({ factura, onOpenModal }: FilaFacturaProps & { onOpe
         </span>
     );
 
-    console.log('Estado de la factura:', factura);
-
     return (
         <tr className="border-b text-sm text-gray-600 dark:text-gray-300">
             <td className="px-4 py-2">{factura.fact_num}</td>

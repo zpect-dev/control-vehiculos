@@ -16,6 +16,7 @@ export default function ModalDetalleFactura({
     onClose,
     visible,
     onActualizarEstado,
+    isAdmin,
 }: ModalDetalleFacturaProps) {
     if (!visible || typeof document === 'undefined') return null;
 
@@ -81,12 +82,13 @@ export default function ModalDetalleFactura({
             },
         });
     };
+console.log('isAdmin:', isAdmin);
 
     const [observacionConductor, setObservacionConductor] = useState(factura.observaciones_res ?? '');
     const [imagenes, setImagenes] = useState<Record<string, File | null>>({});
     const modalContent = (
         <div
-            className="bg-opacity-40 fixed inset-0 z-50 flex items-center justify-center bg-black p-2 backdrop-blur-sm sm:p-4 md:p-6"
+            className="bg-opacity-40 fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 backdrop-blur-sm sm:p-4 md:p-6"
             role="dialog"
             aria-modal="true"
         >
@@ -247,61 +249,63 @@ export default function ModalDetalleFactura({
                     </div>
                 </div>
                 {/* Sección Admin */}
-                <>
-                    <div className="my-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Marcar Aprobado</label>
-                            <div className="flex items-center gap-3 rounded-lg border bg-gray-100 p-3 shadow-sm dark:bg-gray-200">
-                                <Checkbox
-                                    id="aprobado"
-                                    name="aprobado"
-                                    checked={adminState.aprobado}
-                                    onCheckedChange={(value) => setAdminState((prev) => ({ ...prev, aprobado: Boolean(value) }))}
-                                />
+                {isAdmin && (
+                    <>
+                        <div className="my-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Marcar Aprobado</label>
+                                <div className="flex items-center gap-3 rounded-lg border bg-gray-100 p-3 shadow-sm dark:bg-gray-200">
+                                    <Checkbox
+                                        id="aprobado"
+                                        name="aprobado"
+                                        checked={adminState.aprobado}
+                                        onCheckedChange={(value) => setAdminState((prev) => ({ ...prev, aprobado: Boolean(value) }))}
+                                    />
 
-                                <span className="text-md font-medium text-gray-900 dark:text-gray-800">Aprobado</span>
+                                    <span className="text-md font-medium text-gray-900 dark:text-gray-800">Aprobado</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Supervisor</label>
+                                <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
+                                    {factura.supervisor}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">¿Cubre empresa?</label>
+                                <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
+                                    {adminState.cubre ? 'No' : 'Sí'}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
+                                <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
+                                    {adminState.cubre ? adminState.cubreUsuario : 'Empresa'}
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Supervisor</label>
-                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                {factura.supervisor}
-                            </div>
-                        </div>
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">¿Cubre empresa?</label>
-                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                {adminState.cubre ? 'No' : 'Sí'}
-                            </div>
-                        </div>
 
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
-                            <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                {adminState.cubre ? adminState.cubreUsuario : 'Empresa'}
-                            </div>
+                        <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del supervisor</h3>
+                        <textarea
+                            value={adminState.observacionesAdmin}
+                            onChange={(e) => setAdminState((prev) => ({ ...prev, observacionesAdmin: e.target.value }))}
+                            className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
+                            rows={4}
+                            placeholder="Escribe aquí..."
+                        />
+
+                        <div className="flex items-center justify-end">
+                            <button
+                                type="button"
+                                onClick={handleAdminSubmit}
+                                className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                            >
+                                Guardar
+                            </button>
                         </div>
-                    </div>
-
-                    <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del supervisor</h3>
-                    <textarea
-                        value={adminState.observacionesAdmin}
-                        onChange={(e) => setAdminState((prev) => ({ ...prev, observacionesAdmin: e.target.value }))}
-                        className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
-                        rows={4}
-                        placeholder="Escribe aquí..."
-                    />
-
-                    <div className="flex items-center justify-end">
-                        <button
-                            type="button"
-                            onClick={handleAdminSubmit}
-                            className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
-                        >
-                            Guardar
-                        </button>
-                    </div>
-                </>
+                    </>
+                )}
             </div>
         </div>
     );

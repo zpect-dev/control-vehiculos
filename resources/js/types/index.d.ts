@@ -136,6 +136,7 @@ export interface ModalAsignacionUserProps {
         name: string;
     }[];
     onSuccess?: (usuario: { id: string | number; name: string }) => void;
+    isAdmin: boolean;
 }
 
 export interface ModalRegistroSurtidoProps {
@@ -320,7 +321,7 @@ export interface AuditoriaAdminState {
 export type TablaFacturasProps = {
     facturas: Factura[];
     vehiculo: VehiculoConductor;
-    isAdmin: boolean;
+    isAdmin?: boolean;
     aprobado: boolean;
 };
 

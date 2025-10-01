@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\FlashHelper;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
 
 class FacturasController extends Controller
 {
@@ -26,6 +28,7 @@ class FacturasController extends Controller
             ->latest('fact_num')
             ->get()
             ->map(function ($factura) {
+                $aprobado = DB::select('SELECT aprobado FROM auditoria_facturas WHERE fact_num=?', [trim($factura->fact_num)]);
                 return [
                     'fact_num' => $factura->fact_num,
                     'fec_emis' => $factura->fec_emis,
@@ -33,17 +36,21 @@ class FacturasController extends Controller
                     'tot_bruto' => $factura->tot_bruto,
                     'tot_neto' => $factura->tot_neto,
                     'descripcion' => $factura->descripcion_limpia,
+                    'aprobado' => $aprobado ?? false,
                 ];
             });
 
         $conductor = $vehiculo->load('usuario:id,name')->toArray();
+        $user = Auth::user();
+        $isAdmin = $user ? $user->hasRole('admin') : false;
 
         return Inertia::render('facturas', [
             'facturas' => $facturas,
             'vehiculo' => [
                 'placa' => $vehiculo->placa,
                 'conductor' => $conductor['usuario']['name'] ?? null,
-            ]
+            ],
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -111,7 +118,9 @@ class FacturasController extends Controller
             'vehiculo' => [
                 'placa' => $factura->co_cli,
                 'conductor' => $conductor,
-            ]
+            ],
+            'isAdmin' => Auth::user()->hasRole('admin'),
+
         ]);
     }
 
