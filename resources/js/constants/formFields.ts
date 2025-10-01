@@ -3,50 +3,216 @@ import { Field } from '@/hooks/useFormLogic';
 // Campos para el formulario de Expediente
 export const expedienteTecnicoFields: Record<'CARRO' | 'MOTO', Field[]> = {
     CARRO: [
-        { id: '1', label: 'Kilometraje', type: 'text', placeholder: 'Ej: 12.345' },
-        { id: '2', label: 'Marca del Aceite', type: 'text', placeholder: 'Ej: Castrol' },
-        { id: '3', label: 'Marca de Valvulina', type: 'text', placeholder: 'Ej: Mobil' },
-        { id: '4', label: 'Marca del Refrigerante', type: 'text', placeholder: 'Ej: Motul' },
-        { id: '5', label: 'Posee Computadora Bloqueada', type: 'text', placeholder: 'SI / NO' },
-        { id: '6', label: 'Tipo de Frenos', type: 'text', placeholder: 'Ej: Disco, Tambor, ABS' },
-        { id: '7', label: 'Tipo de Distribución de Motor', type: 'text', placeholder: 'Ej: Cadena, Correa, Engranajes' },
-        { id: '8', label: 'Sistema de Enfriamiento', type: 'text', placeholder: 'Ej: Aire, Líquido' },
-        { id: '9', label: 'Sistema de Inyección', type: 'text', placeholder: 'Ej: Gasolina, Eléctrico, Diésel' },
-        { id: '10', label: 'Tipo de Cauchos', type: 'text', placeholder: 'Ej: Medida, Marca' },
+        {
+            id: '1',
+            label: 'Kilometraje',
+            type: 'text',
+            placeholder: 'Ej: 12.345',
+            required: false,
+        },
+        {
+            id: '2',
+            label: 'Marca del Aceite',
+            type: 'text',
+            placeholder: 'Ej: Castrol',
+            required: false,
+        },
+        {
+            id: '3',
+            label: 'Marca de Valvulina',
+            type: 'text',
+            placeholder: 'Ej: Mobil',
+            required: false,
+        },
+        {
+            id: '4',
+            label: 'Marca del Refrigerante',
+            type: 'text',
+            placeholder: 'Ej: Motul',
+            required: false,
+        },
+        {
+            id: '5',
+            label: 'Posee Computadora Bloqueada',
+            type: 'text',
+            placeholder: 'SI / NO',
+            required: false,
+        },
+        {
+            id: '6',
+            label: 'Tipo de Frenos',
+            type: 'text',
+            placeholder: 'Ej: Disco, Tambor, ABS',
+            required: false,
+        },
+        {
+            id: '7',
+            label: 'Tipo de Distribución de Motor',
+            type: 'text',
+            placeholder: 'Ej: Cadena, Correa, Engranajes',
+            required: false,
+        },
+        {
+            id: '8',
+            label: 'Sistema de Enfriamiento',
+            type: 'text',
+            placeholder: 'Ej: Aire, Líquido',
+            required: false,
+        },
+        {
+            id: '9',
+            label: 'Sistema de Inyección',
+            type: 'text',
+            placeholder: 'Ej: Gasolina, Eléctrico, Diésel',
+            required: false,
+        },
+        {
+            id: '10',
+            label: 'Tipo de Cauchos',
+            type: 'text',
+            placeholder: 'Ej: Medida, Marca',
+            required: false,
+        },
     ],
     MOTO: [
-        { id: '1', label: 'Kilometraje', type: 'text', placeholder: 'Ej: 12.345' },
-        { id: '2', label: 'Marca del Aceite', type: 'text', placeholder: 'Ej: Motul' },
-        { id: '3', label: 'Tipo de Motor', type: 'text', placeholder: 'Ej: 4 tiempos, 2 tiempos' },
-        { id: '4', label: 'Cilindrada', type: 'text', placeholder: 'Ej: 150cc, 250cc' },
-        { id: '5', label: 'Sistema de Enfriamiento', type: 'text', placeholder: 'Ej: Aire, Líquido' },
-        { id: '6', label: 'Tipo de Frenos', type: 'text', placeholder: 'Ej: Disco, Tambor' },
-        { id: '7', label: 'Tipo de Cauchos', type: 'text', placeholder: 'Ej: Medida, Marca' },
+        {
+            id: '1',
+            label: 'Kilometraje',
+            type: 'text',
+            placeholder: 'Ej: 12.345',
+            required: false,
+        },
+        {
+            id: '2',
+            label: 'Marca del Aceite',
+            type: 'text',
+            placeholder: 'Ej: Motul',
+            required: false,
+        },
+        {
+            id: '3',
+            label: 'Tipo de Motor',
+            type: 'text',
+            placeholder: 'Ej: 4 tiempos, 2 tiempos',
+            required: false,
+        },
+        {
+            id: '4',
+            label: 'Cilindrada',
+            type: 'text',
+            placeholder: 'Ej: 150cc, 250cc',
+            required: false,
+        },
+        {
+            id: '5',
+            label: 'Sistema de Enfriamiento',
+            type: 'text',
+            placeholder: 'Ej: Aire, Líquido',
+            required: false,
+        },
+        {
+            id: '6',
+            label: 'Tipo de Frenos',
+            type: 'text',
+            placeholder: 'Ej: Disco, Tambor',
+            required: false,
+        },
+        {
+            id: '7',
+            label: 'Tipo de Cauchos',
+            type: 'text',
+            placeholder: 'Ej: Medida, Marca',
+            required: false,
+        },
     ],
 };
 
 // Campos para el formulario de Permisologia
 export const permisologiaFields: Field[] = [
-    { id: 'titulo', label: 'Título del Vehículo', type: 'date' },
-    { id: 'titulo_archivo', label: 'Título del Vehículo', type: 'file' },
+    {
+        id: 'titulo_archivo',
+        label: 'Título del Vehículo',
+        type: 'file',
+        required: false,
+    },
 
-    { id: 'seguro', label: 'Seguro RCV', type: 'date' },
-    { id: 'seguro_archivo', label: 'Documento de Seguro RCV', type: 'file' },
+    {
+        id: 'seguro',
+        label: 'Seguro RCV',
+        type: 'date',
+        required: false,
+    },
+    {
+        id: 'seguro_archivo',
+        label: 'Documento de Seguro RCV',
+        type: 'file',
+        required: false,
+    },
 
-    { id: 'roct', label: 'Roct', type: 'date' },
-    { id: 'roct_archivo', label: 'Documento Roct', type: 'file' },
+    {
+        id: 'roct',
+        label: 'Roct',
+        type: 'date',
+        required: false,
+    },
+    {
+        id: 'roct_archivo',
+        label: 'Documento Roct',
+        type: 'file',
+        required: false,
+    },
 
-    { id: 'permisoRotReg', label: 'Permiso de Rotulado Regional', type: 'date' },
-    { id: 'permisoRotReg_archivo', label: 'Documento Rotulado Regional', type: 'file' },
+    {
+        id: 'permisoRotReg',
+        label: 'Permiso de Rotulado Regional',
+        type: 'date',
+        required: false,
+    },
+    {
+        id: 'permisoRotReg_archivo',
+        label: 'Documento Rotulado Regional',
+        type: 'file',
+        required: false,
+    },
 
-    { id: 'permisoRotNac', label: 'Permiso de Rotulado Nacional', type: 'date' },
-    { id: 'permisoRotNac_archivo', label: 'Documento Rotulado Nacional', type: 'file' },
+    {
+        id: 'permisoRotNac',
+        label: 'Permiso de Rotulado Nacional',
+        type: 'date',
+        required: false,
+    },
+    {
+        id: 'permisoRotNac_archivo',
+        label: 'Documento Rotulado Nacional',
+        type: 'file',
+        required: false,
+    },
 
-    { id: 'salvoconducto', label: 'Salvoconducto', type: 'date' },
-    { id: 'salvoconducto_archivo', label: 'Documento Salvoconducto', type: 'file' },
+    {
+        id: 'salvoconducto',
+        label: 'Salvoconducto',
+        type: 'date',
+        required: false,
+    },
+    {
+        id: 'salvoconducto_archivo',
+        label: 'Documento Salvoconducto',
+        type: 'file',
+        required: false,
+    },
 
-    { id: 'permisoAliMed', label: 'Permiso de Alimentos y Medicamentos', type: 'date' },
-    { id: 'permisoAliMed_archivo', label: 'Documento Alimentos y Medicamentos', type: 'file' },
+    {
+        id: 'permisoAliMed',
+        label: 'Permiso de Alimentos y Medicamentos',
+        type: 'date',
+        required: false,
+    },
+    {
+        id: 'permisoAliMed_archivo',
+        label: 'Documento Alimentos y Medicamentos',
+        type: 'file',
+        required: false,
+    },
 ];
 
 // Campos para el formulario de Accesorios
@@ -58,9 +224,11 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '2',
@@ -68,9 +236,11 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '3',
@@ -78,9 +248,11 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '3', label: 'Malo' },
+                { value: '4', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '4',
@@ -88,9 +260,11 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '5',
@@ -98,9 +272,11 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '6',
@@ -108,9 +284,11 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '7',
@@ -118,19 +296,23 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '8',
-            label: 'Repuesto',
+            label: 'Caucho de Repuesto',
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
     ],
     MOTO: [
@@ -140,80 +322,24 @@ export const accesoriosFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
-        // {
-        //     id: '2',
-        //     label: 'Conos de seguridad',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '3',
-        //     label: 'Cuña',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '4',
-        //     label: 'Extintor',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '5',
-        //     label: 'Gato',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
-        // {
-        //     id: '6',
-        //     label: 'Llave de cruz',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
         {
             id: '2',
             label: 'Linterna',
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
-        // {
-        //     id: '8',
-        //     label: 'Repuesto',
-        //     type: 'select',
-        //     options: [
-        //         { value: '0', label: 'Bueno' },
-        //         { value: '1', label: 'Malo' },
-        //         { value: '2', label: 'No posee' },
-        //     ],
-        // },
     ],
 };
 
@@ -226,9 +352,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '2',
@@ -236,9 +364,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '3',
@@ -246,9 +376,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '4',
@@ -256,9 +388,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '5',
@@ -266,9 +400,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '6',
@@ -276,9 +412,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '7',
@@ -286,9 +424,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '8',
@@ -296,9 +436,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '9',
@@ -306,9 +448,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '10',
@@ -316,9 +460,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '11',
@@ -326,9 +472,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '12',
@@ -336,9 +484,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '13',
@@ -346,9 +496,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '14',
@@ -356,9 +508,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '15',
@@ -366,9 +520,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '16',
@@ -376,9 +532,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '17',
@@ -386,9 +544,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '18',
@@ -396,9 +556,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '19',
@@ -406,9 +568,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '20',
@@ -416,9 +580,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '21',
@@ -426,9 +592,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '22',
@@ -436,9 +604,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '23',
@@ -446,9 +616,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '24',
@@ -456,9 +628,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '25',
@@ -466,9 +640,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '26',
@@ -476,9 +652,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '27',
@@ -486,9 +664,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '28',
@@ -496,9 +676,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '29',
@@ -506,9 +688,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '30',
@@ -516,9 +700,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '31',
@@ -526,9 +712,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '32',
@@ -536,9 +724,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '33',
@@ -546,9 +736,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '34',
@@ -556,9 +748,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '35',
@@ -566,9 +760,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '36',
@@ -576,9 +772,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '37',
@@ -586,9 +784,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '38',
@@ -596,9 +796,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '39',
@@ -606,9 +808,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '40',
@@ -616,9 +820,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '41',
@@ -626,9 +832,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
     ],
     MOTO: [
@@ -638,9 +846,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '2',
@@ -648,9 +858,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '3',
@@ -658,9 +870,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '4',
@@ -668,9 +882,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '5',
@@ -678,9 +894,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '6',
@@ -688,9 +906,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '7',
@@ -698,9 +918,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '8',
@@ -708,9 +930,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '9',
@@ -718,9 +942,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '10',
@@ -728,9 +954,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '11',
@@ -738,9 +966,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '12',
@@ -748,9 +978,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '13',
@@ -758,9 +990,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '14',
@@ -768,9 +1002,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '15',
@@ -778,9 +1014,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '16',
@@ -788,9 +1026,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '17',
@@ -798,9 +1038,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '18',
@@ -808,9 +1050,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '19',
@@ -818,9 +1062,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '20',
@@ -828,9 +1074,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
         {
             id: '21',
@@ -838,9 +1086,11 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
             type: 'select',
             options: [
                 { value: '0', label: 'Bueno' },
-                { value: '1', label: 'Malo' },
-                { value: '2', label: 'No posee' },
+                { value: '1', label: 'Regular' },
+                { value: '2', label: 'Malo' },
+                { value: '3', label: 'No posee' },
             ],
+            required: false,
         },
     ],
 };
@@ -853,60 +1103,50 @@ export const fluidosPorRevisarFields: Record<'CARRO' | 'MOTO', Field[]> = {
             label: 'Gasolina',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
         {
             id: 'aceite',
             label: 'Aceite de Motor',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
-        },
-        {
-            id: 'caja',
-            label: 'Aceite de Caja',
-            type: 'select',
-            options: [
-                { value: '', label: 'Selecciona nivel' },
-                { value: '1', label: 'Normal' },
-                { value: '0', label: 'Bajo' },
-            ],
+            required: false,
         },
         {
             id: 'refrigerante',
             label: 'Refrigerante o Agua',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
         {
             id: 'direccion',
             label: 'Líquido de Dirección',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
         {
             id: 'frenos',
             label: 'Liga de Frenos',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
     ],
     MOTO: [
@@ -915,60 +1155,40 @@ export const fluidosPorRevisarFields: Record<'CARRO' | 'MOTO', Field[]> = {
             label: 'Gasolina',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
         {
             id: 'aceite',
             label: 'Aceite de Motor',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
-        // {
-        //     id: 'caja',
-        //     label: 'Aceite de Caja',
-        //     type: 'select',
-        //     options: [
-        //         { value: '', label: 'Selecciona nivel' },
-        //         { value: '1', label: 'Normal' },
-        //         { value: '0', label: 'Bajo' },
-        //     ],
-        // },
         {
             id: 'refrigerante',
             label: 'Refrigerante o Agua',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
-        // {
-        //     id: 'direccion',
-        //     label: 'Líquido de Dirección',
-        //     type: 'select',
-        //     options: [
-        //         { value: '', label: 'Selecciona nivel' },
-        //         { value: '1', label: 'Normal' },
-        //         { value: '0', label: 'Bajo' },
-        //     ],
-        // },
         {
             id: 'frenos',
             label: 'Liga de Frenos',
             type: 'select',
             options: [
-                { value: '', label: 'Selecciona nivel' },
                 { value: '1', label: 'Normal' },
                 { value: '0', label: 'Bajo' },
             ],
+            required: false,
         },
     ],
 };
@@ -980,16 +1200,19 @@ export const getAsignacionFields = (users: { id: string | number; name: string }
         label: 'Usuario a asignar',
         type: 'select',
         options: users.map((u) => ({ label: u.name, value: String(u.id) })),
+        required: false,
     },
     {
         id: 'kilometraje',
         label: 'Kilometraje actual',
         type: 'text',
         placeholder: 'Ej. 123456',
+        required: false,
     },
     {
         id: 'foto_kilometraje',
         label: 'Foto del Kilometraje',
         type: 'file',
+        required: false,
     },
 ];

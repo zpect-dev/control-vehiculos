@@ -6,22 +6,14 @@ import { useState } from 'react';
 interface Props {
     vehiculo: VehiculoData;
     revisionSemanal?: RevisionSemanalData | null;
-    revisionAnteriorFinalExiste: boolean;
 }
 
-export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisionAnteriorFinalExiste }: Props) {
+export default function CardRevisionSemanal({ vehiculo, revisionSemanal }: Props) {
     const [video, setVideo] = useState<File | null>(null);
     const [kilometraje, setKilometraje] = useState('');
-    const [tipoRevision, setTipoRevision] = useState<'inicial' | 'final' | null>(null);
+    const [subiendoVideo, setSubiendoVideo] = useState(false);
 
-    const today = new Date();
-    const day = today.getDay();
-
-    const puedeSubirInicial = day === 1 && revisionAnteriorFinalExiste && !revisionSemanal?.video_inicial;
-
-    const puedeSubirFinal = (day === 5 || day === 6 || day === 0) && !!revisionSemanal?.video_inicial && !revisionSemanal?.video_final;
-
-    const ambosCompletados = !!revisionSemanal?.video_inicial && !!revisionSemanal?.video_final;
+    const puedeSubirVideo = !revisionSemanal?.video;
 
     const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         setVideo(e.target.files?.[0] || null);
@@ -29,25 +21,21 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!video || !kilometraje || !tipoRevision) return;
+        if (!video || !kilometraje) return;
 
         const formData = new FormData();
-        formData.append(tipoRevision === 'inicial' ? 'video_inicial' : 'video_final', video);
-        formData.append(tipoRevision === 'inicial' ? 'kilometraje_inicial' : 'kilometraje_final', kilometraje);
-        if (tipoRevision === 'final') {
-            formData.append('_method', 'PATCH');
-        }
+        formData.append('video', video);
+        formData.append('kilometraje', kilometraje);
 
-        const url =
-            tipoRevision === 'inicial'
-                ? `/fichaTecnica/${vehiculo.placa}/revisionSemanal`
-                : `/fichaTecnica/${vehiculo.placa}/revisionSemanal/${revisionSemanal?.id}`;
+        const url = revisionSemanal?.id
+            ? `/fichaTecnica/${vehiculo.placa}/revisionSemanal/${revisionSemanal.id}`
+            : `/fichaTecnica/${vehiculo.placa}/revisionSemanal`;
 
         router.post(url, formData, {
             onSuccess: () => {
                 setVideo(null);
                 setKilometraje('');
-                setTipoRevision(null);
+                setSubiendoVideo(false);
             },
             onError: (errors) => console.error('Error al registrar revisión:', errors),
             forceFormData: true,
@@ -59,55 +47,35 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
             <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">Revisión Semanal</h3>
 
             {/* Estado visual */}
-            {ambosCompletados && (
+            {revisionSemanal?.video && (
                 <div className="mb-4 flex items-center gap-2 text-[#49af4e] dark:text-[#4eb953]">
                     <CircleCheck />
-                    <span>Semana completada</span>
+                    <span>Video semanal registrado</span>
                 </div>
             )}
 
-            {/* Revisión Inicial */}
+            {/* Video semanal */}
             <div className="mb-6">
-                <h4 className="text-md mb-2 font-semibold text-gray-800 dark:text-white">Video de los Lunes</h4>
-                {revisionSemanal?.video_inicial ? (
+                <h4 className="text-md mb-2 font-semibold text-gray-800 dark:text-white">Video semanal</h4>
+                {revisionSemanal?.video ? (
                     <>
-                        <video controls src={revisionSemanal.video_inicial} className="mb-2 w-full rounded-md" />
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Kilometraje: {revisionSemanal.kilometraje_inicial}</p>
+                        <video controls src={revisionSemanal.video} className="mb-2 w-full rounded-md" />
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Kilometraje: {revisionSemanal.kilometraje}</p>
                     </>
-                ) : puedeSubirInicial ? (
+                ) : puedeSubirVideo ? (
                     <button
-                        onClick={() => setTipoRevision('inicial')}
+                        onClick={() => setSubiendoVideo(true)}
                         className="flex items-center gap-2 rounded-full bg-[#49af4e] px-4 py-2 text-white hover:bg-green-700"
                     >
                         Subir video
                     </button>
                 ) : (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Solo disponible los lunes si se completó la revisión final anterior.</p>
-                )}
-            </div>
-
-            {/* Revisión Final */}
-            <div>
-                <h4 className="text-md mb-2 font-semibold text-gray-800 dark:text-white">Video de los Fines de Semana</h4>
-                {revisionSemanal?.video_final ? (
-                    <>
-                        <video controls src={revisionSemanal.video_final} className="mb-2 w-full rounded-md" />
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Kilometraje: {revisionSemanal.kilometraje_final}</p>
-                    </>
-                ) : puedeSubirFinal ? (
-                    <button
-                        onClick={() => setTipoRevision('final')}
-                        className="flex items-center gap-2 rounded-full bg-[#49af4e] px-4 py-2 text-white hover:bg-green-700"
-                    >
-                        Subir video
-                    </button>
-                ) : (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Solo disponible de viernes a domingo si ya se subió el video inicial.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Este video aún no ha sido registrado.</p>
                 )}
             </div>
 
             {/* Formulario */}
-            {tipoRevision && (
+            {subiendoVideo && (
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4" encType="multipart/form-data">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Video</label>
@@ -136,7 +104,7 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal, revisio
                             type="submit"
                             className="rounded-full bg-[#49af4e] px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none"
                         >
-                            Guardar {tipoRevision === 'inicial' ? 'video inicial' : 'video final'}
+                            Guardar video semanal
                         </button>
                     </div>
                 </form>

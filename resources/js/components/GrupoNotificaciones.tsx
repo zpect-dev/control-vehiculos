@@ -19,7 +19,7 @@ export default function GrupoNotificaciones({ tipo, notificaciones, modo, onMarc
             >
                 {tipo}
             </h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {notificaciones.map((noti) => (
                     <div key={noti.id} className="transition-transform duration-300 hover:scale-[1.02]">
                         <NotificacionCard notificacion={noti} modo={modo} onMarcarLeida={() => onMarcarLeida(noti)} />

@@ -152,12 +152,14 @@ export interface ModalRegistroSurtidoProps {
 // Revisiones
 
 export interface RevisionSemanalData {
+    kilometraje: number;
     id: number;
     vehiculo_id: string;
     user_id: number;
     video_inicial: string;
     kilometraje_inicial: number;
     video_final?: string;
+    video: string;
     kilometraje_final?: number;
     created_at: string;
     updated_at: string;

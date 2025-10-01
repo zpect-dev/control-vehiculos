@@ -26,8 +26,9 @@ function getCampoLabel(formType: string, tipoVehiculo: 'CARRO' | 'MOTO', fieldId
 function getEstadoLabel(value: number | string): string {
     const estados: Record<string, string> = {
         '0': 'BUENO',
-        '1': 'MALO',
-        '2': 'NO POSEE',
+        '1': 'REGULAR',
+        '2': 'MALO',
+        '3': 'NO POSEE',
     };
 
     return estados[String(value)] ?? `Valor ${value}`;
@@ -52,10 +53,6 @@ export default function NotificacionRealtime() {
 
             const campo = getCampoLabel(data.formType, data.tipoVehiculo, data.field);
             const estado = getEstadoLabel(data.value);
-            console.log('formType:', data.formType);
-            console.log('tipoVehiculo:', data.tipoVehiculo);
-            console.log('field:', data.field);
-            console.log('campo:', campo);
 
             toast.warning(`Cambio crítico registrado`, {
                 description: (
