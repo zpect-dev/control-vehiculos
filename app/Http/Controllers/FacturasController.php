@@ -26,6 +26,7 @@ class FacturasController extends Controller
     {
         $facturas = Factura::where('co_cli', $vehiculo->placa)
             ->where('anulada', 0)
+            ->whereDate('fec_emis', '>=', '2025-10-01')
             ->latest('fact_num')
             ->get()
             ->map(function ($factura) {
