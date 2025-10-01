@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Surtido extends Model
 {
@@ -18,6 +19,13 @@ class Surtido extends Model
         'observaciones',
         'precio',
         'fact_num',
-        'diferencia'
+        'diferencia',
+        'admin_id'
     ];
+
+    // Relación con el usuario que realizó el surtido
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

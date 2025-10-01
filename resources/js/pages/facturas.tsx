@@ -65,7 +65,7 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
                 </div>
 
                 {/* Tabla modular */}
-                <TablaFacturas facturas={facturasFiltradas} vehiculo={vehiculo} isAdmin={!!isAdmin} />
+                <TablaFacturas facturas={facturasFiltradas} vehiculo={vehiculo} isAdmin={!!isAdmin} aprobado={false} />
             </div>
         </AppLayout>
     );

@@ -437,7 +437,7 @@ export interface SurtidoField {
 
 export interface SurtidoFormData {
     litros: string;
-    kilometraje: string;
+    kilometraje: string | any;
     observacion?: string;
     [key: string]: string | boolean | File | null;
 }
@@ -447,7 +447,7 @@ export interface SurtidoResponse {
     precio: number;
 }
 
-export interface GasolinaRow {
+export interface RegistroGasolina {
     factura: number;
     fecha: string;
     vehiculo: string;

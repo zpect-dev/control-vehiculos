@@ -27,7 +27,10 @@ class SurtidosController extends Controller
     {
         $vehiculo->load('usuario');
 
-        $registros = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->get();
+        $registros = Surtido::where('vehiculo_id', $vehiculo->placa)
+            ->latest()
+            ->get();
+
         return Inertia::render('gasolina', [
             'vehiculo' => [
                 'placa' => $vehiculo->placa,
@@ -36,9 +39,27 @@ class SurtidosController extends Controller
                     'name' => optional($vehiculo->usuario)->name,
                 ],
             ],
-            'registros' => $registros,
+            'registros' => $registros->map(function ($surtido) use ($vehiculo) {
+                $user = User::find($surtido->user_id);
+                $admin = User::find($surtido->admin_id);
+                return [
+                    'factura' => $surtido->fact_num,
+                    'fecha' => $surtido->created_at->format('Y-m-d'),
+                    'vehiculo' => $surtido->vehiculo_id,
+                    'precio' => 0.5,
+                    'km_actual' => $surtido->kilometraje,
+                    'recorrido' => $surtido->surtido_ideal,
+                    'litros' => $surtido->cant_litros,
+                    'total' => $surtido->precio,
+                    'observaciones' => $surtido->observaciones,
+                    'diferencia' => $surtido->diferencia,
+                    'conductor' => $user->name ?? 'Sin conductor',
+                    'admin' => $admin->name,
+                ];
+            }),
         ]);
     }
+
 
     public function info(Vehiculo $vehiculo)
     {
@@ -48,7 +69,7 @@ class SurtidosController extends Controller
             'kilometraje_anterior' => $ultimo ? $ultimo->kilometraje : null,
             'precio_unitario' => 0.5,
         ]);
-    } 
+    }
 
 
 
@@ -57,7 +78,6 @@ class SurtidosController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validate([
-                //'tipo_surtido' => 'required|integer|in:1,2,3',
                 'cant_litros' => 'required|numeric|min:0.1|max:1000',
                 'kilometraje' => 'required|numeric|min:0',
                 'observaciones' => 'nullable',
@@ -79,11 +99,11 @@ class SurtidosController extends Controller
             }
 
             Surtido::create([
-                'user_id' => $request->user()->id,
+                'user_id' => $vehiculo->user_id,
+                'admin_id' => $request->user()->id,
                 'vehiculo_id' => $vehiculo->placa,
                 'fact_num' => $fact_num,
-                //'tipo_surtido' => $validatedData['tipo_surtido'],
-                'cant_litros' => 20,
+                'cant_litros' => $validatedData['cant_litros'],
                 'kilometraje' => $validatedData['kilometraje'],
                 'surtido_ideal' => $surtido_ideal ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,

@@ -8,19 +8,20 @@ import { useEffect, useState } from 'react';
 
 const fields: SurtidoField[] = [
     {
-        id: 'litros',
-        label: 'Litros surtidos',
-        type: 'number',
-        placeholder: 'Ej: 20',
-        required: true,
-    },
-    {
         id: 'kilometraje',
         label: 'Kilometraje actual',
         type: 'number',
         placeholder: 'Ej: 12500',
         required: true,
     },
+    {
+        id: 'litros',
+        label: 'Litros surtidos',
+        type: 'number',
+        placeholder: 'Ej: 20',
+        required: true,
+    },
+
     {
         id: 'observacion',
         label: 'Observación',
@@ -41,10 +42,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
     const { litros, kilometraje, observacion } = formValues;
     const [processing, setProcessing] = useState(false);
     const [kilometrajeAnterior, setKilometrajeAnterior] = useState<number>(0);
-    const [surtidoIdeal, setSurtidoIdeal] = useState<number | null>(null);
     const [precioUnitario, setPrecioUnitario] = useState<number>(0.5);
-
-    console.log(kilometraje)
 
     useEffect(() => {
         if (isOpen) {
@@ -52,7 +50,6 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 .then((res) => res.json())
                 .then((data) => {
                     setKilometrajeAnterior(data.kilometraje_anterior);
-                    setSurtidoIdeal(data.surtido_ideal);
                     setPrecioUnitario(data.precio_unitario);
                 });
         }
@@ -125,7 +122,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <strong>Kilometraje anterior:</strong> {kilometrajeAnterior}
                         </p>
                         <p>
-                            <strong>Surtido ideal:</strong> {(kilometraje - kilometrajeAnterior)*0.35}
+                            <strong>Surtido ideal:</strong> {(kilometraje - kilometrajeAnterior) * 0.35}
                         </p>
                         <p>
                             <strong>Precio unitario:</strong> ${precioUnitario}

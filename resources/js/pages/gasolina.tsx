@@ -1,31 +1,18 @@
 import ModalRegistroSurtido from '@/components/modal/ModalRegistrarSurtido';
 import AppLayout from '@/layouts/app-layout';
-import { VehiculoData } from '@/types';
+import { RegistroGasolina, VehiculoData } from '@/types';
 import { exportGasolinaExcel } from '@/utils/exportExcel';
 import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Gasolina() {
-    const { vehiculo } = usePage<{ vehiculo: VehiculoData }>().props;
+    const { vehiculo, registros } = usePage<{ vehiculo: VehiculoData; registros: RegistroGasolina[] }>().props;
 
     const [modalOpen, setModalOpen] = useState(false);
 
     const handleExport = () => {
-        const data = [...Array(5)].map((_, index) => ({
-            factura: index + 1,
-            fecha: '2025-09-22',
-            vehiculo: vehiculo.placa,
-            precio: 0.5,
-            km_actual: 12250,
-            recorrido: 250,
-            litros: 20,
-            total: 10.0,
-            observaciones: 'Sin observaciones',
-            diferencia: -10,
-            conductor: vehiculo.usuario,
-        }));
-
-        exportGasolinaExcel(data);
+        exportGasolinaExcel(registros);
+        exportGasolinaExcel();
     };
 
     return (
@@ -50,7 +37,7 @@ export default function Gasolina() {
                 {/* Filtros */}
                 <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Filtrar por placa</label>
+                    <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">N° Factura</label>
                         <input type="text" placeholder="Ej: ABC123" className="rounded-md border px-3 py-2 text-sm" />
                     </div>
 
@@ -85,7 +72,7 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">Vehículo</th>
                                 <th className="px-4 py-2">Precio</th>
                                 <th className="px-4 py-2">Km Actual</th>
-                                <th className="px-4 py-2">Recorrido Km</th>
+                                <th className="px-4 py-2">Surtido ideal</th>
                                 <th className="px-4 py-2">Litros</th>
                                 <th className="px-4 py-2">Total $</th>
                                 <th className="px-4 py-2">Observaciones</th>
@@ -94,21 +81,29 @@ export default function Gasolina() {
                             </tr>
                         </thead>
                         <tbody>
-                            {[...Array(5)].map((_, index) => (
-                                <tr key={index} className="text-sm text-gray-700 dark:text-gray-300">
-                                    <td className="px-4 py-2">{index + 1}</td>
-                                    <td className="px-4 py-2">2025-09-22</td>
-                                    <td className="px-4 py-2">{vehiculo.placa}</td>
-                                    <td className="px-4 py-2">$0.5</td>
-                                    <td className="px-4 py-2">12250</td>
-                                    <td className="px-4 py-2">250</td>
-                                    <td className="px-4 py-2">20</td>
-                                    <td className="px-4 py-2">$10.0</td>
-                                    <td className="px-4 py-2">Sin observaciones</td>
-                                    <td className="px-4 py-2">-10</td>
-                                    <td className="px-4 py-2">{vehiculo.usuario?.name ?? 'Sin conductor'}</td>
+                            {registros.length === 0 ? (
+                                <tr>
+                                    <td colSpan={11} className="py-4 text-center text-gray-500">
+                                        No hay registros de gasolina para este vehículo.
+                                    </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                registros.map((registro, index) => (
+                                    <tr key={index} className="text-sm text-gray-700 dark:text-gray-300">
+                                        <td className="px-4 py-2">{registro.factura}</td>
+                                        <td className="px-4 py-2">{registro.fecha}</td>
+                                        <td className="px-4 py-2">{registro.vehiculo}</td>
+                                        <td className="px-4 py-2">${registro.precio}</td>
+                                        <td className="px-4 py-2">{registro.km_actual}</td>
+                                        <td className="px-4 py-2">{registro.recorrido}</td>
+                                        <td className="px-4 py-2">{registro.litros}</td>
+                                        <td className="px-4 py-2">${registro.total}</td>
+                                        <td className="px-4 py-2">{registro.observaciones}</td>
+                                        <td className="px-4 py-2">{registro.diferencia}</td>
+                                        <td className="px-4 py-2">{registro.conductor}</td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
