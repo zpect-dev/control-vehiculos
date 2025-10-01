@@ -23,7 +23,7 @@ export default function Login({ status }: LoginProps) {
                         <div className="grid gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email" className="font-semibold text-gray-700 dark:text-gray-300">
-                                    Cedula de Identidad
+                                    INGRESE SU CÉDULA DE IDENTIDAD
                                 </Label>
                                 <Input
                                     id="email"
@@ -42,7 +42,7 @@ export default function Login({ status }: LoginProps) {
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password" className="font-semibold text-gray-700 dark:text-gray-300">
-                                        Contraseña
+                                        INGRESE SU NUEVA CONTRASEÑA
                                     </Label>
                                 </div>
                                 <Input

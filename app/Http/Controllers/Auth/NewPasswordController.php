@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class NewPasswordController extends Controller
 {
@@ -28,6 +26,7 @@ class NewPasswordController extends Controller
         ], [
             'email.required' => 'La cédula es obligatoria.',
             'email.numeric' => 'La cédula debe contener solo números.',
+            'email.exists' => 'No se encontró un usuario con esa cédula.',
             'password.required' => 'La contraseña es obligatoria.',
         ]);
 
