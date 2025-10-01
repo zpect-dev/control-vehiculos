@@ -27,6 +27,22 @@ class SurtidosController extends Controller
     {
         $vehiculo->load('usuario');
 
+        $query = Surtido::where('vehiculo_id', $vehiculo->placa);
+
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('created_at', '>=', $request->fecha_desde);
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('created_at', '<=', $request->fecha_hasta);
+        }
+
+        if ($request->filled('factura')) {
+            $query->where('fact_num', 'like', '%' . $request->factura . '%');
+        }
+
+        $registros = $query->latest()->get();
+
         $registros = Surtido::where('vehiculo_id', $vehiculo->placa)
             ->latest()
             ->get();

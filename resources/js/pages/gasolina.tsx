@@ -3,10 +3,23 @@ import AppLayout from '@/layouts/app-layout';
 import { RegistroGasolina, VehiculoData } from '@/types';
 import { exportGasolinaExcel } from '@/utils/exportExcel';
 import { Head, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function Gasolina() {
     const { vehiculo, registros } = usePage<{ vehiculo: VehiculoData; registros: RegistroGasolina[] }>().props;
+
+    const [fechaDesde, setFechaDesde] = useState('');
+    const [fechaHasta, setFechaHasta] = useState('');
+    const [factura, setFactura] = useState('');
+
+    const registrosFiltrados = useMemo(() => {
+        return registros.filter((r) => {
+            const matchFactura = factura ? r.factura.toString().includes(factura) : true;
+            const matchDesde = fechaDesde ? r.fecha >= fechaDesde : true;
+            const matchHasta = fechaHasta ? r.fecha <= fechaHasta : true;
+            return matchFactura && matchDesde && matchHasta;
+        });
+    }, [factura, fechaDesde, fechaHasta, registros]);
 
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -37,18 +50,35 @@ export default function Gasolina() {
                 {/* Filtros */}
                 <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div className="flex flex-col">
-                    <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">N° Factura</label>
-                        <input type="text" placeholder="Ej: ABC123" className="rounded-md border px-3 py-2 text-sm" />
-                    </div>
-
-                    <div className="flex flex-col">
                         <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Fecha desde</label>
-                        <input type="date" className="rounded-md border px-3 py-2 text-sm" />
+                        <input
+                            type="date"
+                            value={fechaDesde}
+                            onChange={(e) => setFechaDesde(e.target.value)}
+                            className="rounded-md border px-3 py-2 text-sm"
+                        />
                     </div>
 
                     <div className="flex flex-col">
                         <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Fecha hasta</label>
-                        <input type="date" className="rounded-md border px-3 py-2 text-sm" />
+
+                        <input
+                            type="date"
+                            value={fechaHasta}
+                            onChange={(e) => setFechaHasta(e.target.value)}
+                            className="rounded-md border px-3 py-2 text-sm"
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Buscar por N° de factura</label>
+
+                        <input
+                            type="text"
+                            value={factura}
+                            onChange={(e) => setFactura(e.target.value)}
+                            placeholder="Ej: ABC123"
+                            className="rounded-md border px-3 py-2 text-sm"
+                        />
                     </div>
                 </div>
 
@@ -88,7 +118,7 @@ export default function Gasolina() {
                                     </td>
                                 </tr>
                             ) : (
-                                registros.map((registro, index) => (
+                                registrosFiltrados.map((registro, index) => (
                                     <tr key={index} className="text-sm text-gray-700 dark:text-gray-300">
                                         <td className="px-4 py-2">{registro.factura}</td>
                                         <td className="px-4 py-2">{registro.fecha}</td>
