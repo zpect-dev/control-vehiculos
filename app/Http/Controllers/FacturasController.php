@@ -31,7 +31,6 @@ class FacturasController extends Controller
             ->get()
             ->map(function ($factura) {
                 $aprobado = DB::select('SELECT aprobado FROM auditoria_facturas WHERE fact_num=?', [trim($factura->fact_num)]);
-                //dd($aprobado[0]->aprobado);
                 return [
                     'fact_num' => $factura->fact_num,
                     'fec_emis' => $factura->fec_emis,
@@ -59,7 +58,6 @@ class FacturasController extends Controller
 
     public function show(Request $request, Factura $factura)
     {
-        $vehiculo = Vehiculo::with('usuario:id,name')->where('placa', $factura->co_cli)->first();
         $facturaAuditada = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
 
         $renglones = RenglonAuditoria::where('fact_num', $factura->fact_num)->get();
