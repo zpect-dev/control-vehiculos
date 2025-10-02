@@ -49,19 +49,11 @@ class PermisologiaController extends Controller
                         : $multimedia->guardarImagen($archivo, 'documentos');
                 }
 
-                if ($expedicion || $vencimiento) {
-                    $estado = $vencimiento ? now()->lt($vencimiento) : true;
-
-                    $datos = [
-                        'estado' => $estado,
-                        'fecha_expedicion' => $expedicion,
-                        'fecha_vencimiento' => $vencimiento,
-                        'valor_texto' => null,
-                    ];
+                if ($campo == 'titulo') {
                     if ($documento) {
                         $datos['documento'] = $documento;
                     }
-
+                    
                     VehiculoPermisos::updateOrCreate(
                         [
                             'user_id' => $request->user()->id,
@@ -70,23 +62,44 @@ class PermisologiaController extends Controller
                         ],
                         $datos
                     );
+                }
+                
+                $estado = $vencimiento ? now()->lt($vencimiento) : true;
 
-                    if ($vencimiento) {
-                        $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
-                        $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
-                        $clave = "permiso_alertado_{$vehiculo->placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
+                $datos = [
+                    'estado' => $estado,
+                    'fecha_expedicion' => $expedicion,
+                    'fecha_vencimiento' => $vencimiento,
+                    'valor_texto' => null,
+                ];
+                if ($documento) {
+                    $datos['documento'] = $documento;
+                }
 
-                        if (!session()->has($clave)) {
-                            session()->put($clave, true);
+                VehiculoPermisos::updateOrCreate(
+                    [
+                        'user_id' => $request->user()->id,
+                        'vehiculo_id' => $vehiculo->placa,
+                        'permiso_id' => $permisoId,
+                    ],
+                    $datos
+                );
 
-                            if ($diasRestantes <= 15) {
-                                NotificacionHelper::emitirPermisoPorVencer(
-                                    $vehiculo->placa,
-                                    $usuario,
-                                    ucfirst($campo),
-                                    $vencimientoCarbon->toDateString()
-                                );
-                            }
+                if ($vencimiento) {
+                    $vencimientoCarbon = Carbon::parse($vencimiento)->startOfDay();
+                    $diasRestantes = Carbon::today()->diffInDays($vencimientoCarbon, false);
+                    $clave = "permiso_alertado_{$vehiculo->placa}_{$campo}_{$vencimientoCarbon->toDateString()}";
+
+                    if (!session()->has($clave)) {
+                        session()->put($clave, true);
+
+                        if ($diasRestantes <= 15) {
+                            NotificacionHelper::emitirPermisoPorVencer(
+                                $vehiculo->placa,
+                                $usuario,
+                                ucfirst($campo),
+                                $vencimientoCarbon->toDateString()
+                            );
                         }
                     }
                 }
