@@ -38,16 +38,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('perfil/{user}', [UsersController::class, 'update'])->name('perfil.update');
 });
 
-//Rutas Factura
-Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class, 'index'])->name('facturas.index');
-Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
-Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store');
-Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update');
-
-
 // Route::get('gasolina', [SurtidosController::class, 'test']);
 
 Route::middleware(['auth', 'acceso'])->group(function () {
+    //Rutas Factura
+    Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class, 'index'])->name('facturas.index');
+    Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
+    Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store');
+
     // Ficha Técnica
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
 
@@ -78,6 +76,9 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
 });
 Route::middleware(['auth', 'admin'])->group(function () {
+    // Rutas facturas
+    Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update');
+
     // Observaciones globales
     Route::get('observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
 
