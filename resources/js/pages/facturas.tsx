@@ -22,9 +22,6 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
           })
         : [];
 
-    // const handleExport = () => {
-    //     exportAuditoriaExcel(facturasFiltradas, vehiculo);
-    // };
     return (
         <AppLayout>
             <Head title="Historial de Gastos" />

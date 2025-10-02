@@ -216,7 +216,7 @@ class FacturasController extends Controller
                 $fechaAudi = Carbon::parse($factura->created_at);
                 $diasDiff = $fechaEmis->diffInDays($fechaAudi);
 
-                if ($diasDiff > 5) {
+                if ($diasDiff > 7) {
                     $factura->cubre = true;
                     $factura->cubre_usuario = $factura->user_id;
                     Log::debug('💸 Cubre empresa activado por antigüedad', ['usuario' => $factura->user_id]);
