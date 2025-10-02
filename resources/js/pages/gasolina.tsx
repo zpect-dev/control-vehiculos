@@ -128,7 +128,6 @@ export default function Gasolina() {
                                         <td className="px-4 py-2">{registro.diferencia} Litros</td>
                                         <td className="px-4 py-2">{registro.conductor}</td>
                                         <td className="px-4 py-2">{registro.admin ?? '-'}</td>
-
                                     </tr>
                                 ))
                             )}

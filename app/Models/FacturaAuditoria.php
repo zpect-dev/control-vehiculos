@@ -17,6 +17,7 @@ class FacturaAuditoria extends Model
         'observaciones_admin',
         'aprobado',
         'cubre',
+        'cubre_usuario',
     ];
 
     public function renglones()

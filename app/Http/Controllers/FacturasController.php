@@ -199,7 +199,8 @@ class FacturasController extends Controller
                 'aprobado' => 'required|boolean',
                 'observaciones_admin' => 'nullable|string',
                 'cubre' => 'nullable|boolean',
-                'cubre_usuario' => 'nullable|integer',
+                'cubre_usuario' => 'nullable',
+
             ]);
 
             if ($request->has('cubre')) {
@@ -207,8 +208,29 @@ class FacturasController extends Controller
             }
 
             if ($request->has('cubre_usuario')) {
-                $factura->cubre_usuario = $validatedData['cubre_usuario'];
+                $alias = $validatedData['cubre_usuario'];
+
+                switch ($alias) {
+                    case 'empresa':
+                        $factura->cubre = false;
+                        $factura->cubre_usuario = null;
+                        break;
+                    case 'conductor':
+                        $factura->cubre = true;
+                        $factura->cubre_usuario = $factura->user_id;
+                        break;
+                    case 'supervisor':
+                        $factura->cubre = true;
+                        $factura->cubre_usuario = $factura->admin_id;
+                        break;
+                    default:
+                        $factura->cubre = true;
+                        $factura->cubre_usuario = is_numeric($alias) ? intval($alias) : null;
+                        break;
+                }
             }
+
+
 
             if (!isset($factura->cubre) || !isset($factura->cubre_usuario)) {
                 $facturaOriginal = Factura::where('fact_num', $factura->fact_num)->firstOrFail();
