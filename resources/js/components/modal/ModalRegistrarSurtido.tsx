@@ -33,8 +33,16 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 .then((data) => {
                     setKilometrajeAnterior(data.kilometraje_anterior);
                     setPrecioUnitario(data.precio_unitario);
-                    setValorCarburador(data.valor_carburador)
+                    setValorCarburador(data.valor_carburador);
                 });
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            handleChange('litros', '');
+            handleChange('kilometraje', '');
+            handleChange('observacion', '');
         }
     }, [isOpen]);
 
