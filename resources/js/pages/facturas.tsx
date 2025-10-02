@@ -25,7 +25,11 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
     // const handleExport = () => {
     //     exportAuditoriaExcel(facturasFiltradas, vehiculo);
     // };
+<<<<<<< Updated upstream
+=======
+    
     console.log('isAdmin en Auditoria:', isAdmin);
+>>>>>>> Stashed changes
     return (
         <AppLayout>
             <Head title="Historial de Gastos" />

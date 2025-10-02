@@ -7,11 +7,9 @@ import { useMemo, useState } from 'react';
 
 export default function Gasolina() {
     const { vehiculo, registros } = usePage<{ vehiculo: VehiculoData; registros: RegistroGasolina[] }>().props;
-
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [factura, setFactura] = useState('');
-
     const registrosFiltrados = useMemo(() => {
         return registros.filter((r) => {
             const matchFactura = factura ? r.factura.toString().includes(factura) : true;
@@ -20,9 +18,7 @@ export default function Gasolina() {
             return matchFactura && matchDesde && matchHasta;
         });
     }, [factura, fechaDesde, fechaHasta, registros]);
-
     const [modalOpen, setModalOpen] = useState(false);
-
     const handleExport = () => {
         exportGasolinaExcel(registros);
     };
@@ -91,7 +87,7 @@ export default function Gasolina() {
                     </button>
                 </div>
 
-                {/* Tabla simulada */}
+                {/* Tabla */}
                 <div className="overflow-x-auto rounded-lg shadow">
                     <table className="min-w-full table-auto border-collapse bg-white dark:bg-gray-800">
                         <thead className="bg-gray-200 dark:bg-gray-700">
@@ -107,6 +103,7 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">Observaciones</th>
                                 <th className="px-4 py-2">Diferencia Litros</th>
                                 <th className="px-4 py-2">Conductor</th>
+                                <th className="px-4 py-2">Supervisor</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -130,6 +127,8 @@ export default function Gasolina() {
                                         <td className="px-4 py-2">{registro.observaciones}</td>
                                         <td className="px-4 py-2">{registro.diferencia} Litros</td>
                                         <td className="px-4 py-2">{registro.conductor}</td>
+                                        <td className="px-4 py-2">{registro.admin ?? '-'}</td>
+
                                     </tr>
                                 ))
                             )}

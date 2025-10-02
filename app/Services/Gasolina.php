@@ -7,11 +7,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
-class Gasolina 
-{   
+class Gasolina
+{
     protected $TASA_GASOLINA = 0.5;
-    
-    public function registrarFacturaConRenglon($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $cant_litros){
+
+    public function registrarFacturaConRenglon($kilometraje, $descrip, $saldo, $co_cli, $cedula, $admin, $diferencia, $cant_litros)
+    {
         DB::connection('sqlsrv')->beginTransaction();
         try {
             $rowguid = (string) Uuid::uuid4();
@@ -44,14 +45,16 @@ class Gasolina
         }
     }
 
-    public function co_ven($cedula){
+    public function co_ven($cedula)
+    {
         $co_ven = DB::connection('sqlsrv')->select("
             SELECT co_ven FROM vendedor WHERE cedula=?
         ", [$cedula]);
         return $co_ven[0]->co_ven ?? "GAS";
     }
 
-    public function construir_factura($kilometraje, $descrip, $saldo, $co_cli, $co_ven, $admin, $diferencia, $fact_num, $rowguid){
+    public function construir_factura($kilometraje, $descrip, $saldo, $co_cli, $co_ven, $admin, $diferencia, $fact_num, $rowguid)
+    {
         $factura = [
             "fact_num" => $fact_num,
             "contrib" => 1,
@@ -61,7 +64,7 @@ class Gasolina
             "num_control" => "",
             "status" => 0,
             "comentario" => "",
-            "descrip" => $descrip,
+            "descrip" => $descrip ?? "",
             "saldo" => $saldo,
             "fec_emis" => Carbon::today()->format('d-m-Y H:i:s'),
             "fec_venc" => Carbon::today()->format('d-m-Y H:i:s'),
@@ -137,7 +140,8 @@ class Gasolina
         return $factura;
     }
 
-    public function construir_renglon($fact_num, $cant_litros, $num_doc, $saldo, $rowguid){
+    public function construir_renglon($fact_num, $cant_litros, $num_doc, $saldo, $rowguid)
+    {
         $renglon = [
             "fact_num" => $fact_num,
             "reng_num" => 1,
@@ -188,7 +192,8 @@ class Gasolina
         return $renglon;
     }
 
-    public function construir_documento($fact_num, $co_cli, $co_ven, $saldo, $rowguid){
+    public function construir_documento($fact_num, $co_cli, $co_ven, $saldo, $rowguid)
+    {
         $documento = [
             "tipo_doc" => 'FACT',
             "nro_doc" => $fact_num,

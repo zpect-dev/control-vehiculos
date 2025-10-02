@@ -155,10 +155,8 @@ export interface RevisionSemanalData {
     id: number;
     vehiculo_id: string;
     user_id: number;
-    video_inicial: string;
-    kilometraje_inicial: number;
-    video_final?: string;
-    kilometraje_final?: number;
+    video: string;
+    kilometraje: number;
     created_at: string;
     updated_at: string;
 }
@@ -460,4 +458,5 @@ export interface RegistroGasolina {
     observaciones: string;
     diferencia: number;
     conductor: string;
+    admin?: string;
 }

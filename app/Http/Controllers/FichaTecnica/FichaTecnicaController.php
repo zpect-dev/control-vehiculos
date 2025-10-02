@@ -59,8 +59,9 @@ class FichaTecnicaController extends Controller
 
         $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
-
-        $users = $isAdmin ? User::select('id', 'name')->get() : [];
+        $users = $isAdmin ? User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'admin');
+        })->get() : [];
 
         return Inertia::render('fichaTecnica', [
             'vehiculos' => [$vehiculo],

@@ -1,34 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { fields } from '@/constants/formFields';
 import { useFormLogic } from '@/hooks/useFormLogic';
-import { ModalRegistroSurtidoProps, SurtidoField, SurtidoFormData } from '@/types';
+import { ModalRegistroSurtidoProps, SurtidoFormData } from '@/types';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-const fields: SurtidoField[] = [
-    {
-        id: 'kilometraje',
-        label: 'Kilometraje actual',
-        type: 'number',
-        placeholder: 'Ej: 12500',
-        required: true,
-    },
-    {
-        id: 'litros',
-        label: 'Litros surtidos',
-        type: 'number',
-        placeholder: 'Ej: 20',
-        required: true,
-    },
-    {
-        id: 'observacion',
-        label: 'Observación',
-        type: 'textarea',
-        placeholder: 'Observaciones adicionales...',
-        required: false,
-    },
-];
+import { toast } from 'sonner';
 
 export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: ModalRegistroSurtidoProps) {
     const { formValues, handleChange, hasCamposIncompletos } = useFormLogic<SurtidoFormData>(
@@ -39,12 +17,14 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
         },
         fields,
     );
-
     const { litros, kilometraje, observacion } = formValues;
     const [processing, setProcessing] = useState(false);
     const [kilometrajeAnterior, setKilometrajeAnterior] = useState<number>(0);
     const [precioUnitario, setPrecioUnitario] = useState<number>(0.5);
-    const [valorCarburador, setValorCarburador] = useState<number>(0);
+    const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+    const [valorCarburador, setValorCarburador] = useState(0);
+    const surtidoIdeal = Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * valorCarburador : 0;
+    const precioTotal = Number(litros) * precioUnitario;
 
     useEffect(() => {
         if (isOpen) {
@@ -53,17 +33,27 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 .then((data) => {
                     setKilometrajeAnterior(data.kilometraje_anterior);
                     setPrecioUnitario(data.precio_unitario);
-                    setValorCarburador(data.valor_carburador);
+                    setValorCarburador(data.valor_carburador)
                 });
         }
     }, [isOpen]);
 
     function registrarSurtido() {
         if (hasCamposIncompletos) {
-            alert('Por favor completa los campos requeridos');
+            toast.error('Por favor completa los campos requeridos');
             return;
         }
 
+        const diferenciaLitros = Math.abs(Number(litros) - surtidoIdeal);
+        if (diferenciaLitros > 10) {
+            setMostrarConfirmacion(true);
+            return;
+        }
+
+        ejecutarRegistro();
+    }
+
+    function ejecutarRegistro() {
         setProcessing(true);
 
         router.post(
@@ -72,18 +62,18 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 cant_litros: litros,
                 kilometraje,
                 observaciones: observacion,
-                precio: Number(litros) * precioUnitario,
+                precio: precioTotal,
             },
             {
-                onSuccess: () => onClose(),
-                onError: () => alert('Error al registrar el surtido'),
+                onSuccess: () => {
+                    toast.success('Surtido registrado correctamente');
+                    onClose();
+                },
+                onError: () => toast.error('Error al registrar el surtido'),
                 onFinish: () => setProcessing(false),
             },
         );
     }
-    const surtidoIdeal = Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * valorCarburador : 0;
-
-    const precioTotal = Number(litros) * precioUnitario;
 
     return (
         <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -121,7 +111,6 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <p className="text-sm text-gray-600 dark:text-gray-300">Surtido ideal</p>
                             <p className="text-lg font-bold text-green-600 dark:text-green-400">{surtidoIdeal.toFixed(2)} litros</p>
                         </div>
-
                         <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
                             <p className="text-sm text-gray-600 dark:text-gray-300">Precio total</p>
                             <p className="text-lg font-bold text-green-600 dark:text-green-400">${precioTotal.toFixed(2)}</p>
@@ -162,7 +151,33 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                         ))}
                     </div>
 
-                    {/* Botón de acción */}
+                    {/* Confirmación embebida */}
+                    {mostrarConfirmacion && (
+                        <div className="mt-6 rounded-lg border border-red-400 bg-red-100 p-4 text-sm text-red-800 dark:border-red-600 dark:bg-red-900 dark:text-red-200">
+                            <p className="mb-2 font-semibold">
+                                ¿Registrar surtido con diferencia de {Math.abs(Number(litros) - surtidoIdeal).toFixed(2)} litros?
+                            </p>
+                            <p className="mb-4">La cantidad ingresada difiere significativamente del cálculo ideal.</p>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => setMostrarConfirmacion(false)}
+                                    className="rounded bg-gray-300 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-white"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setMostrarConfirmacion(false);
+                                        ejecutarRegistro();
+                                    }}
+                                    className="rounded bg-green-600 px-3 py-1 text-sm font-medium text-white hover:bg-green-700"
+                                >
+                                    Confirmar
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mt-6 text-right">
                         <button
                             onClick={registrarSurtido}

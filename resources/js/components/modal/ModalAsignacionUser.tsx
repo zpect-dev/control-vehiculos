@@ -34,29 +34,40 @@ export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, 
 
     return (
         <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <DialogPanel className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-900">
+                <DialogPanel className="animate-fade-in max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-900">
                     {/* Encabezado */}
-                    <div className="mb-6 flex items-center justify-between border-b pb-2">
-                        <DialogTitle className="text-xl font-bold text-gray-800 dark:text-white">Asignar Usuario al Vehículo</DialogTitle>
-                        <button onClick={onClose} className="rounded-full p-1 text-gray-500 hover:text-gray-700 dark:hover:text-white">
+                    <div className="mb-6 flex items-center justify-between border-b pb-3">
+                        <DialogTitle className="text-2xl font-semibold text-gray-800 dark:text-white">Asignar Usuario al Vehículo</DialogTitle>
+                        <button
+                            onClick={onClose}
+                            aria-label="Cerrar modal"
+                            className="rounded-full p-1 text-gray-500 transition-colors hover:text-gray-700 dark:hover:text-white"
+                        >
                             <X className="h-5 w-5" />
                         </button>
                     </div>
 
                     {/* Info del vehículo */}
-                    <div className="mb-6 text-sm text-gray-600 dark:text-gray-300">
-                        <p>
+                    <fieldset className="mb-6 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <legend className="text-base font-medium text-gray-700 dark:text-white">Detalles del Vehículo</legend>
+                        <div>
                             <strong>Placa:</strong> {vehiculo.placa}
-                        </p>
-                        <p>
+                        </div>
+                        <div>
                             <strong>Modelo:</strong> {vehiculo.modelo}
-                        </p>
-                    </div>
+                        </div>
+                    </fieldset>
 
                     {/* Formulario */}
-                    <FormCard title="Asignacion de Usuario" fields={fields} formType="asignacion" buttonText="Asignar Usuario" onSubmit={handleSubmit} />
+                    <FormCard
+                        title="Asignación de Usuario"
+                        fields={fields}
+                        formType="asignacion"
+                        buttonText="Asignar Usuario"
+                        onSubmit={handleSubmit}
+                    />
                 </DialogPanel>
             </div>
         </Dialog>

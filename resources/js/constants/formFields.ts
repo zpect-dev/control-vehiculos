@@ -1,4 +1,5 @@
 import { Field } from '@/hooks/useFormLogic';
+import { SurtidoField } from '@/types';
 
 // Campos para el formulario de Expediente
 export const expedienteTecnicoFields: Record<'CARRO' | 'MOTO', Field[]> = {
@@ -1213,6 +1214,31 @@ export const getAsignacionFields = (users: { id: string | number; name: string }
         id: 'foto_kilometraje',
         label: 'Foto del Kilometraje',
         type: 'file',
+        required: false,
+    },
+];
+
+// Campos para Surtidos
+export const fields: SurtidoField[] = [
+    {
+        id: 'kilometraje',
+        label: 'Kilometraje actual',
+        type: 'number',
+        placeholder: 'Ej: 12500',
+        required: true,
+    },
+    {
+        id: 'litros',
+        label: 'Litros surtidos',
+        type: 'number',
+        placeholder: 'Ej: 20',
+        required: true,
+    },
+    {
+        id: 'observacion',
+        label: 'Observación',
+        type: 'textarea',
+        placeholder: 'Observaciones adicionales...',
         required: false,
     },
 ];

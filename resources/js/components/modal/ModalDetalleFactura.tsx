@@ -32,7 +32,6 @@ export default function ModalDetalleFactura({
         cubre: factura.cubre,
         cubreUsuario: factura.cubre_usuario ? factura.cubre_usuario : '-',
     });
-    console.log(factura.aprobado);
 
     const handleSubmitAuditoria = () => {
         const hayImagenes = Object.values(imagenes).some((file) => file instanceof File);
@@ -82,7 +81,6 @@ export default function ModalDetalleFactura({
             },
         });
     };
-console.log('isAdmin:', isAdmin);
 
     const [observacionConductor, setObservacionConductor] = useState(factura.observaciones_res ?? '');
     const [imagenes, setImagenes] = useState<Record<string, File | null>>({});
