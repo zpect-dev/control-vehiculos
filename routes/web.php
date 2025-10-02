@@ -67,7 +67,7 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::patch('fichaTecnica/{vehiculo:placa}/revisionSemanal/{revision}', [RevisionSemanalController::class, 'update'])->name('revisionSemanal.update');
 
     // Observaciones
-    Route::get('fichaTecnica/{vehiculo:placa}/observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
+    Route::get('fichaTecnica/{vehiculo:placa}/observaciones', [ObservacionesController::class, 'show'])->name('observaciones.show');
     Route::post('observaciones/{vehiculo:placa}/save', [ObservacionesController::class, 'store'])->name('observaciones.store');
 
     // Rutas para asignaciones
@@ -78,6 +78,9 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
 });
 Route::middleware(['auth', 'admin'])->group(function () {
+    // Observaciones globales
+    Route::get('observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
+
     // Rutas gasolina
     Route::post('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'store'])->name('surtidos.store');
 

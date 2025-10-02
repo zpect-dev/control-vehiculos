@@ -11,7 +11,16 @@ use App\Helpers\FlashHelper;
 
 class ObservacionesController extends Controller
 {
-    public function index(Request $request, Vehiculo $vehiculo)
+    public function index(Request $request)
+    {   
+        $observaciones = Observacion::all();
+        dd($observaciones);
+        return Inertia::render('nombre_vista', [
+            'observaciones' => $observaciones
+        ]);
+    }
+
+    public function show(Request $request, Vehiculo $vehiculo)
     {
         $user = $request->user();
         $isAdmin = $user->hasRole('admin');
