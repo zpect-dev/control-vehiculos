@@ -25,7 +25,7 @@ class Multimedia
 
             $nameImage = Str::uuid() . '.' . $image->extension();
             $serverImage = ImageManager::gd()->read($image);
-            $serverImage->cover(1200, 800);
+            //$serverImage->cover(1200, 800);
 
             $targetPath = $this->rutasGuardado[$tipo];
             $encoded = $serverImage->encode();
