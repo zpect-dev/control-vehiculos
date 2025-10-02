@@ -41,7 +41,7 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal = null, inic
                     </div>
 
                     {/* Card de Revisión Semanal */}
-                    <CardRevisionSemanal vehiculo={vehiculo} revisionSemanal={revisionSemanal} revisionAnteriorFinalExiste />
+                    <CardRevisionSemanal vehiculo={vehiculo} revisionSemanal={revisionSemanal} />
                 </div>
             </div>
         </AppLayout>

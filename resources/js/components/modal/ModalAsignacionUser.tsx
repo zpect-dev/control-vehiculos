@@ -56,7 +56,7 @@ export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, 
                     </div>
 
                     {/* Formulario */}
-                    <FormCard title="" fields={fields} formType="asignacion" buttonText="Asignar Usuario" onSubmit={handleSubmit} />
+                    <FormCard title="Asignacion de Usuario" fields={fields} formType="asignacion" buttonText="Asignar Usuario" onSubmit={handleSubmit} />
                 </DialogPanel>
             </div>
         </Dialog>

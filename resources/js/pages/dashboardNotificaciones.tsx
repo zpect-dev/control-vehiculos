@@ -13,10 +13,8 @@ export default function DashboardNotificaciones() {
         notificaciones: Notificacion[];
         modo: string;
     }>().props;
-
     const [searchTerm, setSearchTerm] = useState('');
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>(rawNotificaciones);
-
     const notificacionesFiltradas = useMemo(() => {
         const term = searchTerm.toLowerCase();
         return notificaciones.filter((n) => {
@@ -25,7 +23,6 @@ export default function DashboardNotificaciones() {
             return titulo.includes(term) || descripcion.includes(term);
         });
     }, [searchTerm, notificaciones]);
-
     const notificacionesAgrupadas = useMemo(() => {
         return notificacionesFiltradas.reduce(
             (acc, noti) => {
@@ -47,7 +44,6 @@ export default function DashboardNotificaciones() {
                     preserveScroll: true,
                     onSuccess: () => {
                         setNotificaciones((prev) => prev.filter((n) => n.id !== id));
-
                         const destino =
                             tipo === 'documentoUsuario' && notificacion.usuario_id
                                 ? `/perfil/${notificacion.usuario_id}`
@@ -64,7 +60,6 @@ export default function DashboardNotificaciones() {
                                           : tipo === 'observacion'
                                             ? `/fichaTecnica/${vehiculo_id}/observaciones`
                                             : '/dashboard';
-
                         router.visit(destino);
                         router.visit(destino, {
                             preserveScroll: true,
@@ -150,7 +145,6 @@ export default function DashboardNotificaciones() {
                 ) : (
                     <p className="text-center text-gray-500 dark:text-gray-400">No se encontraron notificaciones que coincidan con la búsqueda.</p>
                 )}
-
                 <Toaster />
             </div>
         </AppLayout>

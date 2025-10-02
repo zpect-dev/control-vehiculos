@@ -5,7 +5,7 @@ import VehiculoCard from '@/components/VehiculoCard';
 import AppLayout from '@/layouts/app-layout';
 import { Head, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function Dashboard() {
     const { vehiculos } = usePage<{
@@ -14,16 +14,28 @@ export default function Dashboard() {
     }>().props;
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [tipoFiltro, setTipoFiltro] = useState<'todos' | 'moto' | 'carro'>(() => {
+        return (localStorage.getItem('tipoFiltro') as 'todos' | 'moto' | 'carro') || 'todos';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('tipoFiltro', tipoFiltro);
+    }, [tipoFiltro]);
 
     const vehiculosFiltrados = useMemo(() => {
         const term = searchTerm.toLowerCase();
         return vehiculos.filter((v) => {
             const placa = v.placa?.toLowerCase() || '';
             const nombre = v.nombre?.toLowerCase() || '';
+            const tipo = v.tipo?.toLowerCase() || '';
             const modelo = v.modelo?.toLowerCase() || '';
-            return placa.includes(term) || nombre.includes(term) || modelo.includes(term);
+
+            const coincideBusqueda = placa.includes(term) || nombre.includes(term) || modelo.includes(term) || tipo.includes(term);
+            const coincideTipo = tipoFiltro === 'todos' || tipo === tipoFiltro;
+
+            return coincideBusqueda && coincideTipo;
         });
-    }, [searchTerm, vehiculos]);
+    }, [searchTerm, tipoFiltro, vehiculos]);
 
     return (
         <AppLayout>
@@ -33,7 +45,7 @@ export default function Dashboard() {
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Vehículos</h1>
                 </div>
-                <div className="mb-6 flex justify-center">
+                <div className="mb-6 flex justify-center gap-4">
                     <div className="relative w-full max-w-md">
                         <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <input
@@ -44,7 +56,16 @@ export default function Dashboard() {
                             className="w-full rounded-md border border-gray-300 bg-white px-10 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         />
                     </div>
+                    <select
+                        value={tipoFiltro}
+                        onChange={(e) => setTipoFiltro(e.target.value as 'todos' | 'moto' | 'carro')}
+                        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    >
+                        <option value="moto">Motos</option>
+                        <option value="carro">Carros</option>
+                    </select>
                 </div>
+
                 <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
                     Mostrando <strong>{vehiculosFiltrados.length}</strong> de {vehiculos.length} vehículos
                 </div>

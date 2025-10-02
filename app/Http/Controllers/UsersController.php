@@ -13,7 +13,10 @@ class UsersController extends Controller
 {
     public function index(Request $request)
     {
-        $usuarios = User::all();
+        $usuarios = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'admin');
+        })->get();
+
 
         return Inertia::render('dashboardUsuarios', [
             'usuarios' => $usuarios

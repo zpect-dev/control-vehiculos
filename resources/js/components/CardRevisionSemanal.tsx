@@ -10,7 +10,6 @@ interface Props {
 
 export default function CardRevisionSemanal({ vehiculo, revisionSemanal }: Props) {
     const [video, setVideo] = useState<File | null>(null);
-    const [kilometraje, setKilometraje] = useState('');
     const [subiendoVideo, setSubiendoVideo] = useState(false);
 
     const puedeSubirVideo = !revisionSemanal?.video;
@@ -21,11 +20,10 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal }: Props
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!video || !kilometraje) return;
+        if (!video) return;
 
         const formData = new FormData();
         formData.append('video', video);
-        formData.append('kilometraje', kilometraje);
 
         const url = revisionSemanal?.id
             ? `/fichaTecnica/${vehiculo.placa}/revisionSemanal/${revisionSemanal.id}`
@@ -34,7 +32,6 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal }: Props
         router.post(url, formData, {
             onSuccess: () => {
                 setVideo(null);
-                setKilometraje('');
                 setSubiendoVideo(false);
             },
             onError: (errors) => console.error('Error al registrar revisión:', errors),
@@ -78,22 +75,11 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal }: Props
             {subiendoVideo && (
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4" encType="multipart/form-data">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Video</label>
+                        <label className="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Video</label>
                         <input
                             type="file"
                             accept="video/*"
                             onChange={handleVideoUpload}
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Kilometraje</label>
-                        <input
-                            type="number"
-                            value={kilometraje}
-                            onChange={(e) => setKilometraje(e.target.value)}
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                             required
                         />
