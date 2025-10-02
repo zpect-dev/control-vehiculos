@@ -97,14 +97,14 @@ class SurtidosController extends Controller
     public function info(Vehiculo $vehiculo)
     {
         $ultimo = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
+        $valorCarburador = $vehiculo->tipo == 'CARRO' ? 0.10 : 0.035;
 
         return response()->json([
             'kilometraje_anterior' => $ultimo ? $ultimo->kilometraje : null,
             'precio_unitario' => 0.5,
+            'valor_carburador' => $valorCarburador
         ]);
     }
-
-
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
@@ -117,10 +117,12 @@ class SurtidosController extends Controller
                 'precio' => 'required|numeric|min:0'
             ]);
 
+            $valorCarburador = $vehiculo->tipo == 'CARRO' ? 0.10 : 0.035;
+
             $UltimoSurtido = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
 
-            $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * 0.35 : 0;
-            $diferencia = $surtido_ideal - $validatedData['cant_litros'];
+            $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * $valorCarburador : 0;
+            $diferencia = $surtido_ideal == 0 ? 0 : $surtido_ideal - $validatedData['cant_litros'];
 
             $usuario = User::find($vehiculo->user_id);
             $profit = new Gasolina;

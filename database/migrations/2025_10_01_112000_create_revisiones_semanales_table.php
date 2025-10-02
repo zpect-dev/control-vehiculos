@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('vehiculo_id');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('video_inicial');
-            $table->bigInteger('kilometraje_inicial');
-            $table->string('video_final')->nullable();
-            $table->bigInteger('kilometraje_final')->nullable();
+            $table->string('video');
             $table->timestamps();
 
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onUpdate('cascade')->onDelete('cascade');

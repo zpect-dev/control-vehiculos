@@ -57,7 +57,6 @@ export default function CardRevisionSemanal({ vehiculo, revisionSemanal }: Props
                 {revisionSemanal?.video ? (
                     <>
                         <video controls src={revisionSemanal.video} className="mb-2 w-full rounded-md" />
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Kilometraje: {revisionSemanal.kilometraje}</p>
                     </>
                 ) : puedeSubirVideo ? (
                     <button

@@ -44,6 +44,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
     const [processing, setProcessing] = useState(false);
     const [kilometrajeAnterior, setKilometrajeAnterior] = useState<number>(0);
     const [precioUnitario, setPrecioUnitario] = useState<number>(0.5);
+    const [valorCarburador, setValorCarburador] = useState<number>(0);
 
     useEffect(() => {
         if (isOpen) {
@@ -52,6 +53,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 .then((data) => {
                     setKilometrajeAnterior(data.kilometraje_anterior);
                     setPrecioUnitario(data.precio_unitario);
+                    setValorCarburador(data.valor_carburador);
                 });
         }
     }, [isOpen]);
@@ -79,7 +81,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
             },
         );
     }
-    const surtidoIdeal = Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * 0.35 : 0;
+    const surtidoIdeal = Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * valorCarburador : 0;
 
     const precioTotal = Number(litros) * precioUnitario;
 

@@ -64,18 +64,26 @@ class RevisionDiariaController extends Controller
             ]);
 
             $datos = [];
-
             foreach ($validatedData['fluidos'] as $revision) {
+
+                if (!$revision['revisado']) {
+                    continue;
+                }
+                
+                if ($revision['revisado'] && !array_key_exists('imagen', $revision)) {
+                    continue;
+                }
+                
                 $multimedia = new Multimedia;
                 $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diario');
-
+                
                 if (!$nameImage) {
                     throw new \Exception('Error al guardar la imagen');
                 }
-
+                
                 $nivel = $revision['nivel_fluido'];
                 $tipo = $revision['tipo'];
-
+                
                 if ($nivel === '0') {
                     NotificacionHelper::emitirNivelBajo(
                         $vehiculo->placa,
@@ -84,7 +92,7 @@ class RevisionDiariaController extends Controller
                         'Revisión de Fluidos'
                     );
                 }
-
+                
                 $datos[] = [
                     'vehiculo_id' => $vehiculo->placa,
                     'user_id' => Auth::id(),
@@ -94,7 +102,6 @@ class RevisionDiariaController extends Controller
                     'tipo' => $tipo,
                 ];
             }
-
             RevisionesDiarias::insert($datos);
         }, 'Revisión diaria registrada correctamente.', 'Error al registrar la revisión diaria.');
     }
