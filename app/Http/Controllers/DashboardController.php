@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use Inertia\Inertia;
 use App\Models\Vehiculo;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Carbon\Carbon;
-use App\Models\RevisionesSemanales;
-use App\Models\RevisionesDiarias;
-use App\Helpers\NotificacionHelper;
-use App\Models\Factura;
-use App\Models\User;
 use App\Models\FacturaAuditoria;
+use App\Models\RevisionesDiarias;
+use Illuminate\Support\Facades\DB;
+use App\Helpers\NotificacionHelper;
+use App\Models\RevisionesSemanales;
 
 class DashboardController extends Controller
 {
@@ -37,21 +36,20 @@ class DashboardController extends Controller
         foreach ($vehiculos as $vehiculo) {
             $auditoriasPendientes = FacturaAuditoria::where('vehiculo_id', $vehiculo->placa)
                 ->where(function ($q) {
-                    $q->whereNull('aprobado')->orWhere('aprobado', false);
+                    $q->whereNull('aprobado')->orWhere('aprobado', 0);
                 })
-                ->whereNull('observaciones_admin')
                 ->count();
 
             $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
-            $facturas = Factura::where('co_cli', $vehiculo->placa)->where('anulada', 0)->whereDate('fec_emis', '>=', '2025-10-01')->get();
-            $auditoriasPendientes = 0;
-            foreach ($facturas as $factura) {
-                $auditado = FacturaAuditoria::where('fact_num', $factura->fact_num)->first();
-                if (!$auditado) {
-                    $auditoriasPendientes++;
-                }
-            }
+            $facturas = DB::connection('sqlsrv')->select('SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ?', [$vehiculo->placa, '2025-01-10']);
+            $factNums = collect($facturas)->pluck('fact_num')->all();
+
+            $auditados = DB::connection('mysql')->select('SELECT fact_num FROM auditoria_facturas WHERE vehiculo_id=?', [$vehiculo->placa]);
+            $factNumsAudit = collect($auditados)->pluck('fact_num')->all();
+
+            $auditoriasPendientes = count(array_diff($factNums, $factNumsAudit));
+
             $vehiculo->factura_pendiente = $auditoriasPendientes;
         }
 

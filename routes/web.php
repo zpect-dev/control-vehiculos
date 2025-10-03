@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminRoleController;
 use App\Http\Controllers\AsignacionesController;
 use App\Http\Controllers\NotificacionController;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Rutas Factura
     Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
-    Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store');
+    Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store')->middleware('audit:Audito factura, Factura');
 });
 
 // Route::get('gasolina', [SurtidosController::class, 'test']);
@@ -52,23 +53,23 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}', [FichaTecnicaController::class, 'show'])->name('fichaTecnica.show');
 
     // Formularios asociados a ficha técnica
-    Route::post('fichaTecnica/{vehiculo:placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store');
-    Route::post('fichaTecnica/{vehiculo:placa}/permisologia', [PermisologiaController::class, 'store'])->name('permisos.store');
-    Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store');
-    Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/expedientes', [ExpedienteTecnicoController::class, 'store'])->name('expedientes.store')->middleware('audit:Actualizo el expediente del vehiculo, Expediente');
+    Route::post('fichaTecnica/{vehiculo:placa}/permisologia', [PermisologiaController::class, 'store'])->name('permisos.store')->middleware('audit:Actualizo la permisologia del vehiculo, Permiso');
+    Route::post('fichaTecnica/{vehiculo:placa}/accesorios', [AccesoriosController::class, 'store'])->name('accesorios.store')->middleware('audit:Actualizo los accesorios del vehiculo, Accesorio');
+    Route::post('fichaTecnica/{vehiculo:placa}/piezas', [PiezasController::class, 'store'])->name('piezas.store')->middleware('audit:Actualizo las piezas del vehiculo, Pieza');
 
     // Revisión de Fluidos
     Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
-    Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store')->middleware('audit:Realizo la revision diaria, Revision diaria');;
 
     // Revisión Semanal
     Route::get('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
-    Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store');
-    Route::patch('fichaTecnica/{vehiculo:placa}/revisionSemanal/{revision}', [RevisionSemanalController::class, 'update'])->name('revisionSemanal.update');
+    Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store')->middleware('audit:Realizo la revision semanal, Revision semanal');;
+    //Route::patch('fichaTecnica/{vehiculo:placa}/revisionSemanal/{revision}', [RevisionSemanalController::class, 'update'])->name('revisionSemanal.update');
 
     // Observaciones
     Route::get('fichaTecnica/{vehiculo:placa}/observaciones', [ObservacionesController::class, 'show'])->name('observaciones.show');
-    Route::post('observaciones/{vehiculo:placa}/save', [ObservacionesController::class, 'store'])->name('observaciones.store');
+    Route::post('observaciones/{vehiculo:placa}/save', [ObservacionesController::class, 'store'])->name('observaciones.store')->middleware('audit:Realizo una observacion, Observacion');;
 
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
@@ -78,20 +79,24 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
 });
 Route::middleware(['auth', 'admin'])->group(function () {
+    // Asignar role
+    Route::get('asignar-rol', [AdminRoleController::class, 'index'])->name('asignar')->middleware('role');
+    Route::post('asignar-rol', [AdminRoleController::class, 'assign'])->name('asignar.assign')->middleware('role');
+
     // Rutas facturas
-    Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update');
+    Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update')->middleware('audit:Aprobo una factura, Aprobo Factura');;
 
     // Observaciones globales
     Route::get('observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
 
     // Rutas gasolina
-    Route::post('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'store'])->name('surtidos.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'store'])->name('surtidos.store')->middleware('audit:Realizo surtido de gasolina, Permisos');;
 
     // Visualizar perfil
     Route::get('perfiles', [UsersController::class, 'index'])->name('perfil.index');
 
     // Asignar usuario
-    Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store');
+    Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store')->middleware('audit:Realizo una asignacion, Asignaciones');
 
     // Rutas para modificar vehiculos (necesario proximamente)
     Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
@@ -104,7 +109,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('notificaciones/{notificacion}', [NotificacionController::class, 'destroy'])->name('notificaciones.destroy');
 
     // Editar Observacion
-    Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update');
+    Route::patch('observaciones/{vehiculo:placa}/{observacion}/edit', [ObservacionesController::class, 'update'])->name('observaciones.update')->middleware('audit:Resolvio una observacion, Observacion');;
 });
 
 // Configuración y autenticación
