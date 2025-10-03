@@ -44,7 +44,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store')->middleware('audit:Audito factura, Factura');
 });
 
-Route::get('supervision', [PistaController::class,'index'])->name('supervision');
 
 // Route::get('gasolina', [SurtidosController::class, 'test']);
 
@@ -78,10 +77,16 @@ Route::middleware(['auth', 'acceso'])->group(function () {
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
 
     // Ruta para la Gasolina
+    
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'index'])->name('gasolina.index');
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
 });
+
+
 Route::middleware(['auth', 'admin'])->group(function () {
+    // Pistas
+    Route::get('supervision', [PistaController::class, 'index'])->name('supervision');
+
     // Asignar role
     Route::get('asignar-rol', [AdminRoleController::class, 'index'])->name('asignar')->middleware('role');
     Route::post('asignar-rol', [AdminRoleController::class, 'assign'])->name('asignar.assign')->middleware('role');
