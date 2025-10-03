@@ -185,6 +185,7 @@ export interface RevisionFluidosProps {
 // Notificaciones
 
 export interface Notificacion {
+    vehiculo: any;
     id: number;
     titulo: string;
     descripcion: string;
@@ -390,6 +391,7 @@ export type FacturaShowProps = {
 // Observaciones
 
 export interface Observacion {
+    vehiculo: any;
     fecha_resolucion: any;
     user: any;
     tipo: any;

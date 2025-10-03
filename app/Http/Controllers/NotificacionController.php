@@ -15,10 +15,9 @@ class NotificacionController extends Controller
         $modo = $user->hasRole('admin') ? 'admin' : 'user';
 
         $query = Notificacion::query()
-            ->with('usuario')
+            ->with('usuario', 'vehiculo')
             ->when($modo === 'admin', fn($q) => $q->where('solo_admin', true))
             ->when($modo !== 'admin', fn($q) => $q->where('usuario_id', $user->id));
-
         // Filtros dinámicos
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
@@ -45,6 +44,7 @@ class NotificacionController extends Controller
             'filtros' => $request->only(['tipo', 'estado', 'fecha_inicio', 'fecha_fin', 'usuario']),
             'modo' => $modo,
         ]);
+        
     }
 
     public function marcarComoLeida(Notificacion $notificacion, Request $request)

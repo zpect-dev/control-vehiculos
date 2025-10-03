@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Notificacion } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function DashboardNotificaciones() {
@@ -15,14 +15,24 @@ export default function DashboardNotificaciones() {
     }>().props;
     const [searchTerm, setSearchTerm] = useState('');
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>(rawNotificaciones);
+    const [tipoFiltro, setTipoFiltro] = useState<'moto' | 'carro'>(() => {
+        return (localStorage.getItem('tipoFiltroNoti') as 'moto' | 'carro') || 'carro';
+    });
+
     const notificacionesFiltradas = useMemo(() => {
         const term = searchTerm.toLowerCase();
         return notificaciones.filter((n) => {
             const titulo = n.titulo?.toLowerCase() || '';
             const descripcion = n.descripcion?.toLowerCase() || '';
-            return titulo.includes(term) || descripcion.includes(term);
+            const tipoVehiculo = n.vehiculo?.tipo?.toLowerCase() || '';
+
+            const coincideBusqueda = titulo.includes(term) || descripcion.includes(term);
+            const coincideTipo = tipoVehiculo === tipoFiltro;
+
+            return coincideBusqueda && coincideTipo;
         });
-    }, [searchTerm, notificaciones]);
+    }, [searchTerm, tipoFiltro, notificaciones]);
+
     const notificacionesAgrupadas = useMemo(() => {
         return notificacionesFiltradas.reduce(
             (acc, noti) => {
@@ -33,6 +43,10 @@ export default function DashboardNotificaciones() {
             {} as Record<string, Notificacion[]>,
         );
     }, [notificacionesFiltradas]);
+
+    useEffect(() => {
+        localStorage.setItem('tipoFiltroNoti', tipoFiltro);
+    }, [tipoFiltro]);
 
     const marcarYRedirigir = async (notificacion: Notificacion) => {
         const { id, tipo, vehiculo_id } = notificacion;
@@ -74,7 +88,7 @@ export default function DashboardNotificaciones() {
             console.error('Error al procesar la notificación:', error);
         }
     };
-
+console.log(notificaciones)
     return (
         <AppLayout>
             <Head title="Dashboard de Notificaciones" />
@@ -85,7 +99,7 @@ export default function DashboardNotificaciones() {
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Notificaciones</h1>
                 </div>
 
-                <div className="mb-6 flex justify-center">
+                <div className="mb-6 flex justify-center gap-4">
                     <div className="relative w-full max-w-md">
                         <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <input
@@ -96,6 +110,14 @@ export default function DashboardNotificaciones() {
                             className="w-full rounded-md border border-gray-300 bg-white px-10 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         />
                     </div>
+                    <select
+                        value={tipoFiltro}
+                        onChange={(e) => setTipoFiltro(e.target.value as 'moto' | 'carro')}
+                        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    >
+                        <option value="moto">Motos</option>
+                        <option value="carro">Carros</option>
+                    </select>
                 </div>
 
                 {modo === 'admin' && notificaciones.length > 0 && (

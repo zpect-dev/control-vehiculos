@@ -10,8 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound } from 'lucide-react';
-
+import { Bell, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound, UserStar } from 'lucide-react';
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
 }
@@ -102,15 +101,26 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </SheetContent>
                             </Sheet>
                             <Link href="/dashboard" prefetch className="flex items-center gap-2">
-                                <h2 className="text-xl font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
+                                <h2 className="text-md font-bold tracking-tight text-gray-800 dark:text-white">Control de Vehículos</h2>
                             </Link>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
+                            {auth.user.is_admin && (
+                                <Link href="/supervisores" prefetch>
+                                    <UserStar className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
+                            {auth.user.is_admin && (
+                                <Link href="/observaciones" prefetch>
+                                    <Eye className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
                             {auth.user.is_admin && (
                                 <Link href="/perfiles" prefetch>
                                     <SquareUserRound className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
                             )}
+
                             {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch>
                                     <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
@@ -148,7 +158,17 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </NavigationMenu>
                             )}
                         </div>
-                        <div className="flex items-center space-x-5">
+                        <div className="flex items-center space-x-3">
+                            {auth.user.is_admin && (
+                                <Link href="/supervisores" prefetch>
+                                    <UserStar className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
+                            {auth.user.is_admin && (
+                                <Link href="/observaciones" prefetch>
+                                    <Eye className="h-6 w-6 text-gray-800 dark:text-white" />
+                                </Link>
+                            )}
                             {auth.user.is_admin && (
                                 <Link href="/perfiles" prefetch className="flex items-center justify-start">
                                     <SquareUserRound />

@@ -32,6 +32,6 @@ class Notificacion extends Model
 
     public function vehiculo(): BelongsTo
     {
-        return $this->belongsTo(Vehiculo::class);
+        return $this->belongsTo(Vehiculo::class, 'vehiculo_id', 'placa');
     }
 }
