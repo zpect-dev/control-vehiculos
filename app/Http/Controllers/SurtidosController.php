@@ -14,51 +14,9 @@ use Ramsey\Uuid\Uuid;
 
 class SurtidosController extends Controller
 {
-    public function test(Request $request)
-    {
-        // // $row = (string) Uuid::uuid4();
-        // // dd($row);
-        // $profit = new Gasolina;
-        // //$respuesta = $profit->registrarFacturaConRenglon(100, 'Prueba gasolina', 20, 14417896, '9338301', 'Juan Vargas', 19, 40);
-
-        // $tabla = 'docum_cc';
-
-        // $columnas = DB::connection('sqlsrv')->select("
-        //     SELECT 
-        //         c.name AS columna,
-        //         d.definition AS valor_default
-        //     FROM sys.columns c
-        //     LEFT JOIN sys.default_constraints d ON c.default_object_id = d.object_id
-        //     WHERE c.object_id = OBJECT_ID(?)
-        // ", ['factura']);
-
-        // $defaults = collect($columnas)->mapWithKeys(function ($col) {
-        //     return [$col->columna => $col->valor_default];
-        // })->toArray();
-
-        // dd($defaults);
-        // //dd($respuesta);
-    }
-
     public function index(Request $request, Vehiculo $vehiculo)
     {
         $vehiculo->load('usuario');
-
-        $query = Surtido::where('vehiculo_id', $vehiculo->placa);
-
-        if ($request->filled('fecha_desde')) {
-            $query->whereDate('created_at', '>=', $request->fecha_desde);
-        }
-
-        if ($request->filled('fecha_hasta')) {
-            $query->whereDate('created_at', '<=', $request->fecha_hasta);
-        }
-
-        if ($request->filled('factura')) {
-            $query->where('fact_num', 'like', '%' . $request->factura . '%');
-        }
-
-        $registros = $query->latest()->get();
 
         $registros = Surtido::where('vehiculo_id', $vehiculo->placa)
             ->latest()
@@ -127,8 +85,7 @@ class SurtidosController extends Controller
             $usuario = User::find($vehiculo->user_id);
             $profit = new Gasolina;
             $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], $vehiculo->placa, $usuario->email, $request->user()->name, $surtido_ideal, $validatedData['cant_litros']);
-            //$fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], '10150838', $usuario->email, $request->user()->name, $diferencia, $validatedData['cant_litros']);
-
+            
             if (!is_numeric($fact_num)) {
                 throw new \Exception('No se pudo generar el número de factura');
             }

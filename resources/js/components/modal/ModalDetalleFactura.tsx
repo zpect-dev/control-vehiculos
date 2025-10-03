@@ -3,7 +3,6 @@ import { AuditoriaAdminState, ModalDetalleFacturaProps } from '@/types';
 import { formatFecha } from '@/utils/formatDate';
 import { formatCantidad, formatPrecio } from '@/utils/formatNumbers';
 import { router } from '@inertiajs/react';
-import dayjs from 'dayjs';
 import { X } from 'lucide-react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -27,14 +26,16 @@ export default function ModalDetalleFactura({
         </span>
     );
 
-    const fechaEmision = dayjs(factura.fec_emis);
-    const diasDesdeEmision = dayjs().diff(fechaEmision, 'day');
-    const puedeEditarCobertura = diasDesdeEmision <= 5;
+    const supervisoresValidos = factura.supervisores?.filter((s) => s?.id != null && s?.name != null) ?? [];
+
+    const conductorValido = { id: vehiculo.respaldo.id, name: vehiculo.respaldo.name };
+
+    const conductorYaIncluido = conductorValido && supervisoresValidos.some((s) => s.id === conductorValido.id);
 
     const opcionesPago = [
-        { id: 'empresa', name: 'Empresa' },
-        { id: 'conductor', name: vehiculo.conductor },
-        { id: 'supervisor', name: factura.supervisor },
+        { id: null, name: 'Empresa' },
+        ...supervisoresValidos,
+        ...(conductorValido && !conductorYaIncluido ? [conductorValido] : []),
     ];
 
     const [adminState, setAdminState] = useState<AuditoriaAdminState>({
@@ -43,6 +44,8 @@ export default function ModalDetalleFactura({
         cubre: factura.cubre,
         cubreUsuario: factura.cubre_usuario ? factura.cubre_usuario : '-',
     });
+
+    console.log(adminState);
 
     const handleSubmitAuditoria = () => {
         const hayImagenes = Object.values(imagenes).some((file) => file instanceof File);
@@ -129,7 +132,7 @@ export default function ModalDetalleFactura({
                     <div>
                         <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Subido por:</p>
                         <div className="rounded-lg border bg-gray-100 p-3 font-medium text-gray-900 shadow-sm dark:bg-gray-200">
-                            {vehiculo.conductor}
+                            {vehiculo.conductor.name}
                         </div>
                     </div>
                     <div>
@@ -290,7 +293,13 @@ export default function ModalDetalleFactura({
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">¿Cubre empresa?</label>
                                 <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                    {puedeEditarCobertura ? (
+                                    {adminState.aprobado ? (
+                                        adminState.cubre ? (
+                                            'No'
+                                        ) : (
+                                            'Sí'
+                                        )
+                                    ) : (
                                         <select
                                             value={adminState.cubre ? 'no' : 'si'}
                                             onChange={(e) =>
@@ -303,10 +312,6 @@ export default function ModalDetalleFactura({
                                             <option value="si">Sí</option>
                                             <option value="no">No</option>
                                         </select>
-                                    ) : (
-                                        <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                            {adminState.cubre ? 'No' : 'Sí'}
-                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -314,7 +319,9 @@ export default function ModalDetalleFactura({
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
                                 <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                    {puedeEditarCobertura ? (
+                                    {adminState.aprobado ? (
+                                        adminState.cubreUsuario
+                                    ) : (
                                         <select
                                             value={adminState.cubreUsuario}
                                             onChange={(e) =>
@@ -330,10 +337,6 @@ export default function ModalDetalleFactura({
                                                 </option>
                                             ))}
                                         </select>
-                                    ) : (
-                                        <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                            {opcionesPago.find((op) => op.id === adminState.cubreUsuario)?.name ?? 'Empresa'}
-                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -352,7 +355,10 @@ export default function ModalDetalleFactura({
                             <button
                                 type="button"
                                 onClick={handleAdminSubmit}
-                                className="mt-4 rounded-md bg-[#1a9888] px-4 py-2 text-sm font-semibold text-white hover:bg-[#188576]"
+                                disabled={adminState.aprobado}
+                                className={`mt-4 rounded-md px-4 py-2 text-sm font-semibold text-white ${
+                                    adminState.aprobado ? 'cursor-not-allowed bg-gray-400' : 'bg-[#1a9888] hover:bg-[#188576]'
+                                }`}
                             >
                                 Guardar auditoría del admin
                             </button>

@@ -94,7 +94,14 @@ class FacturasController extends Controller
             });
 
         $supervisor = User::find($facturaAuditada?->admin_id)?->name ?? '—';
-        $conductor = User::find($facturaAuditada?->user_id)?->name ?? '—';
+        $conductor = User::find($facturaAuditada?->user_id) ?? '—';
+        $vehiculo = Vehiculo::where('placa', $factura->co_cli)->first();
+
+        $respaldo = [
+            'id' => $vehiculo->usuario->id,
+            'name' => $vehiculo->usuario->name
+        ];
+        
         $usuarioQuePaga = $facturaAuditada?->cubre
             ? User::find($facturaAuditada?->cubre_usuario)?->name ?? '—'
             : 'Empresa';
@@ -111,6 +118,7 @@ class FacturasController extends Controller
                 'observaciones_admin' => $facturaAuditada->observaciones_admin ?? null,
                 'aprobado' => $facturaAuditada->aprobado ?? false,
                 'supervisor' => $supervisor,
+                'supervisores' => User::role('admin')->select('id', 'name')->get(),
                 'cubre' => $facturaAuditada->cubre ?? true,
                 'cubre_usuario' => $usuarioQuePaga,
             ],
@@ -119,6 +127,7 @@ class FacturasController extends Controller
             'vehiculo' => [
                 'placa' => $factura->co_cli,
                 'conductor' => $conductor,
+                'respaldo' => $respaldo
             ],
             'isAdmin' => Auth::user()->hasRole('admin'),
 
@@ -191,6 +200,7 @@ class FacturasController extends Controller
     {
         $request->merge([
             'aprobado' => filter_var($request->input('aprobado'), FILTER_VALIDATE_BOOLEAN),
+            'cubre' => filter_var($request->input('cubre'), FILTER_VALIDATE_BOOLEAN)
         ]);
 
         return FlashHelper::try(function () use ($request, $factura) {
@@ -198,56 +208,15 @@ class FacturasController extends Controller
             $validatedData = $request->validate([
                 'aprobado' => 'required|boolean',
                 'observaciones_admin' => 'nullable|string',
-                'cubre' => 'nullable|boolean',
-                'cubre_usuario' => 'nullable',
-
+                'cubre' => 'required|boolean',
+                'cubre_usuario' => 'required',
             ]);
-
-            if ($request->has('cubre')) {
-                $factura->cubre = $validatedData['cubre'];
-            }
-
-            if ($request->has('cubre_usuario')) {
-                $alias = $validatedData['cubre_usuario'];
-
-                switch ($alias) {
-                    case 'empresa':
-                        $factura->cubre = false;
-                        $factura->cubre_usuario = null;
-                        break;
-                    case 'conductor':
-                        $factura->cubre = true;
-                        $factura->cubre_usuario = $factura->user_id;
-                        break;
-                    case 'supervisor':
-                        $factura->cubre = true;
-                        $factura->cubre_usuario = $factura->admin_id;
-                        break;
-                    default:
-                        $factura->cubre = true;
-                        $factura->cubre_usuario = is_numeric($alias) ? intval($alias) : null;
-                        break;
-                }
-            }
-
-
-
-            if (!isset($factura->cubre) || !isset($factura->cubre_usuario)) {
-                $facturaOriginal = Factura::where('fact_num', $factura->fact_num)->firstOrFail();
-                $fechaEmis = Carbon::parse($facturaOriginal->fec_emis);
-                $fechaAudi = Carbon::parse($factura->created_at);
-                $diasDiff = $fechaEmis->diffInDays($fechaAudi);
-
-                if ($diasDiff > 7) {
-                    $factura->cubre = true;
-                    $factura->cubre_usuario = $factura->user_id;
-                    Log::debug('💸 Cubre empresa activado por antigüedad', ['usuario' => $factura->user_id]);
-                }
-            }
 
             $factura->aprobado = $validatedData['aprobado'];
             $factura->observaciones_admin = $validatedData['observaciones_admin'];
             $factura->admin_id = $request->user()->id;
+            $factura->cubre = $validatedData['cubre'];
+            $factura->cubre_usuario = $validatedData['cubre_usuario'];
 
             $factura->save();
         }, 'Auditoría actualizada correctamente.', 'Error al actualizar la auditoría.');

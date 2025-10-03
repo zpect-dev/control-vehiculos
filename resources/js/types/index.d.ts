@@ -337,7 +337,8 @@ export type ModalDetalleFacturaProps = {
     auditados: boolean;
     vehiculo: {
         placa: string;
-        conductor: string;
+        conductor: any;
+        respaldo: any;
     };
     visible: boolean;
     onClose: () => void;
@@ -352,6 +353,7 @@ export type FacturaModalData = {
     cubre_usuario: any;
     cubre: boolean;
     supervisor: string;
+    supervisores: any;
     observaciones_admin: string;
     aprobado: boolean;
     observaciones_res: string;
