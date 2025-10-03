@@ -293,8 +293,8 @@ export default function ModalDetalleFactura({
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">¿Cubre empresa?</label>
                                 <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                    {adminState.aprobado ? (
-                                        adminState.cubre ? (
+                                    {factura.aprobado ? (
+                                        factura.cubre ? (
                                             'No'
                                         ) : (
                                             'Sí'
@@ -319,8 +319,8 @@ export default function ModalDetalleFactura({
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario que Paga</label>
                                 <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">
-                                    {adminState.aprobado ? (
-                                        adminState.cubreUsuario
+                                    {factura.aprobado ? (
+                                        factura.cubre_usuario
                                     ) : (
                                         <select
                                             value={adminState.cubreUsuario}
@@ -355,9 +355,9 @@ export default function ModalDetalleFactura({
                             <button
                                 type="button"
                                 onClick={handleAdminSubmit}
-                                disabled={adminState.aprobado}
+                                disabled={factura.aprobado}
                                 className={`mt-4 rounded-md px-4 py-2 text-sm font-semibold text-white ${
-                                    adminState.aprobado ? 'cursor-not-allowed bg-gray-400' : 'bg-[#1a9888] hover:bg-[#188576]'
+                                    factura.aprobado ? 'cursor-not-allowed bg-gray-400' : 'bg-[#1a9888] hover:bg-[#188576]'
                                 }`}
                             >
                                 Guardar auditoría del admin
