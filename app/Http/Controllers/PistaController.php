@@ -10,9 +10,8 @@ class PistaController extends Controller
 {
     public function index()
     {
-        $pistas = ActivityLog::all();
-
-        return Inertia::render('nombre_vista', [
+        $pistas = ActivityLog::latest()->get();
+        return Inertia::render('pistas', [
             'pistas' => $pistas
         ]);
     }

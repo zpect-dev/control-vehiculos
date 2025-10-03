@@ -20,7 +20,7 @@ class AuditAction
         $response = $next($request);
 
         ActivityLog::create([
-            'user_id' => Auth::id(),
+            'name' => Auth::user()->name,
             'accion' => $action,
             'modelo' => $model,
             'subject_type' => $request->route()->getController()::class ?? 'Ruta',

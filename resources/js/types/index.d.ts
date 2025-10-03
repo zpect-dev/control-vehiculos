@@ -464,3 +464,18 @@ export interface RegistroGasolina {
     conductor: string;
     admin?: string;
 }
+
+// Pistas
+
+interface Pista {
+    name: string;
+    id: number;
+    user_id: string;
+    accion: string;
+    modelo: string;
+    descripcion?: string;
+    created_at: string;
+    user?: {
+        name: string;
+    };
+}

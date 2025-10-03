@@ -16,6 +16,7 @@ use App\Http\Controllers\FichaTecnica\PermisologiaController;
 use App\Http\Controllers\FichaTecnica\AccesoriosController;
 use App\Http\Controllers\FichaTecnica\PiezasController;
 use App\Http\Controllers\ObservacionesController;
+use App\Http\Controllers\PistaController;
 use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
 use App\Http\Controllers\SurtidosController;
@@ -42,6 +43,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fichaTecnica/facturas/{factura:fact_num}', [FacturasController::class, 'show'])->name('facturas.show');
     Route::post('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'storeAuditoria'])->name('facturas.auditoria.store')->middleware('audit:Audito factura, Factura');
 });
+
+Route::get('supervision', [PistaController::class,'index'])->name('supervision');
 
 // Route::get('gasolina', [SurtidosController::class, 'test']);
 
