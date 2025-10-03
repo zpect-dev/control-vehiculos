@@ -59,11 +59,13 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
             label: fluido.label,
             type: 'select' as const,
             options: fluido.options,
+            required: true,
         },
         {
             id: `${fluido.id}_foto`,
             label: `Foto de ${fluido.label}`,
             type: 'file' as const,
+            required: true,
         },
     ]);
 

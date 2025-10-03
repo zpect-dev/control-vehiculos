@@ -1,9 +1,11 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Asignaciones() {
     const { vehiculo, historial } = usePage<PageProps>().props;
+    const [imagenModal, setImagenModal] = useState<string | null>(null);
 
     return (
         <AppLayout>
@@ -43,8 +45,10 @@ export default function Asignaciones() {
                                 </div>
 
                                 {registro.foto_kilometraje && (
-                                    <div className="w-48 flex-shrink-0">
-                                        {' '}
+                                    <div
+                                        className="w-48 flex-shrink-0 cursor-pointer"
+                                        onClick={() => setImagenModal(`/storage/${registro.foto_kilometraje}`)}
+                                    >
                                         <img
                                             src={`/storage/${registro.foto_kilometraje}`}
                                             alt="Foto de kilometraje"
@@ -56,6 +60,14 @@ export default function Asignaciones() {
                         ))
                     ) : (
                         <div className="text-center text-gray-500 dark:text-gray-400">No hay asignaciones registradas para este vehículo.</div>
+                    )}
+                    {imagenModal && (
+                        <div
+                            className="bg-opacity-70 fixed inset-0 z-50 flex items-center justify-center bg-black"
+                            onClick={() => setImagenModal(null)}
+                        >
+                            <img src={imagenModal} alt="Imagen ampliada" className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg" />
+                        </div>
                     )}
                 </div>
             </div>

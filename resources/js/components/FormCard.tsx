@@ -3,11 +3,13 @@ import { SelectField } from '@/components/form-fields/SelectField';
 import { TextField } from '@/components/form-fields/TextField';
 import { Field, useFormLogic } from '@/hooks/useFormLogic';
 import { FormCardProps } from '@/types';
+import { useState } from 'react';
 import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange } = useFormLogic(expediente, fields);
+    const [imagenModal, setImagenModal] = useState<string | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -47,20 +49,23 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                         <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />
                         {documentoActual &&
                             (/\.(pdf)$/i.test(documentoActual) ? (
-                                <a
-                                    href={`/storage/uploads/pdf-documentos/${documentoActual}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block text-sm text-blue-600 underline"
-                                >
-                                    Ver PDF actual
-                                </a>
+<iframe
+    src={`/storage/uploads/pdf-documentos/${documentoActual}`}
+    title="Vista previa del PDF"
+    className="w-full h-64 rounded border shadow-sm"
+></iframe>
+
                             ) : (
-                                <img
-                                    src={`/storage/uploads/fotos-documentos/${documentoActual}`}
-                                    alt="Documento actual"
-                                    className="max-h-48 rounded border"
-                                />
+                                <div
+                                    className="max-h-48 cursor-pointer"
+                                    onClick={() => setImagenModal(`/storage/uploads/fotos-documentos/${documentoActual}`)}
+                                >
+                                    <img
+                                        src={`/storage/uploads/fotos-documentos/${documentoActual}`}
+                                        alt="Documento actual"
+                                        className="max-h-48 rounded border object-contain shadow-sm"
+                                    />
+                                </div>
                             ))}
                         {documentoActual && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">Al subir un nuevo archivo, se reemplazará el documento actual.</p>
@@ -114,6 +119,16 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                     </button>
                 </div>
             </form>
+            {imagenModal && (
+                <div className="bg-opacity-70 fixed inset-0 z-50 flex items-center justify-center bg-black" onClick={() => setImagenModal(null)}>
+                    <img
+                        src={imagenModal}
+                        alt="Imagen ampliada"
+                        className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 }
