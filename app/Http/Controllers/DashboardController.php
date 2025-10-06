@@ -30,7 +30,12 @@ class DashboardController extends Controller
             ->get()
             : Vehiculo::with('usuario')
             ->withCount('observaciones')
-            ->where('user_id', $user->id)
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('user_id_adicional_1', $user->id)
+                    ->orWhere('user_id_adicional_2', $user->id)
+                    ->orWhere('user_id_adicional_3', $user->id);
+            })
             ->get();
 
         foreach ($vehiculos as $vehiculo) {

@@ -340,6 +340,7 @@ export type ModalDetalleFacturaProps = {
         placa: string;
         conductor: any;
         respaldo: any;
+        adicionales: any;
     };
     visible: boolean;
     onClose: () => void;

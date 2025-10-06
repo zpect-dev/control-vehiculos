@@ -101,7 +101,13 @@ class FacturasController extends Controller
             'id' => $vehiculo->usuario->id ?? Auth::user()->id,
             'name' => $vehiculo->usuario->name ?? Auth::user()->name
         ];
-        
+
+        $adicionales = [
+            $adicional_1 = User::select('id', 'name')->find($vehiculo->user_id_adicional_1) ?? null,
+            $adicional_2 = User::select('id', 'name')->find($vehiculo->user_id_adicional_2) ?? null,
+            $adicional_3 = User::select('id', 'name')->find($vehiculo->user_id_adicional_3) ?? null    
+        ];
+
         $usuarioQuePaga = $facturaAuditada?->cubre
             ? User::find($facturaAuditada?->cubre_usuario)?->name ?? '—'
             : 'Empresa';
@@ -127,10 +133,10 @@ class FacturasController extends Controller
             'vehiculo' => [
                 'placa' => $factura->co_cli,
                 'conductor' => $conductor,
-                'respaldo' => $respaldo
+                'respaldo' => $respaldo,
+                'adicionales' => $adicionales
             ],
             'isAdmin' => Auth::user()->hasRole('admin'),
-
         ]);
     }
 

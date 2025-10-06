@@ -47,7 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Route::get('gasolina', [SurtidosController::class, 'test']);
 
-Route::middleware(['auth', 'acceso'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     //Rutas Factura
     Route::get('fichaTecnica/{vehiculo:placa}/facturas', [FacturasController::class, 'index'])->name('facturas.index');
 

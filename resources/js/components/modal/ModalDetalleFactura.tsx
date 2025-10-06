@@ -27,15 +27,16 @@ export default function ModalDetalleFactura({
     );
 
     const supervisoresValidos = factura.supervisores?.filter((s) => s?.id != null && s?.name != null) ?? [];
-
+    const adicionalesValidos = vehiculo.adicionales?.filter((s) => s?.id != null && s?.name != null) ?? [];
     const conductorValido = { id: vehiculo.respaldo.id, name: vehiculo.respaldo.name };
 
     const conductorYaIncluido = conductorValido && supervisoresValidos.some((s) => s.id === conductorValido.id);
-
+    console.log(vehiculo.adicionales);
     const opcionesPago = [
         { id: null, name: 'Empresa' },
         ...supervisoresValidos,
         ...(conductorValido && !conductorYaIncluido ? [conductorValido] : []),
+        ...adicionalesValidos,
     ];
 
     const [adminState, setAdminState] = useState<AuditoriaAdminState>({
@@ -44,8 +45,6 @@ export default function ModalDetalleFactura({
         cubre: factura.cubre,
         cubreUsuario: factura.cubre_usuario ? factura.cubre_usuario : '-',
     });
-
-    console.log(adminState);
 
     const handleSubmitAuditoria = () => {
         const hayImagenes = Object.values(imagenes).some((file) => file instanceof File);
