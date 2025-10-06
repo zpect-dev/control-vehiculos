@@ -25,21 +25,25 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
                 )}
                 <div className="flex-1">
                     <h2 className="text-lg font-semibold text-gray-800 group-hover:text-[#49af4e] dark:text-white">{vehiculo.modelo}</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                        <span className="font-medium">Placa:</span> {vehiculo.placa}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                        <span className="font-medium">Conductor principal:</span> {usuario?.name || 'Sin asignar'}
-                    </p>
 
-                    {adicionales.length > 0 &&
-                        adicionales.map((adicional, index) => (
-                            <p key={adicional.id} className="text-sm text-gray-600 dark:text-gray-300">
-                                <span className="font-medium text-[#49af4e]">Conductor adicional {index + 1}:</span> {adicional.name}
+                    <div className="mt-1 space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                        <p>
+                            <span className="font-semibold text-gray-500 dark:text-gray-400">Placa:</span>{' '}
+                            <span className="font-semibold">{vehiculo.placa}</span>
+                        </p>
+                        <p>
+                            <span className="font-semibold text-[#49af4e]">Conductor principal:</span>{' '}
+                            <span className="font-semibold italic">{usuario?.name || 'Sin asignar'}</span>
+                        </p>
+                        {adicionales.map((adicional, index) => (
+                            <p key={adicional.id}>
+                                <span className="font-semibold text-[#49af4e]">Conductor adicional {index + 1}:</span>{' '}
+                                <span className="font-semibold italic">{adicional.name}</span>
                             </p>
                         ))}
+                    </div>
 
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-2">
                         {observaciones_no_resueltas > 0 && (
                             <button
                                 onClick={(e) => {
