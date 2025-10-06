@@ -9,6 +9,14 @@ export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, 
     const fields = getAsignacionFields(users);
 
     const handleSubmit = (formData: Record<string, string | boolean | File | null>) => {
+        const ids = [formData.user_id, formData.user_id_adicional_1, formData.user_id_adicional_2, formData.user_id_adicional_3].filter(Boolean);
+
+        const uniqueIds = new Set(ids);
+        if (uniqueIds.size !== ids.length) {
+            alert('No puedes asignar el mismo usuario más de una vez.');
+            return;
+        }
+
         const form = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null) {

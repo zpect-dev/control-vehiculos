@@ -236,6 +236,7 @@ export interface UsuarioBasico {
 }
 
 export interface UserInterface {
+    roles: any;
     id: number;
     name: string;
     email: string;
