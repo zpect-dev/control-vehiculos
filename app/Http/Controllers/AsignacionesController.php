@@ -41,6 +41,9 @@ class AsignacionesController extends Controller
         return FlashHelper::try(function () use ($request, $vehiculo) {
             $validatedData = $request->validate([
                 'user_id' => 'required|exists:users,id',
+                'user_id_adicional_1' => 'nullable|exists:users,id',
+                'user_id_adicional_2' => 'nullable|exists:users,id',
+                'user_id_adicional_3' => 'nullable|exists:users,id',
                 'kilometraje' => 'required|numeric',
                 'foto_kilometraje' => 'required|image|file|max:5120'
             ]);
@@ -63,7 +66,7 @@ class AsignacionesController extends Controller
             if (!$nombreImagen) {
                 throw new \Exception('Error al guardar la imagen');
             }
-
+            
             $admin = $request->user();
             $respuesta = HistorialAsignaciones::create([
                 'vehiculo_id' => $vehiculo->placa,
@@ -72,12 +75,15 @@ class AsignacionesController extends Controller
                 'kilometraje' => $validatedData['kilometraje'],
                 'foto_kilometraje' => $nombreImagen
             ]);
-
+            
             if (!$respuesta) {
                 throw new \Exception('Error al realizar el registro');
             }
-
+            
             $vehiculo->user_id = $nuevoUsuario->id;
+            $vehiculo->user_id_adicional_1 = $validatedData['user_id_adicional_1'] ?? null;
+            $vehiculo->user_id_adicional_2 = $validatedData['user_id_adicional_2'] ?? null;
+            $vehiculo->user_id_adicional_3 = $validatedData['user_id_adicional_3'] ?? null;
             $vehiculo->save();
 
             NotificacionHelper::emitirAsignacionUsuario(

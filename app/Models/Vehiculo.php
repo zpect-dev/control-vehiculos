@@ -21,6 +21,9 @@ class Vehiculo extends Model
         'tipo',
         'ubicacion',
         'user_id',
+        'user_id_adicional_1',
+        'user_id_adicional_2',
+        'user_id_adicional_3',
     ];
 
     /**

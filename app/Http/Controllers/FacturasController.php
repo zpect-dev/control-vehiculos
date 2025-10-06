@@ -98,8 +98,8 @@ class FacturasController extends Controller
         $vehiculo = Vehiculo::where('placa', $factura->co_cli)->first();
 
         $respaldo = [
-            'id' => $vehiculo->usuario->id,
-            'name' => $vehiculo->usuario->name
+            'id' => $vehiculo->usuario->id ?? Auth::user()->id,
+            'name' => $vehiculo->usuario->name ?? Auth::user()->name
         ];
         
         $usuarioQuePaga = $facturaAuditada?->cubre
@@ -118,7 +118,7 @@ class FacturasController extends Controller
                 'observaciones_admin' => $facturaAuditada->observaciones_admin ?? null,
                 'aprobado' => $facturaAuditada->aprobado ?? false,
                 'supervisor' => $supervisor,
-                'supervisores' => User::role('admin')->select('id', 'name')->get(),
+                'supervisores' => User::role('admin')->whereNotIn('email', [29960819, 26686507, 25025870])->select('id', 'name')->get(),
                 'cubre' => $facturaAuditada->cubre ?? true,
                 'cubre_usuario' => $usuarioQuePaga,
             ],
