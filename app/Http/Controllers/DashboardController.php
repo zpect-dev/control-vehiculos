@@ -41,7 +41,7 @@ class DashboardController extends Controller
                 'usuarioAdicional3',
             ])
 
-            ->withCount('observaciones')
+            ->withCount('observaciones as observaciones_no_resueltas')
             ->where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
                     ->orWhere('user_id_adicional_1', $user->id)

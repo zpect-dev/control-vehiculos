@@ -51,7 +51,6 @@ class SurtidosController extends Controller
         ]);
     }
 
-
     public function info(Vehiculo $vehiculo)
     {
         $ultimo = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
@@ -83,6 +82,9 @@ class SurtidosController extends Controller
             $diferencia = $surtido_ideal == 0 ? 0 : $surtido_ideal - $validatedData['cant_litros'];
 
             $usuario = User::find($vehiculo->user_id);
+
+            if(!$usuario) throw new \Exception('El vehiculo debe tener un coductor asignado');;
+
             $profit = new Gasolina;
             $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], $vehiculo->placa, $usuario->email, $request->user()->name, $surtido_ideal, $validatedData['cant_litros']);
             
