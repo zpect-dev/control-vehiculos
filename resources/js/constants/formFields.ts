@@ -1100,17 +1100,6 @@ export const piezasRevisadasFields: Record<'CARRO' | 'MOTO', Field[]> = {
 export const fluidosPorRevisarFields: Record<'CARRO' | 'MOTO', Field[]> = {
     CARRO: [
         {
-            id: 'gasolina',
-            label: 'Gasolina',
-            type: 'select',
-            options: [
-                { value: '0', label: 'Full' },
-                { value: '1', label: 'Normal' },
-                { value: '2', label: 'Bajo' },
-            ],
-            required: false,
-        },
-        {
             id: 'aceite',
             label: 'Aceite de Motor',
             type: 'select',
@@ -1156,17 +1145,6 @@ export const fluidosPorRevisarFields: Record<'CARRO' | 'MOTO', Field[]> = {
         },
     ],
     MOTO: [
-        {
-            id: 'gasolina',
-            label: 'Gasolina',
-            type: 'select',
-            options: [
-                { value: '0', label: 'Full' },
-                { value: '1', label: 'Normal' },
-                { value: '2', label: 'Bajo' },
-            ],
-            required: false,
-        },
         {
             id: 'aceite',
             label: 'Aceite de Motor',

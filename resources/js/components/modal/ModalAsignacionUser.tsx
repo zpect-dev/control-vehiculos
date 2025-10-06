@@ -4,9 +4,15 @@ import type { ModalAsignacionUserProps } from '@/types';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
 import { X } from 'lucide-react';
+import { useState } from 'react';
 
 export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, onSuccess }: ModalAsignacionUserProps) {
     const fields = getAsignacionFields(users);
+    const [adicionalesVisibles, setAdicionalesVisibles] = useState(0);
+
+    const baseFields = fields.filter((f) => !f.id.startsWith('user_id_adicional'));
+    const adicionalesFields = fields.filter((f) => f.id.startsWith('user_id_adicional')).slice(0, adicionalesVisibles);
+    const visibleFields = [...baseFields, ...adicionalesFields];
 
     const handleSubmit = (formData: Record<string, string | boolean | File | null>) => {
         const ids = [formData.user_id, formData.user_id_adicional_1, formData.user_id_adicional_2, formData.user_id_adicional_3].filter(Boolean);
@@ -58,7 +64,7 @@ export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, 
                     </div>
 
                     {/* Info del vehículo */}
-                    <fieldset className="mb-6 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    <fieldset className="mb-2 space-y-2 text-sm text-gray-600 dark:text-gray-300">
                         <legend className="text-base font-medium text-gray-700 dark:text-white">Detalles del Vehículo</legend>
                         <div>
                             <strong>Placa:</strong> {vehiculo.placa}
@@ -68,10 +74,21 @@ export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, 
                         </div>
                     </fieldset>
 
+                    {/* Botón para añadir responsables adicionales */}
+                    {adicionalesVisibles < 3 && (
+                        <button
+                            type="button"
+                            onClick={() => setAdicionalesVisibles((prev) => prev + 1)}
+                            className="mb-4 text-sm font-medium text-green-600 hover:underline"
+                        >
+                            + Añadir responsable adicional
+                        </button>
+                    )}
+
                     {/* Formulario */}
                     <FormCard
                         title="Asignación de Usuario"
-                        fields={fields}
+                        fields={visibleFields}
                         formType="asignacion"
                         buttonText="Asignar Usuario"
                         onSubmit={handleSubmit}
