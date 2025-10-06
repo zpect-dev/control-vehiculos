@@ -24,7 +24,13 @@ class FichaTecnicaController extends Controller
         $user = $request->user();
         $isAdmin = $user->hasRole('admin');
 
-        $vehiculo = Vehiculo::with('usuario')->where('placa', $vehiculo->placa)->firstOrFail();
+$vehiculo = Vehiculo::with([
+    'usuario',
+    'usuarioAdicional1',
+    'usuarioAdicional2',
+    'usuarioAdicional3',
+])->where('placa', $vehiculo->placa)->firstOrFail();
+
 
         $expediente = VehiculoEspecificaciones::where('vehiculo_id', $vehiculo->placa)->get();
         $expedientesTecnicosPorVehiculo = [

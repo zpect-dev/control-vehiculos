@@ -34,6 +34,20 @@ class Vehiculo extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function usuarioAdicional1()
+    {
+        return $this->belongsTo(User::class, 'user_id_adicional_1');
+    }
+
+    public function usuarioAdicional2()
+    {
+        return $this->belongsTo(User::class, 'user_id_adicional_2');
+    }
+
+    public function usuarioAdicional3()
+    {
+        return $this->belongsTo(User::class, 'user_id_adicional_3');
+    }
 
     /**
      * Relación con las especificaciones técnicas.

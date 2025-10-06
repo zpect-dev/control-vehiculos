@@ -81,7 +81,7 @@ export default function ModalAsignacionUser({ isOpen, onClose, vehiculo, users, 
                             onClick={() => setAdicionalesVisibles((prev) => prev + 1)}
                             className="mb-4 text-sm font-medium text-green-600 hover:underline"
                         >
-                            + Añadir responsable adicional
+                            + Añadir responsable adicional {adicionalesVisibles + 1}
                         </button>
                     )}
 

@@ -261,6 +261,9 @@ export type VehiculoConductor = VehiculoBase & {
 export type VehiculoCompleto = VehiculoConductor & {
     tipo: 'CARRO' | 'MOTO';
     usuario?: UsuarioAsignado | null;
+    usuario_adicional1?: UsuarioAsignado | null;
+    usuario_adicional2?: UsuarioAsignado | null;
+    usuario_adicional3?: UsuarioAsignado | null;
     imagen_url?: string;
     observaciones_no_resueltas?: number;
     imagenes_factura_pendientes?: number;

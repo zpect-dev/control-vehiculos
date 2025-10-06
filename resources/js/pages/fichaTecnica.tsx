@@ -28,7 +28,6 @@ export default function fichaTecnica({
 }) {
     const [vehiculoActual, setVehiculoActual] = useState(vehiculos[0]);
     const tipoVehiculo = vehiculoActual?.tipo as 'CARRO' | 'MOTO';
-
     const placa = vehiculoActual?.placa || '';
     const [modalOpen, setModalOpen] = useState(false);
     const [permisosLocal, setPermisosLocal] = useState(permisosGuardados);
@@ -124,21 +123,26 @@ export default function fichaTecnica({
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                         Ficha Técnica del Vehículo {vehiculoActual.modelo}
                     </h1>
-                    {vehiculoActual.usuario ? (
-                        <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-                            <span className="font-semibold">Encargado actual:</span>{' '}
-                            <span className="rounded-full bg-green-100 px-2 py-0.5 font-medium text-[#49af4e] dark:bg-green-200 dark:text-green-900">
-                                {vehiculoActual.usuario.name}
+                    <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                        <span className="font-semibold">Encargados actuales:</span>{' '}
+                        {vehiculoActual.usuario ? (
+                            <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 font-medium text-green-800">
+                                {vehiculoActual.usuario.name} (Principal)
                             </span>
-                        </div>
-                    ) : (
-                        <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">Encargado actual:</span>{' '}
-                            <span className="rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-500 dark:bg-red-200 dark:text-red-900">
-                                Sin asignar
-                            </span>
-                        </div>
-                    )}
+                        ) : (
+                            <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-500">Sin asignar</span>
+                        )}
+                        {[vehiculoActual.usuario_adicional1, vehiculoActual.usuario_adicional2, vehiculoActual.usuario_adicional3]
+                            .filter(Boolean)
+                            .map((usuario, index) => (
+                                <span
+                                    key={usuario.id}
+                                    className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 font-medium text-blue-800 dark:bg-blue-200 dark:text-blue-900"
+                                >
+                                    {usuario.name} (Adicional)
+                                </span>
+                            ))}
+                    </div>
 
                     {isAdmin && (
                         <button
