@@ -16,7 +16,7 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
 
     return (
         <div
-            className="group flex h-[220px] cursor-pointer flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-md transition duration-200 hover:shadow-lg hover:ring-2 hover:ring-[#49af4e] dark:border-gray-700 dark:bg-gray-800"
+            className="group flex h-[280px] cursor-pointer flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-md transition duration-200 hover:shadow-lg hover:ring-2 hover:ring-[#49af4e] dark:border-gray-700 dark:bg-gray-800"
             onClick={() => router.get(`/fichaTecnica/${vehiculo.placa}`)}
         >
             <div className="flex items-center gap-4">
