@@ -12,7 +12,6 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
         usuario_adicional3,
     } = vehiculo;
     const adicionales = [usuario_adicional1, usuario_adicional2, usuario_adicional3].filter(Boolean) as { id: number; name: string }[];
-    console.log(vehiculo);
 
     return (
         <div

@@ -44,7 +44,6 @@ class NotificacionController extends Controller
             'filtros' => $request->only(['tipo', 'estado', 'fecha_inicio', 'fecha_fin', 'usuario']),
             'modo' => $modo,
         ]);
-        
     }
 
     public function marcarComoLeida(Notificacion $notificacion, Request $request)
