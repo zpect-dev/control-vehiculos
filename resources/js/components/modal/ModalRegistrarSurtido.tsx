@@ -23,7 +23,9 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
     const [precioUnitario, setPrecioUnitario] = useState<number>(0.5);
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
     const [valorCarburador, setValorCarburador] = useState(0);
-    const surtidoIdeal = Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * valorCarburador : 0;
+    const surtidoIdeal =
+        kilometrajeAnterior > 0 && Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * valorCarburador : 0;
+
     const precioTotal = Number(litros) * precioUnitario;
 
     useEffect(() => {
@@ -53,7 +55,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
         }
 
         const diferenciaLitros = Math.abs(Number(litros) - surtidoIdeal);
-        if (diferenciaLitros > 10) {
+        if (surtidoIdeal !== 0 && diferenciaLitros > 10) {
             setMostrarConfirmacion(true);
             return;
         }
@@ -113,11 +115,15 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
                             <p className="text-sm text-gray-600 dark:text-gray-300">Kilometraje anterior</p>
-                            <p className="text-lg font-bold text-green-600 dark:text-green-400">{kilometrajeAnterior} Km</p>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                                {kilometrajeAnterior !== null ? kilometrajeAnterior.toFixed(2) + ' km' : 'N/A'}
+                            </p>
                         </div>
                         <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
                             <p className="text-sm text-gray-600 dark:text-gray-300">Surtido ideal</p>
-                            <p className="text-lg font-bold text-green-600 dark:text-green-400">{surtidoIdeal.toFixed(2)} litros</p>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                                {surtidoIdeal !== 0 ? surtidoIdeal.toFixed(2) + ' litros' : 'N/A'}
+                            </p>
                         </div>
                         <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
                             <p className="text-sm text-gray-600 dark:text-gray-300">Precio total</p>
