@@ -24,13 +24,12 @@ class FichaTecnicaController extends Controller
         $user = $request->user();
         $isAdmin = $user->hasRole('admin');
 
-$vehiculo = Vehiculo::with([
-    'usuario',
-    'usuarioAdicional1',
-    'usuarioAdicional2',
-    'usuarioAdicional3',
-])->where('placa', $vehiculo->placa)->firstOrFail();
-
+        $vehiculo = Vehiculo::with([
+            'usuario',
+            'usuarioAdicional1',
+            'usuarioAdicional2',
+            'usuarioAdicional3',
+        ])->where('placa', $vehiculo->placa)->firstOrFail();
 
         $expediente = VehiculoEspecificaciones::where('vehiculo_id', $vehiculo->placa)->get();
         $expedientesTecnicosPorVehiculo = [
@@ -65,9 +64,7 @@ $vehiculo = Vehiculo::with([
 
         $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
-        $users = $isAdmin ? User::whereDoesntHave('roles', function ($query) {
-            $query->where('name', 'admin');
-        })->get() : [];
+        $users = User::whereNotIn('email', [29960819, 26686507, 25025870])->select('id', 'name')->get();
 
         return Inertia::render('fichaTecnica', [
             'vehiculos' => [$vehiculo],

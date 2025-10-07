@@ -217,6 +217,8 @@ class FacturasController extends Controller
                 'cubre' => 'required|boolean',
                 'cubre_usuario' => 'required',
             ]);
+            
+            if($validatedData['cubre_usuario'] == 'Empresa') $validatedData['cubre_usuario'] = null;
 
             $factura->aprobado = $validatedData['aprobado'];
             $factura->observaciones_admin = $validatedData['observaciones_admin'];
