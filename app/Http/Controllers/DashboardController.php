@@ -12,6 +12,8 @@ use App\Models\RevisionesDiarias;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\NotificacionHelper;
 use App\Models\RevisionesSemanales;
+use App\Models\Surtido;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -27,7 +29,6 @@ class DashboardController extends Controller
                 'usuarioAdicional2',
                 'usuarioAdicional3',
             ])
-
             ->withCount([
                 'observaciones as observaciones_no_resueltas' => function ($query) {
                     $query->where('resuelto', false);
@@ -40,7 +41,6 @@ class DashboardController extends Controller
                 'usuarioAdicional2',
                 'usuarioAdicional3',
             ])
-
             ->withCount('observaciones as observaciones_no_resueltas')
             ->where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
@@ -59,15 +59,19 @@ class DashboardController extends Controller
 
             $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
-            $facturas = DB::connection('sqlsrv')->select('SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ?', [$vehiculo->placa, '2025-01-10']);
+            $facturas = DB::connection('sqlsrv')->select(
+                'SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ?',
+                [$vehiculo->placa, '2025-01-10']
+            );
             $factNums = collect($facturas)->pluck('fact_num')->all();
 
-            $auditados = DB::connection('mysql')->select('SELECT fact_num FROM auditoria_facturas WHERE vehiculo_id=?', [$vehiculo->placa]);
+            $auditados = DB::connection('mysql')->select(
+                'SELECT fact_num FROM auditoria_facturas WHERE vehiculo_id=?',
+                [$vehiculo->placa]
+            );
             $factNumsAudit = collect($auditados)->pluck('fact_num')->all();
 
-            $auditoriasPendientes = count(array_diff($factNums, $factNumsAudit));
-
-            $vehiculo->factura_pendiente = $auditoriasPendientes;
+            $vehiculo->factura_pendiente = count(array_diff($factNums, $factNumsAudit));
         }
 
         $notificaciones = $modo === 'admin'
@@ -81,7 +85,7 @@ class DashboardController extends Controller
         $horaActual = $hoy->format('H:i');
         $fechaHoy = $hoy->toDateString();
 
-        // Verificación de video semanal omitido (sábado después de 10am)
+        // Verificación de revisión semanal omitida
         if ($modo === 'admin' && $hoy->isSaturday() && $horaActual >= '10:00') {
             $inicioSemana = $hoy->copy()->startOfWeek(Carbon::MONDAY)->toDateString();
             $finalSemana = $hoy->copy()->endOfWeek(Carbon::FRIDAY)->toDateString();
@@ -107,7 +111,7 @@ class DashboardController extends Controller
             }
         }
 
-        // Verificación de revisión diaria omitida (todos los días después de 9am)
+        // Verificación de revisión diaria omitida
         if ($modo === 'admin' && $horaActual >= '09:00') {
             foreach ($vehiculos as $vehiculo) {
                 $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
@@ -130,8 +134,34 @@ class DashboardController extends Controller
             }
         }
 
+        // 🔥 NUEVO: incluir todos los registros de gasolina
+        $surtidos = Surtido::latest()->get();
+
+        $registros = $surtidos->map(function ($surtido) {
+            $user = User::find($surtido->user_id);
+            $admin = User::find($surtido->admin_id);
+            $vehiculo = Vehiculo::find($surtido->vehiculo_id);
+
+            return [
+                'factura' => $surtido->fact_num,
+                'fecha' => $surtido->created_at->format('Y-m-d'),
+                'vehiculo' => $vehiculo->modelo ?? $surtido->vehiculo_id,
+                'placa' => $surtido->vehiculo_id,
+                'precio' => $surtido->precio,
+                'km_actual' => $surtido->kilometraje,
+                'recorrido' => $surtido->surtido_ideal,
+                'litros' => $surtido->cant_litros,
+                'total' => $surtido->precio,
+                'observaciones' => $surtido->observaciones,
+                'diferencia' => $surtido->diferencia,
+                'conductor' => $user->name ?? 'Sin conductor',
+                'admin' => $admin->name ?? 'Sin supervisor',
+            ];
+        });
+        // dd($registros);
         return Inertia::render('dashboard', [
             'vehiculos' => $vehiculos,
+            'registros' => $registros,
             'modo' => $modo,
             'notificaciones' => $notificaciones,
             'auth' => [

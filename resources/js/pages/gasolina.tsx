@@ -19,6 +19,7 @@ export default function Gasolina() {
         });
     }, [factura, fechaDesde, fechaHasta, registros]);
     const [modalOpen, setModalOpen] = useState(false);
+
     const handleExport = () => {
         exportGasolinaExcel(registros);
     };
@@ -103,19 +104,18 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">Observaciones</th>
                                 <th className="px-4 py-2">Diferencia Litros</th>
                                 <th className="px-4 py-2">Conductor</th>
-                                <th className="px-4 py-2">Supervisor</th>
                             </tr>
                         </thead>
                         <tbody>
                             {registros.length === 0 ? (
                                 <tr>
-                                    <td colSpan={11} className="py-4 text-center text-gray-500">
+                                    <td colSpan={12} className="py-4 text-center text-gray-500">
                                         No hay registros de gasolina para este vehículo.
                                     </td>
                                 </tr>
                             ) : (
                                 registrosFiltrados.map((registro, index) => (
-                                    <tr key={index} className="text-sm text-gray-700 dark:text-gray-300">
+                                    <tr key={index} className="text-sm text-gray-700 even:bg-gray-50 dark:text-gray-300 dark:even:bg-gray-700">
                                         <td className="px-4 py-2">{registro.factura}</td>
                                         <td className="px-4 py-2">{registro.fecha}</td>
                                         <td className="px-4 py-2">{registro.vehiculo}</td>
@@ -127,7 +127,6 @@ export default function Gasolina() {
                                         <td className="px-4 py-2">{registro.observaciones}</td>
                                         <td className="px-4 py-2">{registro.diferencia} Litros</td>
                                         <td className="px-4 py-2">{registro.conductor}</td>
-                                        <td className="px-4 py-2">{registro.admin ?? '-'}</td>
                                     </tr>
                                 ))
                             )}
@@ -141,7 +140,7 @@ export default function Gasolina() {
                         onClick={handleExport}
                         className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
                     >
-                        Generar Report en Excel
+                        Generar Reporte
                     </button>
                 </div>
             </div>

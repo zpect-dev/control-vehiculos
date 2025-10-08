@@ -3,12 +3,13 @@ import NotificacionRealtime from '@/components/NotificacionRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import VehiculoCard from '@/components/VehiculoCard';
 import AppLayout from '@/layouts/app-layout';
+import { exportGasolinaGeneralExcel } from '@/utils/exportGasolinaGeneralExcel';
 import { Head, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 export default function Dashboard() {
-    const { vehiculos } = usePage<{
+    const { vehiculos, registros, modo } = usePage<{
         vehiculos: any[];
         modo: string;
     }>().props;
@@ -37,6 +38,10 @@ export default function Dashboard() {
         });
     }, [searchTerm, tipoFiltro, vehiculos]);
 
+    const handleExport = () => {
+        exportGasolinaGeneralExcel(registros);
+    };
+
     return (
         <AppLayout>
             <Head title="Dashboard de Vehículos" />
@@ -46,7 +51,7 @@ export default function Dashboard() {
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Vehículos</h1>
                 </div>
                 <div className="mb-6 flex justify-center gap-4">
-                    <div className="relative w-full max-w-md">
+                    <div className="relative flex w-full max-w-md items-center gap-2">
                         <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <input
                             type="text"
@@ -56,6 +61,7 @@ export default function Dashboard() {
                             className="w-full rounded-md border border-gray-300 bg-white px-10 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         />
                     </div>
+
                     <select
                         value={tipoFiltro}
                         onChange={(e) => setTipoFiltro(e.target.value as 'todos' | 'moto' | 'carro')}
@@ -64,6 +70,14 @@ export default function Dashboard() {
                         <option value="moto">Motos</option>
                         <option value="carro">Carros</option>
                     </select>
+                    {modo === 'admin' && (
+                        <button
+                            onClick={handleExport}
+                            className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
+                        >
+                            Reporte General de Gasolina
+                        </button>
+                    )}
                 </div>
 
                 <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">

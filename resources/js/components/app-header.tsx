@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { Bell, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound, UserStar } from 'lucide-react';
+
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
 }
@@ -25,7 +26,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 
     const matchFichaTecnica = currentUrl.match(/^\/fichaTecnica\/([^/]+)/);
     const placaActual = matchFichaTecnica ? matchFichaTecnica[1] : null;
-
+    const isAdmin = auth.user?.roles?.some((role: { name: string }) => role.name === 'admin');
     const vehiculoNavItems: NavItem[] = placaActual
         ? [
               { title: 'Ficha Técnica', href: `/fichaTecnica/${placaActual}`, icon: Car },
@@ -33,7 +34,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
               { title: 'Observaciones', href: `/fichaTecnica/${placaActual}/observaciones`, icon: Eye },
               { title: 'Facturas', href: `/fichaTecnica/${placaActual}/facturas`, icon: ReceiptText },
-              { title: 'Gasolina', href: `/fichaTecnica/${placaActual}/gasolina`, icon: Fuel },
+              ...(isAdmin ? [{ title: 'Gasolina', href: `/fichaTecnica/${placaActual}/gasolina`, icon: Fuel }] : []),
               { title: 'Asignaciones', href: `/fichaTecnica/${placaActual}/asignaciones`, icon: History },
           ]
         : [];

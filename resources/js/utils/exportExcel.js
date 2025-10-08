@@ -17,7 +17,6 @@ export async function exportGasolinaExcel(data) {
         { header: 'Observaciones', key: 'observaciones', width: 20 },
         { header: 'Diferencia Litros', key: 'diferencia', width: 12 },
         { header: 'Conductor', key: 'conductor', width: 20 },
-        { header: 'Supervisor', key: 'admin', width: 20 },
     ];
 
     worksheet.getRow(1).eachCell((cell) => {
@@ -39,6 +38,7 @@ export async function exportGasolinaExcel(data) {
     data.forEach((rowData) => {
         const row = worksheet.addRow(rowData);
         row.eachCell((cell, colNumber) => {
+            const key = worksheet.columns[colNumber - 1].key;
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
             cell.border = {
                 top: { style: 'thin' },
@@ -49,6 +49,13 @@ export async function exportGasolinaExcel(data) {
 
             if (['precio', 'total'].includes(worksheet.columns[colNumber - 1].key)) {
                 cell.numFmt = '"$"#,##0.00';
+            }
+
+            if (key === 'diferencia') {
+                const value = parseFloat(cell.value);
+                if (!isNaN(value) && value < 0) {
+                    cell.font = { color: { argb: 'FFFF0000' } };
+                }
             }
         });
     });
