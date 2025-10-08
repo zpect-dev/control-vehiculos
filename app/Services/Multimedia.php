@@ -13,7 +13,8 @@ class Multimedia
         'asignacion' => 'uploads/fotos-asignaciones',
         'documentos' => 'uploads/fotos-documentos',
         'pdf' => 'uploads/pdf-documentos',
-        'auditorias' => 'uploads/auditorias'
+        'auditorias' => 'uploads/auditorias',
+        'semanal' => 'uploads/fotos-semanales'
     ];
 
     public function guardarImagen($image, $tipo)

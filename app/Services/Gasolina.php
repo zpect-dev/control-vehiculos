@@ -17,6 +17,7 @@ class Gasolina
         try {
             $rowguid = (string) Uuid::uuid4();
             $co_ven = $this->co_ven($cedula);
+
             $fact_num = DB::connection('sqlsrv')->select("
                 SELECT ISNULL(MAX(fact_num), 0) + 1 AS nuevo
                 FROM factura WITH (UPDLOCK, HOLDLOCK)
@@ -35,7 +36,7 @@ class Gasolina
             DB::connection('sqlsrv')->table('factura')->insert($datosFactura);
             DB::connection('sqlsrv')->table('reng_fac')->insert($datosRenglon);
             DB::connection('sqlsrv')->table('docum_cc')->insert($datosDocumento);
-            DB::connection('sqlsrv')->table('pistas')->insert(ProfitLogger::pista('FACTURA', $fact_num, 'I', 'VEHI24', $rowguid));
+            DB::connection('sqlsrv')->table('pistas')->insert(ProfitLogger::pista('FACTURA', $fact_num, 'I', 'VEHI24', $rowguid, $admin));
 
             DB::connection('sqlsrv')->commit();
             return $datosFactura['fact_num'];

@@ -8,11 +8,11 @@ use Ramsey\Uuid\Uuid;
 
 class ProfitLogger
 {
-    public static function pista(string $tabla, int $numDoc = 0, string $tipoOp = 'I', string $empresa = 'VEHI24', $rowguid)
+    public static function pista(string $tabla, int $numDoc = 0, string $tipoOp = 'I', string $empresa = 'VEHI24', $rowguid, $admin)
     {
         $pista = [
             "usuario_id" => "GAS",
-            "usuario" => Auth::user()?->name ?? 'SISTEMA_CONTROL_VEHICULOS',
+            "usuario" => $admin,
             "fecha" => Carbon::today()->format('d-m-Y H:i:s'),
             "empresa" => $empresa,
             "co_sucu" => "01",

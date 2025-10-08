@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\RevisionesSemanales;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\FlashHelper;
+use App\Services\Multimedia;
 
 class RevisionSemanalController extends Controller
 {
@@ -24,8 +25,8 @@ class RevisionSemanalController extends Controller
             ->first();
 
         if ($revisionSemanal) {
-            $basePath = '/storage/uploads/videos-semanales/';
-            $revisionSemanal->video = $basePath . ltrim($revisionSemanal->video, '/');
+            $basePath = '/storage/uploads/fotos-semanales/';
+            $revisionSemanal->imagen = $basePath . ltrim($revisionSemanal->imagen, '/');
         }
 
         return Inertia::render('revisionSemanal', [
@@ -41,35 +42,67 @@ class RevisionSemanalController extends Controller
         ]);
     }
 
-    public function store(Request $request, Vehiculo $vehiculo)
-    {
+    public function store(Request $request, Vehiculo $vehiculo){
         return FlashHelper::try(function () use ($request, $vehiculo) {
-            if (!$request->hasFile('video')) {
-                throw new \Exception('Debe subir un video a la plataforma');
+
+            $validatedData = $request->validate([
+                'semanal' => 'required|array',
+                'semanal.*.tipo' => 'required|string',
+                'semanal.*.imagen' => 'required|image|max:5120',
+                'semanal.*.observacion' => 'nullable|string'
+            ]);
+
+            $datos = [];
+            foreach($validatedData['semanal'] as $revision){
+                $multimedia = new Multimedia;
+                $nameImage = $multimedia->guardarImagen($revision['image'], 'semanal');
+
+                if(!$nameImage){
+                    throw new \Exception('Error al guardar la imagen');
+                }
+
+                $datos[] = [
+                    'vehiculo_id' => $vehiculo->placa,
+                    'user_id' => Auth::id(),
+                    'imagen' => $nameImage,
+                    'tipo' => $validatedData['tipo'],
+                    'observacion' => $validatedData['observacion'] ?? '',
+                ];
             }
-
-            $request->validate([
-                'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm',
-            ]);
             
-            // $KilometrajeFinal = RevisionesSemanales::select('kilometraje_final')->where('vehiculo_id', $vehiculo->placa)->latest()->first();
-            
-            // if($KilometrajeFinal && $KilometrajeFinal !== $validatedData['kilometraje_inicial']){
-            //     return back()->with('error', 'El kilometraje no concuerda con el de la semana pasada, comunicarse con un administrador');   
-            // }
-            
-            $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
-            $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
-            $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
-            
-            RevisionesSemanales::create([
-                'vehiculo_id' => $vehiculo->placa,
-                'user_id' => Auth::id(),
-                'video' => $videoName,
-            ]);
-
+            RevisionesSemanales::insert($datos);
         }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
     }
+    
+    // public function store(Request $request, Vehiculo $vehiculo)
+    // {
+    //     return FlashHelper::try(function () use ($request, $vehiculo) {
+    //         if (!$request->hasFile('imagen')) {
+    //             throw new \Exception('Debe subir un video a la plataforma');
+    //         }
+
+    //         $request->validate([
+    //             'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm',
+    //         ]);
+            
+    //         // $KilometrajeFinal = RevisionesSemanales::select('kilometraje_final')->where('vehiculo_id', $vehiculo->placa)->latest()->first();
+            
+    //         // if($KilometrajeFinal && $KilometrajeFinal !== $validatedData['kilometraje_inicial']){
+    //         //     return back()->with('error', 'El kilometraje no concuerda con el de la semana pasada, comunicarse con un administrador');   
+    //         // }
+            
+    //         $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
+    //         $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
+    //         $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
+            
+    //         RevisionesSemanales::create([
+    //             'vehiculo_id' => $vehiculo->placa,
+    //             'user_id' => Auth::id(),
+    //             'video' => $videoName,
+    //         ]);
+
+    //     }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
+    // }
 
     // public function update(Request $request, Vehiculo $vehiculo, RevisionesSemanales $revision)
     // {

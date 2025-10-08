@@ -14,6 +14,8 @@ class RevisionesSemanales extends Model
     protected $fillable = [
         'vehiculo_id',
         'user_id',
-        'video',
+        'imagen',
+        'tipo',
+        'observacion'
     ];
 }

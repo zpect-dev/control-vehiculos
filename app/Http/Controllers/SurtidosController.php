@@ -86,7 +86,7 @@ class SurtidosController extends Controller
             if(!$usuario) throw new \Exception('El vehiculo debe tener un coductor asignado');;
 
             $profit = new Gasolina;
-            $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], $vehiculo->placa, $usuario->email, $request->user()->name, $surtido_ideal, $validatedData['cant_litros']);
+            $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], $vehiculo->placa, $usuario->email, substr($request->user()->name, 0, 20), $surtido_ideal, $validatedData['cant_litros']);
             
             if (!is_numeric($fact_num)) {
                 throw new \Exception('No se pudo generar el número de factura');
