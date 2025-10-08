@@ -17,6 +17,10 @@ class ObservacionesController extends Controller
         $isAdmin = $user->hasRole('admin');
 
         $observaciones = Observacion::with(['vehiculo', 'user', 'admin'])
+            ->whereHas('vehiculo', function ($qVehiculo) {
+                $qVehiculo->whereColumn('tipo', 'users.tipo');
+            })
+            ->join('users', 'observaciones.user_id', '=', 'users.id') // Necesario para comparar columnas
             ->latest('fecha_creacion')
             ->get();
 

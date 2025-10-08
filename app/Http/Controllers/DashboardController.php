@@ -29,6 +29,7 @@ class DashboardController extends Controller
                 'usuarioAdicional2',
                 'usuarioAdicional3',
             ])
+            ->where('tipo', $user->tipo)
             ->withCount([
                 'observaciones as observaciones_no_resueltas' => function ($query) {
                     $query->where('resuelto', false);
