@@ -16,6 +16,8 @@ class RevisionesSemanales extends Model
         'user_id',
         'imagen',
         'tipo',
-        'observacion'
+        'observacion',
+        'created_at',
+        'updated_at'
     ];
 }

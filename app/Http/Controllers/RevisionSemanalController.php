@@ -25,11 +25,13 @@ class RevisionSemanalController extends Controller
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
-            ->first();
+            ->get();
 
-        if ($revisionSemanal) {
-            $basePath = '/storage/uploads/fotos-semanales/';
-            $revisionSemanal->imagen = $basePath . ltrim($revisionSemanal->imagen, '/');
+        foreach($revisionSemanal as $revision) {
+            if ($revision) {
+                $basePath = '/storage/uploads/fotos-semanales/';
+                $revision->imagen = $basePath . ltrim($revision->imagen, '/');
+            }
         }
 
         return Inertia::render('revisionSemanal', [
@@ -71,6 +73,8 @@ class RevisionSemanalController extends Controller
                     'imagen' => $nameImage,
                     'tipo' => $revision['tipo'],
                     'observacion' => $revision['observacion'] ?? '',
+                    'created_at' => Carbon::today(),
+                    'updated_at' => Carbon::today()
                 ];
 
                 if(!empty($revision['observacion'])){
