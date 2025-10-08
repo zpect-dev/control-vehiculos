@@ -19,7 +19,7 @@ class FormatearVehiculos extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Formatea los vehículos desde la tabla clientes';
 
     /**
      * Execute the console command.
@@ -28,15 +28,38 @@ class FormatearVehiculos extends Command
     {
         $this->info('Formateando vehículos...');
 
-        $vehiculos = DB::table('clientes')->select('co_cli', 'tipo', 'cli_des')->where('tipo', 'CARRO')->orWhere('tipo', 'MOTO')->get();
-        
-        foreach($vehiculos as $vehiculo){
-            $this->info("Vehículo: {$vehiculo->cli_des}");
-            DB::table('vehiculos')->createOrUpdate([
-                'placa' => trim($vehiculo->co_cli),
-                'tipo' => trim($vehiculo->tipo),
-                'modelo' => trim($vehiculo->cli_des)
-            ]);
+        $vehiculos = DB::table('clientes')
+            ->select('co_cli', 'tipo', 'cli_des')
+            ->where(function ($query) {
+                $query->where('tipo', 'CARRO')
+                      ->orWhere('tipo', 'MOTO');
+            })
+            ->whereNotIn('co_cli', ['00002040', 'PLANTA', 'A27BG3S'])
+            ->get();
+
+        foreach ($vehiculos as $vehiculo) {
+            $placa = trim($vehiculo->co_cli);
+            $tipo = trim($vehiculo->tipo);
+            $modelo = trim($vehiculo->cli_des);
+
+            $this->info("Vehículo: {$modelo}");
+
+            $existe = DB::table('vehiculos')->where('placa', $placa)->exists();
+
+            if ($existe) {
+                DB::table('vehiculos')->where('placa', $placa)->update([
+                    'tipo' => $tipo,
+                    'modelo' => $modelo,
+                ]);
+            } else {
+                DB::table('vehiculos')->insert([
+                    'placa' => $placa,
+                    'tipo' => $tipo,
+                    'modelo' => $modelo,
+                ]);
+            }
         }
+
+        $this->info('Vehículos formateados correctamente.');
     }
 }

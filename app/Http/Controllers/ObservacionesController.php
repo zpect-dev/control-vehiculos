@@ -14,15 +14,20 @@ class ObservacionesController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $isAdmin = $user->hasRole('admin');
 
         $observaciones = Observacion::with(['vehiculo', 'user', 'admin'])
-            ->whereHas('vehiculo', function ($qVehiculo) {
-                $qVehiculo->whereColumn('tipo', 'users.tipo');
-            })
             ->join('users', 'observaciones.user_id', '=', 'users.id') // Necesario para comparar columnas
+            ->when($user->tipo, function ($query) use ($user) {
+                $query->whereHas('vehiculo', function ($qVehiculo) use ($user) {
+                    $qVehiculo->where('tipo', $user->tipo);
+                });
+            }, function ($query) {
+                // Si el tipo es null, no filtramos por tipo
+                $query->whereHas('vehiculo');
+            })
             ->latest('fecha_creacion')
             ->get();
+
 
         return Inertia::render('dashboardObservaciones', [
             'observaciones' => $observaciones,
