@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateField } from '@/components/form-fields/DateField';
 import { SelectField } from '@/components/form-fields/SelectField';
 import { TextField } from '@/components/form-fields/TextField';
@@ -7,7 +8,15 @@ import { useState } from 'react';
 import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
 
-export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {} }: FormCardProps) {
+export default function FormCard({
+    title,
+    fields,
+    buttonText,
+    formType = 'expediente',
+    onSubmit,
+    expediente = {},
+    onChange,
+}: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange } = useFormLogic(expediente, fields);
     const [imagenModal, setImagenModal] = useState<string | null>(null);
 
@@ -18,6 +27,11 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
             return;
         }
         onSubmit?.(formValues);
+    };
+
+    const handleChangeWrapper = (id: string, value: any) => {
+        handleChange(id, value);
+        onChange?.({ ...formValues, [id]: value });
     };
 
     const renderField = (field: Field) => {
@@ -31,22 +45,33 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                         label={field.label}
                         expedicion={typeof formValues[`${field.id}_expedicion`] === 'string' ? formValues[`${field.id}_expedicion`] : ''}
                         vencimiento={typeof formValues[`${field.id}_vencimiento`] === 'string' ? formValues[`${field.id}_vencimiento`] : ''}
-                        onChange={handleChange}
+                        onChange={handleChangeWrapper}
                     />
                 );
 
             case 'select':
-                return <SelectField id={field.id} label={field.label} value={value} options={field.options} onChange={handleChange} />;
+                return <SelectField id={field.id} label={field.label} value={value} options={field.options} onChange={handleChangeWrapper} />;
 
             case 'file': {
-                const safeFile = typeof value === 'string' || value instanceof File || value === null ? value : undefined;
+                const safeFile = value instanceof File || value === null ? value : undefined;
                 const baseId = field.id.replace('_archivo', '');
-                const rawDocumento = expediente[`${baseId}_documento`];
+                const rawDocumento = expediente[`${baseId}_documento`] || expediente[field.id];
                 const documentoActual = typeof rawDocumento === 'string' ? rawDocumento : undefined;
 
                 return (
                     <div className="space-y-2">
-                        <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChange(id, file)} />
+                        <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChangeWrapper(id, file)} />
+
+                        {/* Vista previa del archivo recién cargado */}
+                        {value instanceof File && (
+                            <img
+                                src={URL.createObjectURL(value)}
+                                alt="Vista previa"
+                                className="max-h-32 rounded border object-contain shadow-sm"
+                            />
+                        )}
+
+                        {/* Archivo anterior si existe */}
                         {documentoActual &&
                             (/\.(pdf)$/i.test(documentoActual) ? (
                                 <a
@@ -69,8 +94,11 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                                     />
                                 </div>
                             ))}
+
                         {documentoActual && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Al subir un nuevo archivo, se reemplazará el documento actual.</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                Al subir un nuevo archivo, se reemplazará el documento actual.
+                            </p>
                         )}
                     </div>
                 );
@@ -78,7 +106,12 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
 
             case 'checkbox':
                 return (
-                    <CheckField id={field.id} label={field.label} checked={value === true} onChange={(id, checked) => handleChange(id, checked)} />
+                    <CheckField
+                        id={field.id}
+                        label={field.label}
+                        checked={value === true}
+                        onChange={(id, checked) => handleChangeWrapper(id, checked)}
+                    />
                 );
 
             default:
@@ -89,7 +122,7 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                         value={typeof value === 'string' ? value : ''}
                         placeholder={field.placeholder}
                         type={field.type}
-                        onChange={handleChange}
+                        onChange={handleChangeWrapper}
                     />
                 );
         }
@@ -121,6 +154,8 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                     </button>
                 </div>
             </form>
+
+            {/* Modal para imagen ampliada */}
             {imagenModal && (
                 <div className="bg-opacity-70 fixed inset-0 z-50 flex items-center justify-center bg-black" onClick={() => setImagenModal(null)}>
                     <img

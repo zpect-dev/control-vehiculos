@@ -5,14 +5,11 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Vehiculo;
-use App\Models\Observacion;
-use App\Helpers\FlashHelper;
-use App\Services\Multimedia;
 use Illuminate\Http\Request;
-use PhpParser\Node\Expr\Empty_;
-use App\Helpers\NotificacionHelper;
 use App\Models\RevisionesSemanales;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\FlashHelper;
+use App\Services\Multimedia;
 
 class RevisionSemanalController extends Controller
 {
@@ -33,7 +30,6 @@ class RevisionSemanalController extends Controller
                 $revision->imagen = $basePath . ltrim($revision->imagen, '/');
             }
         }
-
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
             'revisionSemanal' => $revisionSemanal,
@@ -49,7 +45,6 @@ class RevisionSemanalController extends Controller
 
     public function store(Request $request, Vehiculo $vehiculo){
         return FlashHelper::try(function () use ($request, $vehiculo) {
-
             $validatedData = $request->validate([
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
@@ -76,32 +71,12 @@ class RevisionSemanalController extends Controller
                     'created_at' => Carbon::today(),
                     'updated_at' => Carbon::today()
                 ];
-
-                if(!empty($revision['observacion'])){
-                    $respuesta = Observacion::create([
-                        'user_id' => Auth::id(),
-                        'vehiculo_id' => $vehiculo->placa,
-                        'observacion' => $revision['observacion'],
-                        'resuelto' => false,
-                    ]);
-
-                    if (!$respuesta) {
-                        throw new \Exception('Error al registrar la observación');
-                    }
-
-                    // Emitir notificación
-                    NotificacionHelper::emitirObservacionAgregada(
-                        $vehiculo->placa,
-                        $request->user()->name,
-                        $revision['observacion'],
-                        'pendiente'
-                    );
-                }
             }
             
             RevisionesSemanales::insert($datos);
-
         }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
+    
+
     }
     
     // public function store(Request $request, Vehiculo $vehiculo)

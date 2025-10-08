@@ -73,6 +73,7 @@ export interface FichaSeccionProps {
     options?: string[];
     formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'semanal';
     expediente: Record<string, string | boolean | File | null>;
+    onChange?: (data: Record<string, any>) => void
     onSubmit: (data: Record<string, string | boolean | File | null>) => void;
 }
 
@@ -80,7 +81,8 @@ export interface FormCardProps {
     title?: string;
     fields: Field[];
     buttonText?: string;
-    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido';
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido' | 'semanal';
+    onChange?: (data: Record<string, any>) => void
     onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
     expediente?: Record<string | number, string | boolean | File | null>;
 }
@@ -152,6 +154,7 @@ export interface ModalRegistroSurtidoProps {
 // Revisiones
 
 export interface RevisionSemanalData {
+    forEach(arg0: (item: any) => void): unknown;
     id: number;
     vehiculo_id: string;
     user_id: number;

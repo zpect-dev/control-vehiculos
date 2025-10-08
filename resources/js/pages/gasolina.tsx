@@ -104,6 +104,7 @@ export default function Gasolina() {
                                 <th className="px-4 py-2">Observaciones</th>
                                 <th className="px-4 py-2">Diferencia Litros</th>
                                 <th className="px-4 py-2">Conductor</th>
+                                <th className="px-4 py-2">Supervisor</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,6 +128,7 @@ export default function Gasolina() {
                                         <td className="px-4 py-2">{registro.observaciones}</td>
                                         <td className="px-4 py-2">{registro.diferencia} Litros</td>
                                         <td className="px-4 py-2">{registro.conductor}</td>
+                                        <td className="px-4 py-2">{registro.admin ?? '-'}</td>
                                     </tr>
                                 ))
                             )}

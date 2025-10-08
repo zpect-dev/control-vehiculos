@@ -17,6 +17,7 @@ export async function exportGasolinaExcel(data) {
         { header: 'Observaciones', key: 'observaciones', width: 20 },
         { header: 'Diferencia Litros', key: 'diferencia', width: 12 },
         { header: 'Conductor', key: 'conductor', width: 20 },
+        { header: 'Supervisor', key: 'admin', width: 20 },
     ];
 
     worksheet.getRow(1).eachCell((cell) => {

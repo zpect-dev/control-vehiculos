@@ -9,36 +9,35 @@ export interface Field {
     required: boolean;
 }
 
-export function useFormLogic<T extends Record<string, string | boolean | File | null>>(initialData: T, fields: Field[]) {
+export function useFormLogic<T extends Record<string, string | boolean | File | null>>(
+    initialData: T,
+    fields: Field[],
+    onChange?: (data: T) => void,
+) {
     const [formValues, setFormValues] = useState<T>(() => {
         const isValid = initialData && typeof initialData === 'object' && !Array.isArray(initialData);
         if (isValid && Object.keys(initialData).length > 0) {
             return initialData;
         } else {
             const defaultValues = fields.reduce((acc, field) => {
-                if (field.type === 'checkbox') {
-                    return { ...acc, [field.id]: false };
-                }
-                if (field.type === 'file') {
-                    return { ...acc, [field.id]: null };
-                }
-                if (field.type === 'number') {
-                    return { ...acc, [field.id]: '' };
-                }
-                return { ...acc, [field.id]: '' };
+                const value = field.type === 'checkbox' ? false : field.type === 'file' ? null : '';
+
+                return { ...acc, [field.id]: value };
             }, {} as T);
+
             return defaultValues;
         }
     });
+
     const [isEditing, setIsEditing] = useState(false);
     const [hasFechasInvalidas, setHasFechasInvalidas] = useState(false);
     const [hasCamposIncompletos, setHasCamposIncompletos] = useState(false);
+
     useEffect(() => {
         const incompletos = fields.some((field) => {
             const value = formValues[field.id];
 
             if (!field.required) return false;
-
             if (field.type === 'checkbox') return false;
             if (field.type === 'file') return !(value instanceof File || typeof value === 'string');
             if (field.type === 'select') return typeof value !== 'string' || value.trim() === '';
@@ -57,6 +56,7 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
         const isValid = initialData && typeof initialData === 'object' && !Array.isArray(initialData);
         setIsEditing(isValid && Object.keys(initialData).length > 0);
     }, [initialData]);
+
     useEffect(() => {
         const invalid = fields.some((field) => {
             if (field.type === 'date') {
@@ -72,7 +72,9 @@ export function useFormLogic<T extends Record<string, string | boolean | File | 
     }, [formValues, fields]);
 
     const handleChange = (id: string, value: string | boolean | File | null) => {
-        setFormValues((prev) => ({ ...prev, [id]: value }));
+        const updated = { ...formValues, [id]: value };
+        setFormValues(updated);
+        onChange?.(updated);
     };
 
     return { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange };

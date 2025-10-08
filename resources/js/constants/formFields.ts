@@ -1146,28 +1146,6 @@ export const fluidosPorRevisarFields: Record<'CARRO' | 'MOTO', Field[]> = {
     ],
     MOTO: [
         {
-            id: 'aceite',
-            label: 'Aceite de Motor',
-            type: 'select',
-            options: [
-                { value: '0', label: 'Full' },
-                { value: '1', label: 'Normal' },
-                { value: '2', label: 'Bajo' },
-            ],
-            required: false,
-        },
-        {
-            id: 'frenos',
-            label: 'Liga de Frenos',
-            type: 'select',
-            options: [
-                { value: '0', label: 'Full' },
-                { value: '1', label: 'Normal' },
-                { value: '2', label: 'Bajo' },
-            ],
-            required: false,
-        },
-        {
             id: 'cauchos',
             label: 'Vida de los Cauchos',
             type: 'select',

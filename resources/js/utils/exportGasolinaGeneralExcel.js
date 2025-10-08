@@ -23,6 +23,7 @@ export async function exportGasolinaGeneralExcel(data) {
         { header: 'Observaciones', key: 'observaciones', width: 20 },
         { header: 'Diferencia Litros', key: 'diferencia', width: 12 },
         { header: 'Conductor', key: 'conductor', width: 20 },
+        { header: 'Supervisor', key: 'admin', width: 20 },
     ];
 
     worksheet.getRow(1).eachCell((cell) => {
@@ -61,6 +62,7 @@ export async function exportGasolinaGeneralExcel(data) {
             observaciones: registro.observaciones,
             diferencia: registro.diferencia,
             conductor: registro.conductor,
+            admin: registro.admin,
         });
 
         row.eachCell((cell, colNumber) => {
