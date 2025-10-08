@@ -14,7 +14,7 @@ class AdminRoleController extends Controller
 
     public function assign(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'email' => 'required|exists:users,email'
         ]);
         

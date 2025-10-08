@@ -20,6 +20,7 @@ use App\Http\Controllers\PistaController;
 use App\Http\Controllers\RevisionDiariaController;
 use App\Http\Controllers\RevisionSemanalController;
 use App\Http\Controllers\SurtidosController;
+use App\Http\Controllers\TipoUsuarioController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VehiculoController;
 
@@ -75,11 +76,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Rutas para asignaciones
     Route::get('fichaTecnica/{vehiculo:placa}/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones');
-
-    // Ruta para la Gasolina
-    
-    Route::get('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'index'])->name('gasolina.index');
-    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
 });
 
 
@@ -87,9 +83,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Pistas
     Route::get('supervision', [PistaController::class, 'index'])->name('supervision');
 
-    // Asignar role
+    // Asignar rol
     Route::get('asignar-rol', [AdminRoleController::class, 'index'])->name('asignar')->middleware('role');
     Route::post('asignar-rol', [AdminRoleController::class, 'assign'])->name('asignar.assign')->middleware('role');
+
+    // Asignar tipo a usuario
+    Route::get('asignar-tipo', [TipoUsuarioController::class, 'index'])->name('asignar-tipo')->middleware('role');
+    Route::post('asignar-tipo', [TipoUsuarioController::class, 'assign'])->name('asignar-tipo.assign')->middleware('role');
 
     // Rutas facturas
     Route::patch('fichaTecnica/facturas/{factura:fact_num}/auditoria', [FacturasController::class, 'updateAuditoria'])->name('facturas.auditoria.update')->middleware('audit:Aprobo una factura, Aprobo Factura');;
@@ -98,6 +98,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
 
     // Rutas gasolina
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'index'])->name('gasolina.index');
+    Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);
     Route::post('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'store'])->name('surtidos.store')->middleware('audit:Realizo surtido de gasolina, Permisos');;
 
     // Visualizar perfil
