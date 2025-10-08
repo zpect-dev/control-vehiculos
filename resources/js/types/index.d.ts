@@ -71,7 +71,7 @@ export interface FichaSeccionProps {
     title: string;
     fields: Field[];
     options?: string[];
-    formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos';
+    formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'semanal';
     expediente: Record<string, string | boolean | File | null>;
     onSubmit: (data: Record<string, string | boolean | File | null>) => void;
 }
@@ -271,6 +271,7 @@ export type VehiculoCompleto = VehiculoConductor & {
 };
 
 export interface VehiculoData {
+    tipo: "CARRO" | "MOTO";
     placa: string;
     modelo: string;
     usuario?: { name: string } | null;

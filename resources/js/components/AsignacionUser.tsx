@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AsignacionUserProps, UsuarioAsignado } from '@/types';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -25,7 +26,7 @@ export default function AsignacionUser({ vehiculo, users, onSuccess }: Asignacio
             preserveState: true,
             forceFormData: true,
             onSuccess: () => {
-                const newUser = users.find((u) => String(u.id) === selectedUserId) || null;
+                const newUser = users.find((u: { id: any; }) => String(u.id) === selectedUserId) || null;
                 setAssignedUser(newUser);
                 if (newUser) {
                     onSuccess?.(newUser);
