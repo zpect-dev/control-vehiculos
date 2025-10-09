@@ -12,7 +12,7 @@ class PistaController extends Controller
     public function index(Request $request)
     {
         // 1. Lista de cédulas permitidas
-        $cedulasPermitidas = ['29960819', '29960818'];
+        $cedulasPermitidas = ['26686508', '26686507'];
 
         // 2. Obtener nombres de usuarios por cédula (email)
         $userNames = User::whereIn('email', $cedulasPermitidas)->pluck('name');
@@ -39,6 +39,7 @@ class PistaController extends Controller
                 return [
                     'name' => $name,
                     'actions' => $actions,
+                    'created_at' => $activities->sortByDesc('created_at')->first()->created_at,
                 ];
             })->values();
 

@@ -21,7 +21,7 @@ export default function Auditoria({ facturas, vehiculo, isAdmin }: AuditoriaProp
               return coincideFecha && coincideBusqueda;
           })
         : [];
-
+console.log(facturas)
     return (
         <AppLayout>
             <Head title="Historial de Gastos" />
