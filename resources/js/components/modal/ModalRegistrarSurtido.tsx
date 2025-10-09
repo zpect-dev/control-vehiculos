@@ -14,6 +14,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
             litros: '',
             kilometraje: '',
             observacion: '',
+            users: '',
         },
         fields,
     );
@@ -50,6 +51,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
             handleChange('litros', '');
             handleChange('kilometraje', '');
             handleChange('observacion', '');
+            handleChange('user_id', '');
         }
     }, [isOpen]);
 
@@ -78,6 +80,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                 kilometraje,
                 observaciones: observacion,
                 precio: precioTotal,
+                user_id: formValues.user_id,
             },
             {
                 onSuccess: () => {
@@ -167,6 +170,25 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                                 )}
                             </div>
                         ))}
+                    </div>
+
+                    {/* Select de conductores */}
+                    <div className="mt-2">
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Conductor responsable</label>
+                        <select
+                            value={formValues.user_id}
+                            onChange={(e) => handleChange('user_id', e.target.value)}
+                            className={`w-full rounded-md border px-3 py-2 text-sm ${
+                                hasCamposIncompletos && !formValues.user_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                            } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
+                        >
+                            <option value="">Selecciona un conductor</option>
+                            {conductores.map((c: { id: number; name: string }) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Confirmación embebida */}
