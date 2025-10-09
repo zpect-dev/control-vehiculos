@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Vehiculo;
-use Illuminate\Http\Request;
-use App\Models\RevisionesSemanales;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Observacion;
 use App\Helpers\FlashHelper;
 use App\Services\Multimedia;
+use Illuminate\Http\Request;
+use PhpParser\Node\Expr\Empty_;
+use App\Helpers\NotificacionHelper;
+use App\Models\RevisionesSemanales;
+use Illuminate\Support\Facades\Auth;
 
 class RevisionSemanalController extends Controller
 {
@@ -22,14 +25,13 @@ class RevisionSemanalController extends Controller
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
-            ->get();
+            ->first();
 
-        foreach($revisionSemanal as $revision) {
-            if ($revision) {
-                $basePath = '/storage/uploads/fotos-semanales/';
-                $revision->imagen = $basePath . ltrim($revision->imagen, '/');
-            }
+        if ($revisionSemanal) {
+            $basePath = '/storage/uploads/fotos-semanales/';
+            $revisionSemanal->imagen = $basePath . ltrim($revisionSemanal->imagen, '/');
         }
+
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
             'revisionSemanal' => $revisionSemanal,
@@ -45,18 +47,19 @@ class RevisionSemanalController extends Controller
 
     public function store(Request $request, Vehiculo $vehiculo){
         return FlashHelper::try(function () use ($request, $vehiculo) {
+
             $validatedData = $request->validate([
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
                 'semanal.*.imagen' => 'required|image|max:5120',
                 'semanal.*.observacion' => 'nullable|string'
             ]);
-            
+
             $datos = [];
             foreach($validatedData['semanal'] as $revision){
                 $multimedia = new Multimedia;
                 $nameImage = $multimedia->guardarImagen($revision['imagen'], 'semanal');
-                
+
                 if(!$nameImage){
                     dd($validatedData);
                     throw new \Exception('Error al guardar la imagen');
@@ -68,17 +71,35 @@ class RevisionSemanalController extends Controller
                     'imagen' => $nameImage,
                     'tipo' => $revision['tipo'],
                     'observacion' => $revision['observacion'] ?? '',
-                    'created_at' => Carbon::today(),
-                    'updated_at' => Carbon::today()
                 ];
+
+                if(!empty($revision['observacion'])){
+                    $respuesta = Observacion::create([
+                        'user_id' => Auth::id(),
+                        'vehiculo_id' => $vehiculo->placa,
+                        'observacion' => $revision['observacion'],
+                        'resuelto' => false,
+                    ]);
+
+                    if (!$respuesta) {
+                        throw new \Exception('Error al registrar la observación');
+                    }
+
+                    // Emitir notificación
+                    NotificacionHelper::emitirObservacionAgregada(
+                        $vehiculo->placa,
+                        $request->user()->name,
+                        $revision['observacion'],
+                        'pendiente'
+                    );
+                }
             }
-            
+
             RevisionesSemanales::insert($datos);
         }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
-    
-
     }
-    
+}
+
     // public function store(Request $request, Vehiculo $vehiculo)
     // {
     //     return FlashHelper::try(function () use ($request, $vehiculo) {
@@ -89,17 +110,17 @@ class RevisionSemanalController extends Controller
     //         $request->validate([
     //             'video' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm',
     //         ]);
-            
+
     //         // $KilometrajeFinal = RevisionesSemanales::select('kilometraje_final')->where('vehiculo_id', $vehiculo->placa)->latest()->first();
-            
+
     //         // if($KilometrajeFinal && $KilometrajeFinal !== $validatedData['kilometraje_inicial']){
     //         //     return back()->with('error', 'El kilometraje no concuerda con el de la semana pasada, comunicarse con un administrador');   
     //         // }
-            
+
     //         $videoPath = $request->file('video')->store('uploads/videos-semanales', 'public');
     //         $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
     //         $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
-            
+
     //         RevisionesSemanales::create([
     //             'vehiculo_id' => $vehiculo->placa,
     //             'user_id' => Auth::id(),
@@ -119,7 +140,7 @@ class RevisionSemanalController extends Controller
     //     if ($validatedData['kilometraje_final'] < $revision->kilometraje_inicial) {
     //         return back()->with('error', 'El kilometraje final no puede ser menor al inicial');
     //     }
-        
+
     //     $videoPath = $request->file('video_final')->store('uploads/videos-semanales', 'public');
     //     $extension = "." . pathinfo($videoPath, PATHINFO_EXTENSION);
     //     $videoName = pathinfo($videoPath, PATHINFO_FILENAME) . $extension;
@@ -133,4 +154,3 @@ class RevisionSemanalController extends Controller
 
     //     return back()->with('success', 'Revision realizada correctamente');
     // }   
-}

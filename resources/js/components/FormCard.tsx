@@ -8,15 +8,7 @@ import { useState } from 'react';
 import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
 
-export default function FormCard({
-    title,
-    fields,
-    buttonText,
-    formType = 'expediente',
-    onSubmit,
-    expediente = {},
-    onChange,
-}: FormCardProps) {
+export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {}, onChange }: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange } = useFormLogic(expediente, fields);
     const [imagenModal, setImagenModal] = useState<string | null>(null);
 
@@ -64,18 +56,14 @@ export default function FormCard({
 
                         {/* Vista previa del archivo recién cargado */}
                         {value instanceof File && (
-                            <img
-                                src={URL.createObjectURL(value)}
-                                alt="Vista previa"
-                                className="max-h-32 rounded border object-contain shadow-sm"
-                            />
+                            <img src={URL.createObjectURL(value)} alt="Vista previa" className="max-h-32 rounded border object-contain shadow-sm" />
                         )}
 
                         {/* Archivo anterior si existe */}
                         {documentoActual &&
                             (/\.(pdf)$/i.test(documentoActual) ? (
                                 <a
-                                    href={`/storage/uploads/pdf-documentos/${documentoActual}`}
+                                    href={`${documentoActual}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="block text-sm text-blue-600 underline"
@@ -83,12 +71,9 @@ export default function FormCard({
                                     Ver PDF actual
                                 </a>
                             ) : (
-                                <div
-                                    className="max-h-48 cursor-pointer"
-                                    onClick={() => setImagenModal(`/storage/uploads/fotos-documentos/${documentoActual}`)}
-                                >
+                                <div className="max-h-48 cursor-pointer" onClick={() => setImagenModal(`${documentoActual}`)}>
                                     <img
-                                        src={`/storage/uploads/fotos-documentos/${documentoActual}`}
+                                        src={`${documentoActual}`}
                                         alt="Documento actual"
                                         className="max-h-48 rounded border object-contain shadow-sm"
                                     />
@@ -96,9 +81,7 @@ export default function FormCard({
                             ))}
 
                         {documentoActual && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                Al subir un nuevo archivo, se reemplazará el documento actual.
-                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Al subir un nuevo archivo, se reemplazará el documento actual.</p>
                         )}
                     </div>
                 );

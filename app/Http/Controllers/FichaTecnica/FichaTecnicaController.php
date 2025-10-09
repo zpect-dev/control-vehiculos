@@ -53,8 +53,13 @@ class FichaTecnicaController extends Controller
 
             $permisosPorVehiculo[$vehiculo->placa]["{$campo}_expedicion"] = $permiso->fecha_expedicion;
             $permisosPorVehiculo[$vehiculo->placa]["{$campo}_vencimiento"] = $permiso->fecha_vencimiento;
-            $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = $permiso->documento;
+            if (pathinfo($permiso->documento, PATHINFO_EXTENSION) == 'pdf') {
+                $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = '/storage/uploads/pdf-documentos/' . $permiso->documento;
+            } else {
+                $permisosPorVehiculo[$vehiculo->placa]["{$campo}_documento"] = '/storage/uploads/fotos-documentos/' . $permiso->documento;
+            }
         }
+
         $auditoriasPendientes = FacturaAuditoria::where('vehiculo_id', $vehiculo->placa)
             ->where(function ($q) {
                 $q->whereNull('aprobado')->orWhere('aprobado', false);
@@ -65,7 +70,7 @@ class FichaTecnicaController extends Controller
         $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
         $users = User::whereNotIn('email', [29960819, 26686507, 25025870])->select('id', 'name')->get();
-
+        
         return Inertia::render('fichaTecnica', [
             'vehiculos' => [$vehiculo],
             'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,

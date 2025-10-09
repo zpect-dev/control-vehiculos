@@ -63,11 +63,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Revisión de Fluidos
     Route::get('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'index'])->name('revisionFluidos');
-    Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store')->middleware('audit:Realizo la revision diaria, Revision diaria');;
+    Route::post('fichaTecnica/{vehiculo:placa}/revisionFluidos', [RevisionDiariaController::class, 'store'])->name('revisionFluidos.store')->middleware('audit:Realizo la revision diaria, Revision diaria');
 
     // Revisión Semanal
     Route::get('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'index'])->name('revisionSemanal');
-    Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store')->middleware('audit:Realizo la revision semanal, Revision semanal');;
+    Route::post('fichaTecnica/{vehiculo:placa}/revisionSemanal', [RevisionSemanalController::class, 'store'])->name('revisionSemanal.store')->middleware('audit:Realizo la revision semanal, Revision semanal');
     //Route::patch('fichaTecnica/{vehiculo:placa}/revisionSemanal/{revision}', [RevisionSemanalController::class, 'update'])->name('revisionSemanal.update');
 
     // Observaciones

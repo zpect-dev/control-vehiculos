@@ -16,8 +16,8 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $usuariosPermitidos = [
-            '29960819',
             '26686507',
+            '29960819',
             '25025870',
         ];  
 

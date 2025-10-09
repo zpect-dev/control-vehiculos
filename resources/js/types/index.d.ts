@@ -274,7 +274,7 @@ export type VehiculoCompleto = VehiculoConductor & {
 };
 
 export interface VehiculoData {
-    tipo: "CARRO" | "MOTO";
+    tipo: 'CARRO' | 'MOTO';
     placa: string;
     modelo: string;
     usuario?: { name: string } | null;
