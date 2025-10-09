@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { fields } from '@/constants/formFields';
+import { fields } from '@/constants/surtidoFields';
 import { useFormLogic } from '@/hooks/useFormLogic';
 import { ModalRegistroSurtidoProps, SurtidoFormData } from '@/types';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';

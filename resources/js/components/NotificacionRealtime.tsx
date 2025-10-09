@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { accesoriosFields, piezasRevisadasFields } from '@/constants/formFields';
+import { accesoriosFields } from '@/constants/accesoriosFields';
+import { piezasRevisadasFields } from '@/constants/piezasRevisadasFields';
 import { Field } from '@/hooks/useFormLogic';
 import { router, usePage } from '@inertiajs/react';
 import Pusher from 'pusher-js';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { AuditoriaAdminState, ModalDetalleFacturaProps } from '@/types';
 import { formatFecha } from '@/utils/formatDate';
@@ -26,11 +27,11 @@ export default function ModalDetalleFactura({
         </span>
     );
 
-    const supervisoresValidos = factura.supervisores?.filter((s) => s?.id != null && s?.name != null) ?? [];
-    const adicionalesValidos = vehiculo.adicionales?.filter((s) => s?.id != null && s?.name != null) ?? [];
+    const supervisoresValidos = factura.supervisores?.filter((s: { id: null; name: null }) => s?.id != null && s?.name != null) ?? [];
+    const adicionalesValidos = vehiculo.adicionales?.filter((s: { id: null; name: null }) => s?.id != null && s?.name != null) ?? [];
     const conductorValido = { id: vehiculo.respaldo.id, name: vehiculo.respaldo.name };
 
-    const conductorYaIncluido = conductorValido && supervisoresValidos.some((s) => s.id === conductorValido.id);
+    const conductorYaIncluido = conductorValido && supervisoresValidos.some((s: { id: any }) => s.id === conductorValido.id);
     console.log(vehiculo.adicionales);
     const opcionesPago = [
         { id: null, name: 'Empresa' },

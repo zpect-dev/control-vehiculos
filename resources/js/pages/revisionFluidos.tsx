@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccionFluidos from '@/components/FichaSeccionFluidos';
-import { fluidosPorRevisarFields } from '@/constants/formFields';
+import { fluidosPorRevisarFields } from '@/constants/fluidosPorRevisarFields';
 import AppLayout from '@/layouts/app-layout';
 import { RevisionFluido, RevisionFluidosProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';

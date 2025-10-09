@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
-import { fluidosSemanalFields } from '@/constants/formFields';
+import { fluidosSemanalFields } from '@/constants/fluidosSemanalFields';
 import AppLayout from '@/layouts/app-layout';
 import type { RevisionSemanalProps } from '@/types';
 import { Head, router } from '@inertiajs/react';

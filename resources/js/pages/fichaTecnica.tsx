@@ -3,7 +3,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
 import ModalAsignacionUser from '@/components/modal/ModalAsignacionUser';
-import { accesoriosFields, expedienteTecnicoFields, permisologiaFields, piezasRevisadasFields } from '@/constants/formFields';
+import { accesoriosFields } from '@/constants/accesoriosFields';
+import { expedienteTecnicoFields } from '@/constants/expedienteTecnicoFields';
+import { permisologiaFields } from '@/constants/permisologiaFields';
+import { piezasRevisadasFields } from '@/constants/piezasRevisadasFields';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';

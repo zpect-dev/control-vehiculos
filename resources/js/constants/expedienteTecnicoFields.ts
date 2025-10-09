@@ -1,0 +1,128 @@
+import { Field } from '@/hooks/useFormLogic';
+
+// Campos para el formulario de Expediente
+export const expedienteTecnicoFields: Record<'CARRO' | 'MOTO', Field[]> = {
+    CARRO: [
+        {
+            id: '1',
+            label: 'Kilometraje',
+            type: 'text',
+            placeholder: 'Ej: 12.345',
+            required: false,
+        },
+        {
+            id: '2',
+            label: 'Marca del Aceite',
+            type: 'text',
+            placeholder: 'Ej: Castrol',
+            required: false,
+        },
+        {
+            id: '3',
+            label: 'Marca de Valvulina',
+            type: 'text',
+            placeholder: 'Ej: Mobil',
+            required: false,
+        },
+        {
+            id: '4',
+            label: 'Marca del Refrigerante',
+            type: 'text',
+            placeholder: 'Ej: Motul',
+            required: false,
+        },
+        {
+            id: '5',
+            label: 'Posee Computadora Bloqueada',
+            type: 'text',
+            placeholder: 'SI / NO',
+            required: false,
+        },
+        {
+            id: '6',
+            label: 'Tipo de Frenos',
+            type: 'text',
+            placeholder: 'Ej: Disco, Tambor, ABS',
+            required: false,
+        },
+        {
+            id: '7',
+            label: 'Tipo de Distribución de Motor',
+            type: 'text',
+            placeholder: 'Ej: Cadena, Correa, Engranajes',
+            required: false,
+        },
+        {
+            id: '8',
+            label: 'Sistema de Enfriamiento',
+            type: 'text',
+            placeholder: 'Ej: Aire, Líquido',
+            required: false,
+        },
+        {
+            id: '9',
+            label: 'Sistema de Inyección',
+            type: 'text',
+            placeholder: 'Ej: Gasolina, Eléctrico, Diésel',
+            required: false,
+        },
+        {
+            id: '10',
+            label: 'Tipo de Cauchos',
+            type: 'text',
+            placeholder: 'Ej: Medida, Marca',
+            required: false,
+        },
+    ],
+    MOTO: [
+        {
+            id: '1',
+            label: 'Kilometraje',
+            type: 'text',
+            placeholder: 'Ej: 12.345',
+            required: false,
+        },
+        {
+            id: '2',
+            label: 'Marca del Aceite',
+            type: 'text',
+            placeholder: 'Ej: Motul',
+            required: false,
+        },
+        {
+            id: '3',
+            label: 'Tipo de Motor',
+            type: 'text',
+            placeholder: 'Ej: 4 tiempos, 2 tiempos',
+            required: false,
+        },
+        {
+            id: '4',
+            label: 'Cilindrada',
+            type: 'text',
+            placeholder: 'Ej: 150cc, 250cc',
+            required: false,
+        },
+        {
+            id: '5',
+            label: 'Sistema de Enfriamiento',
+            type: 'text',
+            placeholder: 'Ej: Aire, Líquido',
+            required: false,
+        },
+        {
+            id: '6',
+            label: 'Tipo de Frenos',
+            type: 'text',
+            placeholder: 'Ej: Disco, Tambor',
+            required: false,
+        },
+        {
+            id: '7',
+            label: 'Tipo de Cauchos',
+            type: 'text',
+            placeholder: 'Ej: Medida, Marca',
+            required: false,
+        },
+    ],
+};

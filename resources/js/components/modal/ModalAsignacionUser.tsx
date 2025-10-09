@@ -1,5 +1,5 @@
 import FormCard from '@/components/FormCard';
-import { getAsignacionFields } from '@/constants/formFields';
+import { getAsignacionFields } from '@/constants/getAsignacionFields';
 import type { ModalAsignacionUserProps } from '@/types';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { router } from '@inertiajs/react';
