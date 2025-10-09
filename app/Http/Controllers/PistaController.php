@@ -12,13 +12,10 @@ class PistaController extends Controller
     public function index(Request $request)
     {
         // 1. Lista de cédulas permitidas
-        $users = User::role('admin')->whereNotIn('email', [29960819, 26686507, 25025870])->select('name')->get();
-        
+        $cedulasPermitidas = ['29960819', '29960818'];
+
         // 2. Obtener nombres de usuarios por cédula (email)
-        $userNames = [];
-        foreach($users as $user){
-            $userNames[] = $user->name;
-        }
+        $userNames = User::whereIn('email', $cedulasPermitidas)->pluck('name');
 
         // 3. Obtener fecha enviada desde el frontend
         $date = $request->input('date');
@@ -44,14 +41,15 @@ class PistaController extends Controller
                     'actions' => $actions,
                 ];
             })->values();
+
         // 6. Obtener encabezados únicos
-        //$administrators = $pistas->pluck('name')->unique()->sort()->values();
+        $administrators = $pistas->pluck('name')->unique()->sort()->values();
         $actions = $pistas->pluck('accion')->unique()->sort()->values();
 
         // 7. Enviar datos a la vista con el filtro aplicado
         return Inertia::render('pistas', [
             'activityMatrix' => $activityMatrix,
-            'administrators' => $users,
+            'administrators' => $administrators,
             'actions' => $actions,
             'filters' => [
                 'date' => $date,

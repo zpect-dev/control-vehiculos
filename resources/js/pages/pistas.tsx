@@ -9,7 +9,7 @@ export default function Pistas() {
 
     // Función para buscar el recuento de una acción para un administrador específico
     const getActionCount = (adminName: any, actionName: string | number) => {
-        const adminData = activityMatrix.find((item: { name: any }) => item.name === adminName.name);
+        const adminData = activityMatrix.find((item: { name: any }) => item.name === adminName);
         return adminData?.actions[actionName] || 0;
     };
 
@@ -34,18 +34,15 @@ export default function Pistas() {
                         </thead>
                         <tbody>
                             {administrators.map((adminName: any) => {
-                                const totalActions = actions.reduce(
-                                    (sum: number, actionName: any) => sum + getActionCount(adminName.name, actionName),
-                                    0,
-                                );
+                                const totalActions = actions.reduce((sum: number, actionName: any) => sum + getActionCount(adminName, actionName), 0);
                                 return (
-                                    <tr key={adminName.name} className="dark:bg-gray-800">
-                                        <td className="border-2 border-gray-300 p-3 font-semibold dark:border-gray-700">{adminName.name}</td>
+                                    <tr key={adminName} className="dark:bg-gray-800">
+                                        <td className="border-2 border-gray-300 p-3 font-semibold dark:border-gray-700">{adminName}</td>
                                         {actions.map((actionName: any) => {
-                                            const count = getActionCount(adminName.name, actionName);
+                                            const count = getActionCount(adminName, actionName);
                                             return (
                                                 <td
-                                                    key={`${adminName.name}-${actionName}`}
+                                                    key={`${adminName}-${actionName}`}
                                                     className={`border-2 border-gray-300 p-3 text-center font-bold dark:border-gray-700`}
                                                 >
                                                     {count > 0 ? (
