@@ -25,12 +25,12 @@ class RevisionSemanalController extends Controller
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
-            ->first();
-
-        if ($revisionSemanal) {
-            $basePath = '/storage/uploads/fotos-semanales/';
-            $revisionSemanal->imagen = $basePath . ltrim($revisionSemanal->imagen, '/');
-        }
+            ->get()
+            ->map(function ($item) {
+                $basePath = '/storage/uploads/fotos-semanales/';
+                $item->imagen = $basePath . ltrim($item->imagen, '/');
+                return $item;
+            });
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
@@ -45,47 +45,48 @@ class RevisionSemanalController extends Controller
         ]);
     }
 
-    public function store(Request $request, Vehiculo $vehiculo){
+    public function store(Request $request, Vehiculo $vehiculo)
+    {
         return FlashHelper::try(function () use ($request, $vehiculo) {
-
             $validatedData = $request->validate([
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
                 'semanal.*.imagen' => 'required|image|max:5120',
-                'semanal.*.observacion' => 'nullable|string'
+                'semanal.*.observacion' => 'nullable|string',
             ]);
 
+            $multimedia = new Multimedia;
             $datos = [];
-            foreach($validatedData['semanal'] as $revision){
-                $multimedia = new Multimedia;
-                $nameImage = $multimedia->guardarImagen($revision['imagen'], 'semanal');
 
-                if(!$nameImage){
-                    dd($validatedData);
+            foreach ($validatedData['semanal'] as $revision) {
+                $imagen = $multimedia->guardarImagen($revision['imagen'], 'semanal');
+
+                if (!$imagen) {
                     throw new \Exception('Error al guardar la imagen');
                 }
 
                 $datos[] = [
                     'vehiculo_id' => $vehiculo->placa,
                     'user_id' => Auth::id(),
-                    'imagen' => $nameImage,
+                    'imagen' => $imagen,
                     'tipo' => $revision['tipo'],
                     'observacion' => $revision['observacion'] ?? '',
+                    'created_at' => Carbon::today(),
+                    'updated_at' => Carbon::today(),
                 ];
 
-                if(!empty($revision['observacion'])){
-                    $respuesta = Observacion::create([
+                if (!empty($revision['observacion'])) {
+                    $observacion = Observacion::create([
                         'user_id' => Auth::id(),
                         'vehiculo_id' => $vehiculo->placa,
                         'observacion' => $revision['observacion'],
                         'resuelto' => false,
                     ]);
 
-                    if (!$respuesta) {
+                    if (!$observacion) {
                         throw new \Exception('Error al registrar la observación');
                     }
 
-                    // Emitir notificación
                     NotificacionHelper::emitirObservacionAgregada(
                         $vehiculo->placa,
                         $request->user()->name,

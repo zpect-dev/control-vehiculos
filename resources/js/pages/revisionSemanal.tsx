@@ -14,7 +14,6 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
     const storageKey = `revisionSemanal-${placa}`;
 
     const [formData, setFormData] = useState<Record<string, any>>({});
-
     // Precargar datos desde localStorage o desde revisión semanal
     useEffect(() => {
         const saved = localStorage.getItem(storageKey);
