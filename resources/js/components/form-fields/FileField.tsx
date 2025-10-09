@@ -50,7 +50,7 @@ export function FileField({ id, label, value, onChange }: FileFieldProps) {
                 <img
                     src={previewUrl}
                     alt="Vista previa"
-                    className="mt-2 h-32 w-auto rounded-md border object-contain shadow"
+                    className="max-h-32 rounded border object-contain shadow-sm"
                     onError={(e) => {
                         (e.target as HTMLImageElement).style.opacity = '0.4';
                         (e.target as HTMLImageElement).title = 'No se pudo cargar la imagen';

@@ -65,7 +65,6 @@ class RevisionDiariaController extends Controller
 
             $datos = [];
             foreach ($validatedData['fluidos'] as $revision) {
-
                 if (!$revision['revisado']) {
                     continue;
                 }
