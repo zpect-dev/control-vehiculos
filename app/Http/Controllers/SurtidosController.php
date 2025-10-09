@@ -53,13 +53,23 @@ class SurtidosController extends Controller
 
     public function info(Vehiculo $vehiculo)
     {
+        $ids = array_filter([
+            $vehiculo->user_id,
+            $vehiculo->user_id_adicional_1,
+            $vehiculo->user_id_adicional_2,
+            $vehiculo->user_id_adicional_3,
+        ]);
+
+        $users = User::whereIn('id', $ids)->select('id', 'name')->get();
+
         $ultimo = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
         $valorCarburador = $vehiculo->tipo == 'CARRO' ? 0.10 : 0.035;
 
         return response()->json([
             'kilometraje_anterior' => $ultimo ? $ultimo->kilometraje : null,
             'precio_unitario' => 0.5,
-            'valor_carburador' => $valorCarburador
+            'valor_carburador' => $valorCarburador,
+            'users' => $users
         ]);
     }
 
@@ -71,7 +81,8 @@ class SurtidosController extends Controller
                 'cant_litros' => 'required|numeric|min:0.1|max:1000',
                 'kilometraje' => 'required|numeric|min:0',
                 'observaciones' => 'nullable',
-                'precio' => 'required|numeric|min:0'
+                'precio' => 'required|numeric|min:0',
+                'user_id' => 'required|exists:users,id'
             ]);
 
             $valorCarburador = $vehiculo->tipo == 'CARRO' ? 0.10 : 0.035;
@@ -83,7 +94,7 @@ class SurtidosController extends Controller
             $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * $valorCarburador : 0;
             $diferencia = $surtido_ideal == 0 ? 0 : $surtido_ideal - $validatedData['cant_litros'];
 
-            $usuario = User::find($vehiculo->user_id);
+            $usuario = User::find($validatedData['user_id']);
 
             if(!$usuario) throw new \Exception('El vehiculo debe tener un coductor asignado');
 
