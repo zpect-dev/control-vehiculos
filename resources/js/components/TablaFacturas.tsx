@@ -1,5 +1,4 @@
 import { Factura, FacturaModalData, FacturaShowProps, Renglon, TablaFacturasProps } from '@/types';
-
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { FilaFactura } from '../components/FilaFactura';
@@ -19,7 +18,12 @@ export function TablaFacturas({ facturas: facturasIniciales, vehiculo, isAdmin }
 
     const [modalData, setModalData] = useState<{
         factura: FacturaModalData;
-        vehiculo: { placa: string; conductor: string };
+        vehiculo: {
+            placa: string;
+            conductor: string;
+            respaldo?: string | null;
+            adicionales?: string | null;
+        };
         renglones: Renglon[];
         auditados: boolean;
     } | null>(null);
@@ -64,7 +68,16 @@ export function TablaFacturas({ facturas: facturasIniciales, vehiculo, isAdmin }
                                         preserveState: true,
                                         onSuccess: (page) => {
                                             const { factura, vehiculo, renglones, auditados } = page.props as unknown as FacturaShowProps;
-                                            setModalData({ factura, vehiculo, renglones, auditados });
+                                            setModalData({
+                                                factura,
+                                                vehiculo: {
+                                                    ...vehiculo,
+                                                    respaldo: vehiculo.respaldo ?? null,
+                                                    adicionales: vehiculo.adicionales ?? null,
+                                                },
+                                                renglones,
+                                                auditados,
+                                            });
                                             setShowModal(true);
                                         },
                                     },

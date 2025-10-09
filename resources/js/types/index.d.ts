@@ -73,7 +73,7 @@ export interface FichaSeccionProps {
     options?: string[];
     formType: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'semanal';
     expediente: Record<string, string | boolean | File | null>;
-    onChange?: (data: Record<string, any>) => void
+    onChange?: (data: Record<string, any>) => void;
     onSubmit: (data: Record<string, string | boolean | File | null>) => void;
 }
 
@@ -82,7 +82,7 @@ export interface FormCardProps {
     fields: Field[];
     buttonText?: string;
     formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido' | 'semanal';
-    onChange?: (data: Record<string, any>) => void
+    onChange?: (data: Record<string, any>) => void;
     onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
     expediente?: Record<string | number, string | boolean | File | null>;
 }
@@ -346,8 +346,8 @@ export type ModalDetalleFacturaProps = {
     vehiculo: {
         placa: string;
         conductor: any;
-        respaldo: any;
-        adicionales: any;
+        respaldo?: any;
+        adicionales?: any;
     };
     visible: boolean;
     onClose: () => void;
@@ -393,6 +393,8 @@ export type FacturaShowProps = {
     vehiculo: {
         placa: string;
         conductor: string;
+        respaldo?: string;
+        adicionales?: string;
     };
     renglones: Renglon[];
     auditados: boolean;
