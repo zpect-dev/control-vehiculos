@@ -1,89 +1,70 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppLayout from '@/layouts/app-layout';
-import { PageProps, Pista } from '@/types';
+import { PageProps } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { CalendarDays, FileText, Layers, User } from 'lucide-react';
-import { useState } from 'react';
+import { CheckCircle, MinusCircle } from 'lucide-react';
 
 export default function Pistas() {
-    const { pistas } = usePage<PageProps>().props;
-    const [filtroNombre, setFiltroNombre] = useState('');
-    const [filtroAccion, setFiltroAccion] = useState('');
+    const { activityMatrix, administrators, actions } = usePage<PageProps>().props;
 
-    const pistasFiltradas = pistas.filter((pista: Pista) => {
-        const nombreMatch = pista.name?.toLowerCase().includes(filtroNombre.toLowerCase());
-        const accionMatch = pista.accion?.toLowerCase().includes(filtroAccion.toLowerCase());
-        return nombreMatch && accionMatch;
-    });
+    // Función para buscar el recuento de una acción para un administrador específico
+    const getActionCount = (adminName: any, actionName: string | number) => {
+        const adminData = activityMatrix.find((item: { name: any }) => item.name === adminName);
+        return adminData?.actions[actionName] || 0;
+    };
 
     return (
         <AppLayout>
             <Head title="Pista de Empleados" />
-            <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
-                <h1 className="mb-8 text-center text-4xl font-bold text-gray-900 dark:text-white">Pista de Empleados</h1>
+            <div className="min-h-screen bg-white px-4 py-10 dark:bg-gray-800">
+                <h1 className="mb-10 text-center text-4xl font-extrabold text-gray-900 dark:text-white">Pista de Empleados</h1>
 
-                {/* Filtros */}
-                <div className="mx-auto mb-6 grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Filtrar por nombre</label>
-                        <input
-                            type="text"
-                            value={filtroNombre}
-                            onChange={(e) => setFiltroNombre(e.target.value)}
-                            placeholder="Ej. Cristian"
-                            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Filtrar por acción</label>
-                        <input
-                            type="text"
-                            value={filtroAccion}
-                            onChange={(e) => setFiltroAccion(e.target.value)}
-                            placeholder="Ej. Aprobo, Audito, Asigno..."
-                            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                        />
-                    </div>
-                </div>
-
-                {/* Resultados */}
-                <div className="mx-auto max-w-5xl space-y-4">
-                    {pistasFiltradas.length > 0 ? (
-                        pistasFiltradas.map((pista: Pista) => (
-                            <div
-                                key={pista.id}
-                                className="rounded-lg border border-gray-200 bg-white p-6 shadow-md transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
-                            >
-                                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                                    <div className="flex items-center gap-2">
-                                        <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                                        <span className="font-semibold">Usuario:</span> {pista.name || 'Desconocido'}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                                        <span className="font-semibold">Acción:</span> {pista.accion}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Layers className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                                        <span className="font-semibold">Área:</span> {pista.modelo}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <CalendarDays className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                                        <span className="font-semibold">Fecha:</span>{' '}
-                                        {new Date(pista.created_at).toLocaleString('es-VE', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
+                <div className="mx-auto max-w-full overflow-x-auto rounded-xl shadow-2xl transition-all duration-300">
+                    <table className="w-full text-gray-700 dark:text-gray-300">
+                        <thead>
+                            <tr className="rounded-t-xl bg-gray-200 text-sm dark:bg-gray-700">
+                                <th className="rounded-tl-xl p-3 text-left font-semibold">Usuario</th>
+                                {actions.map((action: any) => (
+                                    <th key={action} className="p-3 text-center font-semibold">
+                                        {action}
+                                    </th>
+                                ))}
+                                <th className="rounded-tr-xl p-3 text-center font-semibold">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {administrators.map((adminName: any) => {
+                                const totalActions = actions.reduce((sum: number, actionName: any) => sum + getActionCount(adminName, actionName), 0);
+                                return (
+                                    <tr key={adminName} className="dark:bg-gray-800">
+                                        <td className="border-2 border-gray-300 p-3 font-semibold dark:border-gray-700">{adminName}</td>
+                                        {actions.map((actionName: any) => {
+                                            const count = getActionCount(adminName, actionName);
+                                            return (
+                                                <td
+                                                    key={`${adminName}-${actionName}`}
+                                                    className={`border-2 border-gray-300 p-3 text-center font-bold dark:border-gray-700`}
+                                                >
+                                                    {count > 0 ? (
+                                                        <span className="flex items-center justify-center gap-1 text-green-600 dark:text-green-400">
+                                                            <CheckCircle className="h-4 w-4" />
+                                                            {count}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="flex items-center justify-center gap-1 text-red-500 dark:text-red-400">
+                                                            <MinusCircle className="h-4 w-4" />
+                                                            {count}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                            );
                                         })}
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-gray-600 dark:text-gray-400">No se encontraron pistas con esos filtros.</p>
-                    )}
+                                        <td className="border-2 border-gray-300 p-3 text-center font-bold dark:border-gray-700">{totalActions}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </AppLayout>
