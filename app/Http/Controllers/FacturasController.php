@@ -43,9 +43,6 @@ class FacturasController extends Controller
                 ];
             });
 
-            $facturas = DB::connection('sqlsrv')->select('SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ? AND co_tran <> ?',[$vehiculo->placa, '2025-06-10', '000003']);
-
-
         $conductor = $vehiculo->load('usuario:id,name')->toArray();
         $user = Auth::user();
         $isAdmin = $user ? $user->hasRole('admin') : false;
