@@ -26,7 +26,8 @@ class FacturasController extends Controller
     {
         $facturas = Factura::where('co_cli', $vehiculo->placa)
             ->where('anulada', 0)
-            ->whereDate('fec_emis', '>=', '2025-10-01')
+            ->whereNotIn('co_tran', ['000003'])
+            ->whereDate('fec_emis', '>=', '2025-10-06')
             ->latest('fact_num')
             ->get()
             ->map(function ($factura) {
@@ -41,6 +42,9 @@ class FacturasController extends Controller
                     'aprobado' => $aprobado[0]->aprobado ?? false,
                 ];
             });
+
+            $facturas = DB::connection('sqlsrv')->select('SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ? AND co_tran <> ?',[$vehiculo->placa, '2025-06-10', '000003']);
+
 
         $conductor = $vehiculo->load('usuario:id,name')->toArray();
         $user = Auth::user();
