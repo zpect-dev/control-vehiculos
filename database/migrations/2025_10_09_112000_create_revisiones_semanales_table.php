@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('vehiculo_id');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('imagen');
-            $table->string('tipo');
-            $table->string('observacion')->nullable();
+            $table->unsignedBigInteger('observacion_id')->nullable();
+            $table->boolean('revisado')->default(0);
             $table->timestamps();
 
+            $table->foreign('observacion_id')->references('id')->on('observaciones')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('vehiculo_id')->references('placa')->on('vehiculos')->onUpdate('cascade')->onDelete('cascade');
         });
     }

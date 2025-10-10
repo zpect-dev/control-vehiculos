@@ -56,7 +56,7 @@ class RevisionDiariaController extends Controller
             $validatedData = $request->validate([
                 'fluidos' => 'required|array',
                 'fluidos.*.tipo' => 'nullable|string',
-                'fluidos.*.vehiculo_id' => 'nullable|string|max:255',
+                'fluidos.*.vehiculo_id' => 'nullable|string',
                 'fluidos.*.dia' => 'nullable|string',
                 'fluidos.*.nivel_fluido' => 'nullable|string',
                 'fluidos.*.revisado' => 'nullable|string',

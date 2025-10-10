@@ -11,8 +11,11 @@ use App\Services\Multimedia;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\Empty_;
 use App\Helpers\NotificacionHelper;
+use App\Models\FotoRevisionSemanal;
 use App\Models\RevisionesSemanales;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class RevisionSemanalController extends Controller
 {
@@ -21,10 +24,17 @@ class RevisionSemanalController extends Controller
         $vehiculo->load('usuario');
 
         $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
-        $finalSemana = Carbon::now()->endOfWeek(Carbon::SUNDAY)->toImmutable();
+        $finalSemana = Carbon::now()->endOfWeek(Carbon::SATURDAY)->toImmutable();
 
         $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
+            ->first();
+
+        if($revisionSemanal->observacion_id){
+            $observacion = Observacion::where('id', $revisionSemanal->observacion_id);
+        }
+
+        $imagenes = FotoRevisionSemanal::where('revision_semanal_id', $revisionSemanal->id)
             ->get()
             ->map(function ($item) {
                 $basePath = '/storage/uploads/fotos-semanales/';
@@ -34,7 +44,8 @@ class RevisionSemanalController extends Controller
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
-            'revisionSemanal' => $revisionSemanal,
+            'revisionSemanal' => $imagenes,
+            'observacion' => $observacion ?? null,
             'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
             'final' => $finalSemana->isoFormat('D-M-YYYY'),
             'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal',
@@ -45,62 +56,119 @@ class RevisionSemanalController extends Controller
         ]);
     }
 
-    public function store(Request $request, Vehiculo $vehiculo)
-    {
-        // dd($request->all());
-        return FlashHelper::try(function () use ($request, $vehiculo) {
-            $validatedData = $request->validate([
+    public function store(Request $request, Vehiculo $vehiculo){
+        DB::beginTransaction();
+        try {
+            $request->validate([
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
-                'semanal.*.imagen' => 'required|image|max:5120',
-                'semanal.*.observacion' => 'nullable|string',
+                'semanal.*.imagen' => 'required|image',
+                'observacion' => 'nullable|string'
+            ]);
+            
+            if ($request->observacion) {
+                
+                $observacion = Observacion::create([
+                    'user_id' => $request->user()->id,
+                    'vehiculo_id' => $vehiculo->placa,
+                    'observacion' => $request->observacion,
+                    'resuelto' => false
+                ]);
+                
+                if (!$observacion) throw new \Exception('Error al generar la observacion');
+            }
+
+            $revision = RevisionesSemanales::create([
+                'user_id' => $request->user()->id,
+                'vehiculo_id' => $vehiculo->placa,
+                'observacion_id' => $observacion->id ?? null,
+                'revisado' => false,
             ]);
 
-            $multimedia = new Multimedia;
+            if (!$revision) throw new \Exception('Error al generar la revision');
+
             $datos = [];
+            $multimedia = new Multimedia;
 
-            foreach ($validatedData['semanal'] as $revision) {
-                $imagen = $multimedia->guardarImagen($revision['imagen'], 'semanal');
-
-                if (!$imagen) {
-                    throw new \Exception('Error al guardar la imagen');
-                }
+            foreach($request->semanal as $renglon){
+                $nameImage = $multimedia->guardarImagen($renglon['imagen'], 'semanal');
+                if (!$nameImage) throw new \Exception('Error al guardar la imagen de tipo: ' . $renglon['tipo']);
 
                 $datos[] = [
-                    'vehiculo_id' => $vehiculo->placa,
-                    'user_id' => Auth::id(),
-                    'imagen' => $imagen,
-                    'tipo' => $revision['tipo'],
-                    'observacion' => $revision['observacion'] ?? '',
+                    'revision_semanal_id' => $revision->id,
+                    'imagen' => $nameImage,
+                    'tipo' => $renglon['tipo'],
                     'created_at' => Carbon::today(),
                     'updated_at' => Carbon::today(),
                 ];
-
-                if (!empty($revision['observacion'])) {
-                    $observacion = Observacion::create([
-                        'user_id' => Auth::id(),
-                        'vehiculo_id' => $vehiculo->placa,
-                        'observacion' => $revision['observacion'],
-                        'resuelto' => false,
-                    ]);
-
-                    if (!$observacion) {
-                        throw new \Exception('Error al registrar la observación');
-                    }
-
-                    NotificacionHelper::emitirObservacionAgregada(
-                        $vehiculo->placa,
-                        $request->user()->name,
-                        $revision['observacion'],
-                        'pendiente'
-                    );
-                }
             }
 
-            RevisionesSemanales::insert($datos);
-        }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
+            FotoRevisionSemanal::insert($datos);
+            DB::commit();
+
+            return back()->with('success', 'Revision semanal realizada correctamente');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            dd($e);
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }
+
+    // public function store(Request $request, Vehiculo $vehiculo)
+    // {
+    //     return FlashHelper::try(function () use ($request, $vehiculo) {
+    //         $validatedData = $request->validate([
+    //             'semanal' => 'required|array',
+    //             'semanal.*.tipo' => 'required|string',
+    //             'semanal.*.imagen' => 'required|image|max:5120',
+    //             'semanal.*.observacion' => 'nullable|string',
+    //         ]);
+
+    //         $multimedia = new Multimedia;
+    //         $datos = [];
+
+    //         foreach ($validatedData['semanal'] as $revision) {
+    //             $imagen = $multimedia->guardarImagen($revision['imagen'], 'semanal');
+
+    //             if (!$imagen) {
+    //                 throw new Exception('Error al guardar la imagen');
+    //             }
+
+    //             $datos[] = [
+    //                 'vehiculo_id' => $vehiculo->placa,
+    //                 'user_id' => Auth::id(),
+    //                 'imagen' => $imagen,
+    //                 'tipo' => $revision['tipo'],
+    //                 'observacion' => $revision['observacion'] ?? '',
+    //                 'created_at' => Carbon::today(),
+    //                 'updated_at' => Carbon::today(),
+    //             ];
+
+    //             if (!empty($revision['observacion'])) {
+    //                 $observacion = Observacion::create([
+    //                     'user_id' => Auth::id(),
+    //                     'vehiculo_id' => $vehiculo->placa,
+    //                     'observacion' => $revision['observacion'],
+    //                     'resuelto' => false,
+    //                 ]);
+
+    //                 if (!$observacion) {
+    //                     throw new Exception('Error al registrar la observación');
+    //                 }
+
+    //                 NotificacionHelper::emitirObservacionAgregada(
+    //                     $vehiculo->placa,
+    //                     $request->user()->name,
+    //                     $revision['observacion'],
+    //                     'pendiente'
+    //                 );
+    //             }
+    //         }
+
+    //         RevisionesSemanales::insert($datos);
+    //     }, 'Revisión semanal cargada correctamente.', 'Error al registrar la revisión semanal.');
+    // }
 
     // public function store(Request $request, Vehiculo $vehiculo)
     // {
