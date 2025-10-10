@@ -6,16 +6,12 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Vehiculo;
 use App\Models\Observacion;
-use App\Helpers\FlashHelper;
 use App\Services\Multimedia;
 use Illuminate\Http\Request;
-use PhpParser\Node\Expr\Empty_;
-use App\Helpers\NotificacionHelper;
 use App\Models\FotoRevisionSemanal;
 use App\Models\RevisionesSemanales;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
 
 class RevisionSemanalController extends Controller
 {
@@ -47,7 +43,7 @@ class RevisionSemanalController extends Controller
         // dd($imagenes);
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
-            'revisionSemanal' => $imagenes ?? null,
+            'revisionSemanal' => $imagenes ?? [],
             'observacion' => $observacion ?? null,
             'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
             'final' => $finalSemana->isoFormat('D-M-YYYY'),
@@ -113,7 +109,7 @@ class RevisionSemanalController extends Controller
             return back()->with('success', 'Revision semanal realizada correctamente');
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e);
+            report($e);
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
