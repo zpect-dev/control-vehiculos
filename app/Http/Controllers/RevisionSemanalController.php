@@ -30,21 +30,25 @@ class RevisionSemanalController extends Controller
             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
             ->first();
 
-        if($revisionSemanal->observacion_id){
-            $observacion = Observacion::where('id', $revisionSemanal->observacion_id);
-        }
+        if($revisionSemanal){
 
-        $imagenes = FotoRevisionSemanal::where('revision_semanal_id', $revisionSemanal->id)
-            ->get()
-            ->map(function ($item) {
-                $basePath = '/storage/uploads/fotos-semanales/';
-                $item->imagen = $basePath . ltrim($item->imagen, '/');
-                return $item;
+            if($revisionSemanal->observacion_id) {
+                $observacion = Observacion::where('id', $revisionSemanal->observacion_id);
+            }
+
+            $imagenes = FotoRevisionSemanal::where('revision_semanal_id', $revisionSemanal->id)
+                ->get()
+                ->map(function ($item) {
+                    $basePath = '/storage/uploads/fotos-semanales/';
+                    $item->imagen = $basePath . ltrim($item->imagen, '/');
+                    return $item;
             });
+            
+        }
 
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
-            'revisionSemanal' => $imagenes,
+            'revisionSemanal' => $imagenes ?? null,
             'observacion' => $observacion ?? null,
             'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
             'final' => $finalSemana->isoFormat('D-M-YYYY'),
