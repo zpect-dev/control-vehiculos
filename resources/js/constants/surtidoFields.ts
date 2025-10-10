@@ -23,4 +23,11 @@ export const fields: SurtidoField[] = [
         placeholder: 'Observaciones adicionales...',
         required: false,
     },
+    {
+        id: 'user_id',
+        label: 'Conductor',
+        type: 'select',
+        required: true,
+        options: [], // Se llenará dinámicamente
+    },
 ];

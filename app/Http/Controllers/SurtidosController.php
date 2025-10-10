@@ -9,8 +9,6 @@ use App\Models\Vehiculo;
 use App\Services\Gasolina;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Uuid;
-
 
 class SurtidosController extends Controller
 {
@@ -89,7 +87,7 @@ class SurtidosController extends Controller
 
             $UltimoSurtido = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
 
-            if ($UltimoSurtido->kilometraje == $validatedData['kilometraje']) throw new \Exception('El kilometraje no puede ser igual que el anterior');
+            if ($UltimoSurtido->kilometraje == $validatedData['kilometraje'] || $validatedData['kilometraje'] < $UltimoSurtido->kilometraje) throw new \Exception('Kilometraje invalido, es menor o igual que el anterior');
 
             $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * $valorCarburador : 0;
             $diferencia = $surtido_ideal == 0 ? 0 : $surtido_ideal - $validatedData['cant_litros'];
@@ -106,7 +104,7 @@ class SurtidosController extends Controller
             }
 
             Surtido::create([
-                'user_id' => $vehiculo->user_id,
+                'user_id' => $validatedData['user_id'],
                 'admin_id' => $request->user()->id,
                 'vehiculo_id' => $vehiculo->placa,
                 'fact_num' => $fact_num,

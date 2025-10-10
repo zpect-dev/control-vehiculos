@@ -54,10 +54,10 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                     <div className="space-y-2">
                         <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChangeWrapper(id, file)} />
 
-                        {/* Vista previa del archivo recién cargado */}
+                        {/* Vista previa del archivo recién cargado
                         {value instanceof File && (
                             <img src={URL.createObjectURL(value)} alt="Vista previa" className="max-h-32 rounded border object-contain shadow-sm" />
-                        )}
+                        )} */}
 
                         {/* Archivo anterior si existe */}
                         {documentoActual &&
@@ -79,7 +79,6 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                                     />
                                 </div>
                             ))}
-
                         {documentoActual && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">Al subir un nuevo archivo, se reemplazará el documento actual.</p>
                         )}
