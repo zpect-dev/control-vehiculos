@@ -107,6 +107,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Asignar usuario
     Route::post('fichaTecnica/{vehiculo:placa}/assign-user', [AsignacionesController::class, 'store'])->name('asignaciones.store')->middleware('audit:Realizo una asignacion, Asignaciones');
+    // Unassing usuario
+    Route::post('fichaTecnica/{vehiculo:placa}/unassign-user', [AsignacionesController::class, 'unassign'])->name('asignaciones.unassign')->middleware('audit:Elimino los conductores de un vehiculo, Asignaciones');
 
     // Rutas para modificar vehiculos (necesario proximamente)
     Route::get('vehiculo/{vehiculo:placa}/edit', [VehiculoController::class, 'edit'])->name('vehiculo.edit');

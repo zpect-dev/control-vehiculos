@@ -137,7 +137,7 @@ export interface ModalAsignacionUserProps {
         id: string | number;
         name: string;
     }[];
-    onSuccess?: (usuario: { id: string | number; name: string }) => void;
+    onSuccess?: (usuario: { id: string | number; name: string } | null) => void;
     isAdmin: boolean;
 }
 

@@ -97,4 +97,13 @@ class AsignacionesController extends Controller
             }
         }, 'Usuario asignado correctamente.', 'Error al asignar el usuario.');
     }
+
+    public function unassign(Request $request, Vehiculo $vehiculo)
+    {
+        $vehiculo->user_id = null;
+        $vehiculo->user_id_adicional_1 = null;
+        $vehiculo->user_id_adicional_2 = null;
+        $vehiculo->user_id_adicional_3 = null;
+        $vehiculo->save();
+    }
 }

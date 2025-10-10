@@ -1,20 +1,40 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
+import { cheyenneTritonFields } from '@/constants/cheyenneTritonFields';
 import { fluidosSemanalFields } from '@/constants/fluidosSemanalFields';
+import { sparkPeugeotFields } from '@/constants/sparkPeugeotFields';
+import { Field } from '@/hooks/useFormLogic';
 import AppLayout from '@/layouts/app-layout';
 import type { RevisionSemanalProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
+type FormularioGrupo = keyof typeof formOptions;
+
+const formOptions: {
+    SPARK_PEUGEOT: Record<'CARRO', Field[]>;
+    CHEYENNE_TRITON: Record<'CARRO', Field[]>;
+} = {
+    SPARK_PEUGEOT: sparkPeugeotFields,
+    CHEYENNE_TRITON: cheyenneTritonFields,
+};
+
 export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, final }: RevisionSemanalProps) {
     const tipoVehiculo = vehiculo.tipo as 'CARRO' | 'MOTO';
-    const fields = fluidosSemanalFields[tipoVehiculo];
     const placa = vehiculo.placa;
     const storageKey = `revisionSemanal-${placa}`;
 
+    const [formularioSeleccionado, setFormularioSeleccionado] = useState<FormularioGrupo | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
-    // Precargar datos desde localStorage o desde revisión semanal
+
+    // Determinar los fields según selección o tipo de vehículo
+    const fields: Field[] =
+        formularioSeleccionado !== null && tipoVehiculo === 'CARRO'
+            ? formOptions[formularioSeleccionado]['CARRO']
+            : fluidosSemanalFields[tipoVehiculo];
+
     useEffect(() => {
         const saved = localStorage.getItem(storageKey);
         if (saved) {
@@ -23,14 +43,13 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
             const initial: Record<string, any> = {};
             revisionSemanal.forEach((item: any) => {
                 initial[item.tipo] = item.observacion ?? '';
-                initial[`${item.tipo}_archivo`] = null; // campo file vacío
-                initial[`${item.tipo}_documento`] = item.imagen; // nombre del archivo anterior
+                initial[`${item.tipo}_archivo`] = null;
+                initial[`${item.tipo}_documento`] = item.imagen;
             });
             setFormData(initial);
         }
     }, [placa, revisionSemanal]);
 
-    // Guardar cambios en localStorage (excluyendo archivos)
     useEffect(() => {
         const sanitized = { ...formData };
         fields.forEach((field) => {
@@ -41,12 +60,19 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
         localStorage.setItem(storageKey, JSON.stringify(sanitized));
     }, [formData]);
 
+    useEffect(() => {
+        if (formularioSeleccionado !== null) {
+            setFormData({});
+            localStorage.removeItem(storageKey);
+        }
+    }, [formularioSeleccionado]);
+
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
         const semanal: { tipo: string; imagen: File; observacion?: string }[] = [];
 
         fields.forEach((field) => {
             if (field.type === 'file') {
-                const tipo = field.id.replace('_archivo', '');
+                const tipo = field.id.split('_archivo')[0];
                 const imagen = data[field.id];
                 const observacion = data[tipo];
 
@@ -91,25 +117,23 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
                         </p>
                     </div>
 
-                    <div className="pb-4">
-                        <div className="rounded-lg border bg-gray-100 p-4 shadow-md dark:bg-gray-700">
-                            <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Detalles del Vehículo</h3>
-                            <div className="space-y-2 text-gray-700 dark:text-gray-300">
-                                <p>
-                                    <span className="font-semibold">Placa:</span> {vehiculo.placa}
-                                </p>
-                                <p>
-                                    <span className="font-semibold">Modelo:</span> {vehiculo.modelo}
-                                </p>
-                                <p>
-                                    <span className="font-semibold">Conductor:</span> {vehiculo.usuario?.name ?? 'Sin asignar'}
-                                </p>
-                            </div>
+                    {tipoVehiculo === 'CARRO' && (
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Selecciona el tipo de formulario:</label>
+                            <select
+                                value={formularioSeleccionado ?? ''}
+                                onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white"
+                            >
+                                <option value="">-- Usar formulario por tipo de vehículo --</option>
+                                <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
+                                <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
+                            </select>
                         </div>
-                    </div>
+                    )}
 
                     <FichaSeccion
-                        title="Revisión Semanal"
+                        title={`Revisión Semanal ${formularioSeleccionado ?? tipoVehiculo}`}
                         fields={fields}
                         formType="semanal"
                         expediente={formData}
