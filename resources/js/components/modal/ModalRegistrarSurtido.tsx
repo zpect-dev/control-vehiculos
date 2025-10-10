@@ -44,8 +44,6 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
         }
     }, [isOpen]);
 
-    console.log(conductores);
-
     useEffect(() => {
         if (!isOpen) {
             handleChange('litros', '');

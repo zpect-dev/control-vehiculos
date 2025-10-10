@@ -9,8 +9,6 @@ use App\Models\Vehiculo;
 use App\Services\Gasolina;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Uuid;
-
 
 class SurtidosController extends Controller
 {
