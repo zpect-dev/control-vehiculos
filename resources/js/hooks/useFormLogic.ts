@@ -1,13 +1,5 @@
+import { Field } from '@/types';
 import { useEffect, useState } from 'react';
-
-export interface Field {
-    id: string;
-    label: string;
-    type: 'text' | 'select' | 'date' | 'file' | 'checkbox' | 'number' | 'textarea';
-    placeholder?: string;
-    options?: { value: string; label: string }[];
-    required: boolean;
-}
 
 export function useFormLogic<T extends Record<string, string | boolean | File | null>>(
     initialData: T,

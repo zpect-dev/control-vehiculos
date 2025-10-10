@@ -52,12 +52,21 @@ export interface PageProps {
 
 //  Formularios y UI
 
-export interface Field {
-    name: string;
+export interface FileField {
+    id: string;
     label: string;
-    type: string;
-    required?: boolean;
-    options?: string[];
+    type: 'file';
+    required: boolean;
+}
+
+export interface Field {
+    id: string;
+    label: string;
+    type: 'text' | 'select' | 'date' | 'file' | 'checkbox' | 'number' | 'textarea';
+    placeholder?: string;
+    options?: { value: string; label: string }[];
+    required: boolean;
+    files?: FileField[];
 }
 
 export interface FichaSeccionFluidosProps {

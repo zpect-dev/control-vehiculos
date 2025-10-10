@@ -47,6 +47,7 @@ class RevisionSemanalController extends Controller
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
+        // dd($request->all());
         return FlashHelper::try(function () use ($request, $vehiculo) {
             $validatedData = $request->validate([
                 'semanal' => 'required|array',

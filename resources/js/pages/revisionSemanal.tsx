@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
 import { cheyenneTritonFields } from '@/constants/cheyenneTritonFields';
 import { fluidosSemanalFields } from '@/constants/fluidosSemanalFields';
 import { sparkPeugeotFields } from '@/constants/sparkPeugeotFields';
-import { Field } from '@/hooks/useFormLogic';
 import AppLayout from '@/layouts/app-layout';
-import type { RevisionSemanalProps } from '@/types';
+import type { Field, RevisionSemanalProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
@@ -68,32 +66,45 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
     }, [formularioSeleccionado]);
 
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
-        const semanal: { tipo: string; imagen: File; observacion?: string }[] = [];
+        const semanal: { tipo: string; imagen: File }[] = [];
 
         fields.forEach((field) => {
-            if (field.type === 'file') {
-                const tipo = field.id.split('_archivo')[0];
-                const imagen = data[field.id];
-                const observacion = data[tipo];
+            // Archivos agrupados
+            if (field.files && Array.isArray(field.files)) {
+                field.files.forEach((fileField) => {
+                    const imagen = data[fileField.id];
+                    if (imagen instanceof File) {
+                        semanal.push({
+                            tipo: fileField.id,
+                            imagen,
+                        });
+                    }
+                });
+            }
 
+            // Archivos individuales
+            else if (field.type === 'file') {
+                const imagen = data[field.id];
                 if (imagen instanceof File) {
-                    semanal.push({ tipo, imagen, observacion });
+                    semanal.push({
+                        tipo: field.id,
+                        imagen,
+                    });
                 }
             }
         });
 
+        const observacionGeneral = data['observacion_general'];
+
         router.post(
             `/fichaTecnica/${placa}/revisionSemanal`,
-            { semanal },
+            { semanal, observacion: observacionGeneral },
             {
                 preserveScroll: true,
                 forceFormData: true,
                 onSuccess: () => {
                     localStorage.removeItem(storageKey);
                     router.reload({ only: ['revisionSemanal'] });
-                },
-                onError: (errors) => {
-                    console.error('Error al guardar revisión semanal:', errors);
                 },
             },
         );
@@ -125,7 +136,6 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
                                 onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white"
                             >
-                                <option value="">-- Usar formulario por tipo de vehículo --</option>
                                 <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
                                 <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
                             </select>
