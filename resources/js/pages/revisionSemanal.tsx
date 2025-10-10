@@ -9,7 +9,7 @@ import type { Field, RevisionSemanalProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-type FormularioGrupo = keyof typeof formOptions;
+type FormularioGrupo = 'CARRO' | keyof typeof formOptions;
 
 const formOptions: {
     SPARK_PEUGEOT: Record<'CARRO', Field[]>;
@@ -29,8 +29,10 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
 
     // Determinar los fields según selección o tipo de vehículo
     const fields: Field[] =
-        formularioSeleccionado !== null && tipoVehiculo === 'CARRO'
-            ? formOptions[formularioSeleccionado]['CARRO']
+        formularioSeleccionado !== null
+            ? formularioSeleccionado === 'CARRO'
+                ? fluidosSemanalFields[tipoVehiculo]
+                : formOptions[formularioSeleccionado]['CARRO']
             : fluidosSemanalFields[tipoVehiculo];
 
     useEffect(() => {
@@ -130,15 +132,21 @@ export default function RevisionSemanal({ vehiculo, revisionSemanal, inicio, fin
 
                     {tipoVehiculo === 'CARRO' && (
                         <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Selecciona el tipo de formulario:</label>
-                            <select
-                                value={formularioSeleccionado ?? ''}
-                                onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white"
-                            >
-                                <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
-                                <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
-                            </select>
+                            <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                Selecciona el tipo de formulario:
+                            </label>
+                            <div className="relative">
+                                <select
+                                    value={formularioSeleccionado ?? ''}
+                                    onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
+                                    className="block w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                >
+                                    <option value="">Usar formulario por tipo de vehículo</option>
+                                    <option value="CARRO">Carro (Formulario base)</option>
+                                    <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
+                                    <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
+                                </select>
+                            </div>
                         </div>
                     )}
 
