@@ -14,7 +14,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
             litros: '',
             kilometraje: '',
             observacion: '',
-            users: '',
+            user_id: '',
         },
         fields,
     );
@@ -24,7 +24,7 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
     const [precioUnitario, setPrecioUnitario] = useState<number>(0.5);
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
     const [valorCarburador, setValorCarburador] = useState(0);
-    const [conductores, setConductores] = useState([]);
+    const [conductores, setConductores] = useState<{ id: number; name: string }[]>([]);
 
     const surtidoIdeal =
         kilometrajeAnterior > 0 && Number(kilometraje) > kilometrajeAnterior ? (Number(kilometraje) - kilometrajeAnterior) * valorCarburador : 0;
@@ -104,7 +104,6 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <X className="h-5 w-5" />
                         </button>
                     </div>
-
                     {/* Datos del vehículo */}
                     <div className="mb-6 text-gray-700 dark:text-gray-300">
                         <p>
@@ -117,7 +116,6 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <strong>Modelo:</strong> {vehiculo.modelo}
                         </p>
                     </div>
-
                     {/* Resumen de cálculo */}
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div className="rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
@@ -137,25 +135,15 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <p className="text-lg font-bold text-green-600 dark:text-green-400">${precioTotal.toFixed(2)}</p>
                         </div>
                     </div>
-
                     {/* Campos dinámicos */}
-                    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {fields.map((field) => (
-                            <div key={field.id} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
-                                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{field.label}</label>
-                                {field.type === 'textarea' ? (
-                                    <textarea
-                                        value={formValues[field.id] as string}
-                                        onChange={(e) => handleChange(field.id, e.target.value)}
-                                        placeholder={field.placeholder}
-                                        className={`w-full rounded-md border px-3 py-2 text-sm ${
-                                            hasCamposIncompletos && field.required && !formValues[field.id]
-                                                ? 'border-red-500'
-                                                : 'border-gray-300 dark:border-gray-700'
-                                        } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
-                                        rows={3}
-                                    />
-                                ) : (
+                    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        {/* Renderizar primero kilometraje y litros surtidos */}
+                        {['kilometraje', 'litros'].map((id) => {
+                            const field = fields.find((f) => f.id === id);
+                            if (!field) return null;
+                            return (
+                                <div key={field.id}>
+                                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{field.label}</label>
                                     <input
                                         type="number"
                                         value={formValues[field.id] as string}
@@ -167,30 +155,45 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                                                 : 'border-gray-300 dark:border-gray-700'
                                         } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
                                     />
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                                </div>
+                            );
+                        })}
 
-                    {/* Select de conductores */}
-                    <div className="mt-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Conductor responsable</label>
-                        <select
-                            value={formValues.user_id}
-                            onChange={(e) => handleChange('user_id', e.target.value)}
-                            className={`w-full rounded-md border px-3 py-2 text-sm ${
-                                hasCamposIncompletos && !formValues.user_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
-                            } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
-                        >
-                            <option value="">Selecciona un conductor</option>
-                            {conductores.map((c: { id: number; name: string }) => (
-                                <option key={c.id} value={c.id}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                        {/* Renderizar conductor al lado de litros surtidos */}
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Conductor</label>
+                            <select
+                                value={String(formValues.user_id ?? '')}
+                                onChange={(e) => handleChange('user_id', e.target.value)}
+                                className={`w-full rounded-md border px-3 py-2 text-sm ${
+                                    hasCamposIncompletos && !formValues.user_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                                } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
+                            >
+                                <option value="">Seleccionar</option>
+                                {conductores.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
+                        {/* Renderizar textarea de observación ocupando dos columnas */}
+                        <div className="sm:col-span-3">
+                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Observación</label>
+                            <textarea
+                                value={formValues.observacion as string}
+                                onChange={(e) => handleChange('observacion', e.target.value)}
+                                placeholder={fields.find((f) => f.id === 'observacion')?.placeholder}
+                                className={`w-full rounded-md border px-3 py-2 text-sm ${
+                                    hasCamposIncompletos && fields.find((f) => f.id === 'observacion')?.required && !formValues.observacion
+                                        ? 'border-red-500'
+                                        : 'border-gray-300 dark:border-gray-700'
+                                } bg-white text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
+                                rows={6}
+                            />
+                        </div>
+                    </div>
                     {/* Confirmación embebida */}
                     {mostrarConfirmacion && (
                         <div className="mt-6 rounded-lg border border-red-400 bg-red-100 p-4 text-sm text-red-800 dark:border-red-600 dark:bg-red-900 dark:text-red-200">
@@ -217,7 +220,6 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             </div>
                         </div>
                     )}
-
                     <div className="mt-6 text-right">
                         <button
                             onClick={registrarSurtido}
