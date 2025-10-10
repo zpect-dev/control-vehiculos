@@ -30,9 +30,9 @@ class RevisionSemanalController extends Controller
             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
             ->first();
 
-        if($revisionSemanal){
+        if ($revisionSemanal) {
 
-            if($revisionSemanal->observacion_id) {
+            if ($revisionSemanal->observacion_id) {
                 $observacion = Observacion::where('id', $revisionSemanal->observacion_id);
             }
 
@@ -42,10 +42,9 @@ class RevisionSemanalController extends Controller
                     $basePath = '/storage/uploads/fotos-semanales/';
                     $item->imagen = $basePath . ltrim($item->imagen, '/');
                     return $item;
-            });
-            
+                });
         }
-
+        // dd($imagenes);
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
             'revisionSemanal' => $imagenes ?? null,
@@ -60,7 +59,8 @@ class RevisionSemanalController extends Controller
         ]);
     }
 
-    public function store(Request $request, Vehiculo $vehiculo){
+    public function store(Request $request, Vehiculo $vehiculo)
+    {
         DB::beginTransaction();
         try {
             $request->validate([
@@ -69,16 +69,16 @@ class RevisionSemanalController extends Controller
                 'semanal.*.imagen' => 'required|image',
                 'observacion' => 'nullable|string'
             ]);
-            
+
             if ($request->observacion) {
-                
+
                 $observacion = Observacion::create([
                     'user_id' => $request->user()->id,
                     'vehiculo_id' => $vehiculo->placa,
                     'observacion' => $request->observacion,
                     'resuelto' => false
                 ]);
-                
+
                 if (!$observacion) throw new \Exception('Error al generar la observacion');
             }
 
@@ -94,7 +94,7 @@ class RevisionSemanalController extends Controller
             $datos = [];
             $multimedia = new Multimedia;
 
-            foreach($request->semanal as $renglon){
+            foreach ($request->semanal as $renglon) {
                 $nameImage = $multimedia->guardarImagen($renglon['imagen'], 'semanal');
                 if (!$nameImage) throw new \Exception('Error al guardar la imagen de tipo: ' . $renglon['tipo']);
 

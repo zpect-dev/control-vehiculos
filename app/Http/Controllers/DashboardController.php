@@ -135,7 +135,7 @@ class DashboardController extends Controller
             }
         }
 
-        // 🔥 NUEVO: incluir todos los registros de gasolina
+        // incluir todos los registros de gasolina
         $surtidos = Surtido::latest()->get();
 
         $registros = $surtidos->map(function ($surtido) {
