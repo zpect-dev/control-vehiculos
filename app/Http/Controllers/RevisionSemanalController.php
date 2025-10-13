@@ -64,7 +64,8 @@ class RevisionSemanalController extends Controller
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
                 'semanal.*.imagen' => 'required|image',
-                'observacion' => 'nullable|string'
+                'observacion' => 'nullable|string',
+                'tipo_formulario' => 'required|in:1,2'
             ]);
 
             if ($request->observacion) {
@@ -83,6 +84,7 @@ class RevisionSemanalController extends Controller
                 'user_id' => $request->user()->id,
                 'vehiculo_id' => $vehiculo->placa,
                 'observacion_id' => $observacion->id ?? null,
+                'tipo_formulario' => $request->tipo_formulario,
                 'revisado' => false,
             ]);
 
