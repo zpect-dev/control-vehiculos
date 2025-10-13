@@ -4,18 +4,28 @@ import { SelectField } from '@/components/form-fields/SelectField';
 import { TextField } from '@/components/form-fields/TextField';
 import { useFormLogic } from '@/hooks/useFormLogic';
 import { Field, FormCardProps } from '@/types';
-import { useState } from 'react';
+import { compressToWebp } from '@/utils/compressToWebp';
+import { useMemo, useState } from 'react';
 import { CheckField } from './form-fields/CheckField';
 import { FileField } from './form-fields/FileField';
 
 export default function FormCard({ title, fields, buttonText, formType = 'expediente', onSubmit, expediente = {}, onChange }: FormCardProps) {
     const { formValues, isEditing, hasFechasInvalidas, hasCamposIncompletos, handleChange } = useFormLogic(expediente, fields);
+
     const [imagenModal, setImagenModal] = useState<string | null>(null);
+    // Progreso de compresión por campo (0–100). Si existe la clave, está comprimiendo.
+    const [compProgress, setCompProgress] = useState<Record<string, number>>({});
+
+    const isCompressing = useMemo(() => Object.keys(compProgress).length > 0, [compProgress]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (hasFechasInvalidas) {
             alert('Hay fechas inválidas. Corrige antes de guardar.');
+            return;
+        }
+        if (isCompressing) {
+            alert('Espera a que termine la compresión antes de guardar.');
             return;
         }
         onSubmit?.(formValues);
@@ -46,25 +56,53 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
 
             case 'file': {
                 const safeFile = value instanceof File || value === null ? value : undefined;
-                // const baseId = field.id.replace('_archivo', '');
 
                 const baseId = field.id.replace(/_archivo$/, '');
                 const rawDocumento = expediente[`${baseId}`] ?? expediente[`${baseId}_documento`];
-                // console.log('📦 expediente:', expediente);
-                // console.log('🔍 field.id:', field.id);
-                // console.log('🔍 baseId:', baseId);
-                // console.log('🔍 documento encontrado:', rawDocumento);
-
                 const documentoActual = typeof rawDocumento === 'string' ? rawDocumento : undefined;
+
+                const progress = compProgress[field.id];
 
                 return (
                     <div className="space-y-2">
-                        <FileField id={field.id} label={field.label} value={safeFile} onChange={(id, file) => handleChangeWrapper(id, file)} />
+                        <FileField
+                            id={field.id}
+                            label={field.label}
+                            value={safeFile}
+                            onChange={async (id, file) => {
+                                // Si el usuario limpia el input
+                                if (!file) {
+                                    handleChangeWrapper(id, null);
+                                    setCompProgress((prev) => {
+                                        const { [id]: _, ...rest } = prev;
+                                        return rest;
+                                    });
+                                    return;
+                                }
 
-                        {/* Vista previa del archivo recién cargado
-                        {value instanceof File && (
-                            <img src={URL.createObjectURL(value)} alt="Vista previa" className="max-h-32 rounded border object-contain shadow-sm" />
-                        )} */}
+                                // Iniciar y mostrar progreso de compresión
+                                setCompProgress((prev) => ({ ...prev, [id]: 0 }));
+                                try {
+                                    const compressed = await compressToWebp(file, {
+                                        maxWidthOrHeight: 2000, // ajusta si necesitas 1600–2400
+                                        targetSizeMB: 1.2, // ajusta la calidad/tamaño objetivo
+                                        onProgress: (p) => setCompProgress((prev) => ({ ...prev, [id]: p })),
+                                    });
+                                    handleChangeWrapper(id, compressed);
+                                } finally {
+                                    // Quitar el indicador de compresión
+                                    setCompProgress((prev) => {
+                                        const { [id]: _, ...rest } = prev;
+                                        return rest;
+                                    });
+                                }
+                            }}
+                        />
+
+                        {/* Indicador simple de compresión */}
+                        {typeof progress === 'number' && (
+                            <div className="text-xs text-gray-600 dark:text-gray-300">Comprimiendo: {Math.round(progress)}%</div>
+                        )}
 
                         {/* Archivo anterior si existe */}
                         {documentoActual &&
@@ -120,18 +158,21 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
     return (
         <div className="mx-auto w-full max-w-5xl rounded-xl border bg-gray-100 px-8 py-4 shadow-lg dark:bg-gray-800">
             {title && <h2 className="pb-4 text-center text-2xl font-semibold text-gray-800 dark:text-gray-100">{title}</h2>}
+
             <form className="space-y-8" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
                     {fields.map((field) => (
                         <div key={field.id}>{renderField(field)}</div>
                     ))}
                 </div>
+
                 <div className="flex justify-end">
                     <button
                         type="submit"
-                        disabled={hasFechasInvalidas || hasCamposIncompletos}
+                        disabled={hasFechasInvalidas || hasCamposIncompletos || isCompressing}
+                        title={isCompressing ? 'Esperando a que termine la compresión…' : undefined}
                         className={`w-full rounded-full px-6 py-3 text-base font-semibold shadow-md transition-transform duration-200 md:w-auto ${
-                            hasFechasInvalidas || hasCamposIncompletos
+                            hasFechasInvalidas || hasCamposIncompletos || isCompressing
                                 ? 'cursor-not-allowed bg-gray-400 text-white'
                                 : 'bg-[#49af4e] text-white hover:scale-105 hover:bg-[#3d9641] focus:ring-2 focus:ring-[#49af4e] focus:ring-offset-2 focus:outline-none'
                         }`}
