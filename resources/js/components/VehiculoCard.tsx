@@ -6,6 +6,7 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
         observaciones_no_resueltas = 0,
         imagenes_factura_pendientes = 0,
         factura_pendiente = 0,
+        revision_diaria = true,
         usuario,
         usuario_adicional1,
         usuario_adicional2,
@@ -77,6 +78,17 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
                                 className="cursor-pointer rounded-sm bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-700 hover:underline dark:bg-yellow-800 dark:text-yellow-300"
                             >
                                 {factura_pendiente} factura por auditar
+                            </button>
+                        )}
+                        {revision_diaria === false && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.get(`/fichaTecnica/${vehiculo.placa}/revisionFluidos`);
+                                }}
+                                className="cursor-pointer rounded-sm bg-red-100 px-2 py-1 text-xs font-semibold text-red-700 hover:underline dark:bg-red-800 dark:text-red-300"
+                            >
+                                revision diaria pendiente
                             </button>
                         )}
                     </div>

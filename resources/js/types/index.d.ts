@@ -276,6 +276,7 @@ export type VehiculoCompleto = VehiculoConductor & {
     usuario_adicional1?: UsuarioAsignado | null;
     usuario_adicional2?: UsuarioAsignado | null;
     usuario_adicional3?: UsuarioAsignado | null;
+    revision_diaria?: boolean;
     imagen_url?: string;
     observaciones_no_resueltas?: number;
     imagenes_factura_pendientes?: number;

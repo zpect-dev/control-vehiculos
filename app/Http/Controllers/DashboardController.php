@@ -73,67 +73,75 @@ class DashboardController extends Controller
             $factNumsAudit = collect($auditados)->pluck('fact_num')->all();
 
             $vehiculo->factura_pendiente = count(array_diff($factNums, $factNumsAudit));
+
+            if(!$vehiculo->user_id) continue;
+
+            $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
+                ->whereDate('fecha_creacion', Carbon::today())
+                ->exists();
+
+            $vehiculo->revision_diaria = $revisadoHoy ?? false;
         }
 
-        $notificaciones = $modo === 'admin'
-            ? Notificacion::where('usuario_id', $user->id)
-            ->where('solo_admin', true)
-            ->orderByDesc('created_at')
-            ->get()
-            : [];
+        // $notificaciones = $modo === 'admin'
+        //     ? Notificacion::where('usuario_id', $user->id)
+        //     ->where('solo_admin', true)
+        //     ->orderByDesc('created_at')
+        //     ->get()
+        //     : [];
 
-        $hoy = Carbon::now();
-        $horaActual = $hoy->format('H:i');
-        $fechaHoy = $hoy->toDateString();
+        // $hoy = Carbon::now();
+        // $horaActual = $hoy->format('H:i');
+        // $fechaHoy = $hoy->toDateString();
 
-        // Verificación de revisión semanal omitida
-        if ($modo === 'admin' && $hoy->isSaturday() && $horaActual >= '10:00') {
-            $inicioSemana = $hoy->copy()->startOfWeek(Carbon::MONDAY)->toDateString();
-            $finalSemana = $hoy->copy()->endOfWeek(Carbon::FRIDAY)->toDateString();
+        // // Verificación de revisión semanal omitida
+        // if ($modo === 'admin' && $hoy->isSaturday() && $horaActual >= '10:00') {
+        //     $inicioSemana = $hoy->copy()->startOfWeek(Carbon::MONDAY)->toDateString();
+        //     $finalSemana = $hoy->copy()->endOfWeek(Carbon::FRIDAY)->toDateString();
 
-            foreach ($vehiculos as $vehiculo) {
-                $revision = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
-                    ->whereBetween('created_at', [$inicioSemana, $finalSemana])
-                    ->first();
+        //     foreach ($vehiculos as $vehiculo) {
+        //         $revision = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
+        //             ->whereBetween('created_at', [$inicioSemana, $finalSemana])
+        //             ->first();
 
-                $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
-                    ->whereDate('created_at', $fechaHoy)
-                    ->where('tipo', 'chequeoOmitido')
-                    ->where('usuario_id', $user->id)
-                    ->exists();
+        //         $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
+        //             ->whereDate('created_at', $fechaHoy)
+        //             ->where('tipo', 'chequeoOmitido')
+        //             ->where('usuario_id', $user->id)
+        //             ->exists();
 
-                if (!$yaAlertado && !$revision) {
-                    NotificacionHelper::emitirChequeoOmitido(
-                        $vehiculo->placa,
-                        $vehiculo->usuario->name ?? 'Desconocido',
-                        $fechaHoy
-                    );
-                }
-            }
-        }
+        //         if (!$yaAlertado && !$revision) {
+        //             NotificacionHelper::emitirChequeoOmitido(
+        //                 $vehiculo->placa,
+        //                 $vehiculo->usuario->name ?? 'Desconocido',
+        //                 $fechaHoy
+        //             );
+        //         }
+        //     }
+        // }
 
-        // Verificación de revisión diaria omitida
-        if ($modo === 'admin' && $horaActual >= '09:00') {
-            foreach ($vehiculos as $vehiculo) {
-                $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
-                    ->whereDate('fecha_creacion', $fechaHoy)
-                    ->exists();
+        // // Verificación de revisión diaria omitida
+        // if ($modo === 'admin' && $horaActual >= '09:00') {
+        //     foreach ($vehiculos as $vehiculo) {
+        //         $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
+        //             ->whereDate('fecha_creacion', $fechaHoy)
+        //             ->exists();
 
-                $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
-                    ->whereDate('created_at', $fechaHoy)
-                    ->where('tipo', 'chequeoOmitido')
-                    ->where('usuario_id', $user->id)
-                    ->exists();
+        //         $yaAlertado = Notificacion::where('vehiculo_id', $vehiculo->placa)
+        //             ->whereDate('created_at', $fechaHoy)
+        //             ->where('tipo', 'chequeoOmitido')
+        //             ->where('usuario_id', $user->id)
+        //             ->exists();
 
-                if (!$yaAlertado && !$revisadoHoy) {
-                    NotificacionHelper::emitirChequeoOmitido(
-                        $vehiculo->placa,
-                        $vehiculo->usuario->name ?? 'Desconocido',
-                        $fechaHoy
-                    );
-                }
-            }
-        }
+        //         if (!$yaAlertado && !$revisadoHoy) {
+        //             NotificacionHelper::emitirChequeoOmitido(
+        //                 $vehiculo->placa,
+        //                 $vehiculo->usuario->name ?? 'Desconocido',
+        //                 $fechaHoy
+        //             );
+        //         }
+        //     }
+        // }
 
         // incluir todos los registros de gasolina
         $surtidos = Surtido::latest()->get();
@@ -164,7 +172,7 @@ class DashboardController extends Controller
             'vehiculos' => $vehiculos,
             'registros' => $registros,
             'modo' => $modo,
-            'notificaciones' => $notificaciones,
+            'notificaciones' => $notificaciones ?? null,
             'auth' => [
                 'user' => [
                     'id' => $user->id,
