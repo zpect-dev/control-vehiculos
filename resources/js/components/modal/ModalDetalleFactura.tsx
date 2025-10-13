@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { AuditoriaAdminState, ModalDetalleFacturaProps } from '@/types';
+import { compressToWebp } from '@/utils/compressToWebp';
 import { formatFecha } from '@/utils/formatDate';
 import { formatCantidad, formatPrecio } from '@/utils/formatNumbers';
 import { router } from '@inertiajs/react';
@@ -216,9 +217,18 @@ export default function ModalDetalleFactura({
                                                         <input
                                                             type="file"
                                                             accept="image/*"
-                                                            onChange={(e) => {
+                                                            onChange={async (e) => {
                                                                 const file = e.target.files?.[0] ?? null;
-                                                                setImagenes((prev) => ({ ...prev, [r.co_art]: file }));
+                                                                if (!file) {
+                                                                    setImagenes((prev) => ({ ...prev, [r.co_art]: null }));
+                                                                    return;
+                                                                }
+                                                                // Comprime antes de guardar
+                                                                const compressed = await compressToWebp(file, {
+                                                                    maxWidthOrHeight: 2000,
+                                                                    targetSizeMB: 1.2,
+                                                                });
+                                                                setImagenes((prev) => ({ ...prev, [r.co_art]: compressed }));
                                                             }}
                                                             className="block w-full max-w-[110px] truncate text-xs text-gray-600 dark:text-gray-300"
                                                         />
