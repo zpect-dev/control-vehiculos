@@ -125,30 +125,33 @@ export default function RevisionSemanal() {
                     ) : (
                         <>
                             {tipoVehiculo === 'CARRO' && !formularioYaCargado && (
-                                <div className="mb-6">
-                                    <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
-                                        Selecciona el tipo de formulario:
-                                    </label>
-                                    <select
-                                        value={formularioSeleccionado ?? ''}
-                                        onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
-                                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    >
-                                        <option value="">Selecciona una opción</option>
-                                        <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
-                                        <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
-                                    </select>
+                                <div>
+                                    <div className="mb-6">
+                                        <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                            Selecciona el tipo de formulario:
+                                        </label>
+                                        <select
+                                            value={formularioSeleccionado ?? ''}
+                                            onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
+                                            className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                        >
+                                            <option value="">Selecciona una opción</option>
+                                            <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
+                                            <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
+                                        </select>
+                                    </div>
+                                    {formularioSeleccionado && (
+                                        <FichaSeccion
+                                            title={`Revisión Semanal ${formularioSeleccionado}`}
+                                            fields={fields}
+                                            formType="semanal"
+                                            expediente={formData}
+                                            onChange={setFormData}
+                                            onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
+                                        />
+                                    )}
                                 </div>
                             )}
-
-                            <FichaSeccion
-                                title={`Revisión Semanal ${formularioSeleccionado ?? tipoVehiculo}`}
-                                fields={fields}
-                                formType="semanal"
-                                expediente={formData}
-                                onChange={setFormData}
-                                onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
-                            />
                         </>
                     )}
                 </div>
