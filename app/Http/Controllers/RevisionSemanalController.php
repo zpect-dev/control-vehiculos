@@ -59,6 +59,7 @@ class RevisionSemanalController extends Controller
     public function store(Request $request, Vehiculo $vehiculo)
     {
         DB::beginTransaction();
+        // dd($request->all());
         try {
             $request->validate([
                 'semanal' => 'required|array',
@@ -66,6 +67,10 @@ class RevisionSemanalController extends Controller
                 'semanal.*.imagen' => 'required|image',
                 'observacion' => 'nullable|string',
                 'tipo_formulario' => 'required|in:1,2'
+            ]);
+
+            $request->merge([
+                'tipo_formulario' => (int) $request->input('tipo_formulario'),
             ]);
 
             if ($request->observacion) {
