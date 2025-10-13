@@ -6,7 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { exportGasolinaGeneralExcel } from '@/utils/exportGasolinaGeneralExcel';
 import { Head, usePage } from '@inertiajs/react';
 import { Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function Dashboard() {
     const { vehiculos, registros, modo } = usePage<{
@@ -15,13 +15,13 @@ export default function Dashboard() {
     }>().props;
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [tipoFiltro, setTipoFiltro] = useState<'todos' | 'moto' | 'carro'>(() => {
-        return (localStorage.getItem('tipoFiltro') as 'todos' | 'moto' | 'carro') || 'todos';
-    });
+    // const [tipoFiltro, setTipoFiltro] = useState<'todos' | 'moto' | 'carro'>(() => {
+    //     return (localStorage.getItem('tipoFiltro') as 'todos' | 'moto' | 'carro') || 'todos';
+    // });
 
-    useEffect(() => {
-        localStorage.setItem('tipoFiltro', tipoFiltro);
-    }, [tipoFiltro]);
+    // useEffect(() => {
+    //     localStorage.setItem('tipoFiltro', tipoFiltro);
+    // }, [tipoFiltro]);
 
     const vehiculosFiltrados = useMemo(() => {
         const term = searchTerm.toLowerCase();
@@ -32,11 +32,11 @@ export default function Dashboard() {
             const modelo = v.modelo?.toLowerCase() || '';
 
             const coincideBusqueda = placa.includes(term) || nombre.includes(term) || modelo.includes(term) || tipo.includes(term);
-            const coincideTipo = tipoFiltro === 'todos' || tipo === tipoFiltro;
+            // const coincideTipo = tipoFiltro === 'todos' || tipo === tipoFiltro;
 
-            return coincideBusqueda && coincideTipo;
+            return coincideBusqueda;
         });
-    }, [searchTerm, tipoFiltro, vehiculos]);
+    }, [searchTerm, vehiculos]);
 
     const handleExport = () => {
         exportGasolinaGeneralExcel(registros);
@@ -62,14 +62,14 @@ export default function Dashboard() {
                         />
                     </div>
 
-                    <select
+                    {/* <select
                         value={tipoFiltro}
                         onChange={(e) => setTipoFiltro(e.target.value as 'todos' | 'moto' | 'carro')}
                         className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="moto">Motos</option>
                         <option value="carro">Carros</option>
-                    </select>
+                    </select> */}
                     {modo === 'admin' && (
                         <button
                             onClick={handleExport}

@@ -11,10 +11,11 @@ import { useEffect, useState } from 'react';
 type FormularioGrupo = 'SPARK_PEUGEOT' | 'CHEYENNE_TRITON';
 
 export default function RevisionSemanal() {
-    const { vehiculo, revisionSemanal, observacion, inicio, final } = usePage<{
+    const { vehiculo, revisionSemanal, observacion, tipoFormularioCargado, inicio, final } = usePage<{
         vehiculo: { tipo: 'CARRO' | 'MOTO'; modelo: string; placa: string };
         revisionSemanal: any[];
         observacion?: { observacion: string };
+        tipoFormularioCargado: number | null;
         inicio: string;
         final: string;
     }>().props;
@@ -56,8 +57,13 @@ export default function RevisionSemanal() {
             }
 
             setFormData(initial);
+
+            // Detectar tipo de formulario cargado y fijarlo automáticamente
+            if (!formularioSeleccionado && tipoFormularioCargado) {
+                setFormularioSeleccionado(tipoFormularioCargado === 1 ? 'SPARK_PEUGEOT' : tipoFormularioCargado === 2 ? 'CHEYENNE_TRITON' : null);
+            }
         }
-    }, [revisionSemanal, observacion, formularioSeleccionado]);
+    }, [revisionSemanal, observacion, formularioSeleccionado, tipoFormularioCargado]);
 
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
         const semanal: { tipo: string; imagen: File }[] = [];
@@ -107,9 +113,17 @@ export default function RevisionSemanal() {
                         </p>
                     </div>
 
-                    {!formularioYaCargado ? (
+                    {formularioYaCargado ? (
+                        <FichaSeccion
+                            title={`Revisión registrada (${formularioSeleccionado ?? tipoVehiculo})`}
+                            fields={fields}
+                            formType="semanal"
+                            expediente={formData}
+                            onChange={() => {}}
+                            onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
+                        />
+                    ) : (
                         <>
-                            {/* Selector de formulario (solo si es CARRO) */}
                             {tipoVehiculo === 'CARRO' && (
                                 <div className="mb-6">
                                     <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -127,7 +141,6 @@ export default function RevisionSemanal() {
                                 </div>
                             )}
 
-                            {/* Formulario */}
                             <FichaSeccion
                                 title={`Revisión Semanal ${formularioSeleccionado ?? tipoVehiculo}`}
                                 fields={fields}
@@ -137,10 +150,6 @@ export default function RevisionSemanal() {
                                 onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
                             />
                         </>
-                    ) : (
-                        <div className="mt-10 text-center text-lg font-semibold text-gray-700 dark:text-gray-200">
-                            Ya existe una revisión semanal registrada para esta semana.
-                        </div>
                     )}
                 </div>
             </div>

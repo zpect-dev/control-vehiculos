@@ -46,6 +46,7 @@ class RevisionSemanalController extends Controller
             'vehiculo' => $vehiculo,
             'revisionSemanal' => $imagenes ?? [],
             'observacion' => $observacion ?? null,
+            'tipoFormularioCargado' => $revisionSemanal->tipo_formulario ?? null,
             'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
             'final' => $finalSemana->isoFormat('D-M-YYYY'),
             'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal',
