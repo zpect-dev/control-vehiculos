@@ -29,8 +29,9 @@ class RevisionSemanalController extends Controller
         if ($revisionSemanal) {
 
             if ($revisionSemanal->observacion_id) {
-                $observacion = Observacion::where('id', $revisionSemanal->observacion_id);
+                $observacion = Observacion::find($revisionSemanal->observacion_id);
             }
+
 
             $imagenes = FotoRevisionSemanal::where('revision_semanal_id', $revisionSemanal->id)
                 ->get()
@@ -102,7 +103,7 @@ class RevisionSemanalController extends Controller
                     'updated_at' => Carbon::today(),
                 ];
             }
-
+            // dd($renglon);
             FotoRevisionSemanal::insert($datos);
             DB::commit();
 

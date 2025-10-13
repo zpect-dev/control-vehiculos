@@ -1,4 +1,4 @@
-import { Field } from '@/hooks/useFormLogic';
+import { Field } from "@/types";
 
 // Campos para Revision Semanal
 export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {

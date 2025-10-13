@@ -46,8 +46,16 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
 
             case 'file': {
                 const safeFile = value instanceof File || value === null ? value : undefined;
-                const baseId = field.id.replace('_archivo', '');
-                const rawDocumento = expediente[`${baseId}_documento`] || expediente[field.id];
+                // const baseId = field.id.replace('_archivo', '');
+
+                const baseId = field.id.replace(/_archivo$/, '');
+                const rawDocumento = expediente[`${baseId}_documento`] ?? null;
+                console.log('📦 expediente:', expediente);
+                console.log('🔍 field.id:', field.id);
+                console.log('🔍 baseId:', baseId);
+                console.log('🔍 documento encontrado:', rawDocumento);
+                
+
                 const documentoActual = typeof rawDocumento === 'string' ? rawDocumento : undefined;
 
                 return (

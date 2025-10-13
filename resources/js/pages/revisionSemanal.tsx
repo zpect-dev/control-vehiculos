@@ -1,22 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FichaSeccion from '@/components/FichaSeccion';
 import { cheyenneTritonFields } from '@/constants/cheyenneTritonFields';
+import { fluidosSemanalFields } from '@/constants/fluidosSemanalFields';
 import { sparkPeugeotFields } from '@/constants/sparkPeugeotFields';
 import AppLayout from '@/layouts/app-layout';
 import type { Field } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-type FormularioGrupo = keyof typeof formOptions;
-
-const formOptions: {
-    SPARK_PEUGEOT: Record<'CARRO', Field[]>;
-    CHEYENNE_TRITON: Record<'CARRO', Field[]>;
-} = {
-    SPARK_PEUGEOT: sparkPeugeotFields,
-    CHEYENNE_TRITON: cheyenneTritonFields,
-};
+type FormularioGrupo = 'SPARK_PEUGEOT' | 'CHEYENNE_TRITON';
 
 export default function RevisionSemanal() {
     const { vehiculo, revisionSemanal, observacion, inicio, final } = usePage<{
@@ -29,30 +21,27 @@ export default function RevisionSemanal() {
 
     const tipoVehiculo = vehiculo.tipo;
     const placa = vehiculo.placa;
-    const storageKey = `revisionSemanal-${placa}`;
-    const previousFormularioRef = useRef<FormularioGrupo | null>(null);
 
     const [formularioSeleccionado, setFormularioSeleccionado] = useState<FormularioGrupo | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
 
-    const fields: Field[] = formularioSeleccionado
-    
-        ? [
-              ...formOptions[formularioSeleccionado]['CARRO'],
-              {
-                  id: 'observacion_general',
-                  label: 'Observación general',
-                  type: 'textarea',
-                  required: false,
-              },
-          ]
-        : [];
+    const baseFields: Field[] = formularioSeleccionado
+        ? formularioSeleccionado === 'SPARK_PEUGEOT'
+            ? sparkPeugeotFields['CARRO']
+            : cheyenneTritonFields['CARRO']
+        : fluidosSemanalFields[tipoVehiculo];
+
+    const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
+
+    const fields: Field[] = hasObservacion
+        ? baseFields
+        : [...baseFields, { id: 'observacion_general', label: 'Observación general', type: 'textarea', required: false }];
 
     useEffect(() => {
-        if (revisionSemanal && formularioSeleccionado) {
+        if (revisionSemanal.length > 0) {
             const initial: Record<string, any> = {};
 
-            revisionSemanal.forEach((item: any) => {
+            revisionSemanal.forEach((item) => {
                 initial[item.tipo] = null;
                 initial[`${item.tipo}_documento`] = item.imagen;
             });
@@ -65,37 +54,11 @@ export default function RevisionSemanal() {
         }
     }, [revisionSemanal, observacion, formularioSeleccionado]);
 
-    useEffect(() => {
-        const sanitized = { ...formData };
-        fields.forEach((field) => {
-            if (field.type === 'file' && sanitized[field.id] instanceof File) {
-                sanitized[field.id] = null;
-            }
-        });
-        localStorage.setItem(storageKey, JSON.stringify(sanitized));
-    }, [formData]);
-
-    useEffect(() => {
-        if (formularioSeleccionado && formularioSeleccionado !== previousFormularioRef.current) {
-            setFormData({});
-            localStorage.removeItem(storageKey);
-        }
-
-        previousFormularioRef.current = formularioSeleccionado;
-    }, [formularioSeleccionado]);
-
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
         const semanal: { tipo: string; imagen: File }[] = [];
 
         fields.forEach((field) => {
-            if (field.files && Array.isArray(field.files)) {
-                field.files.forEach((fileField) => {
-                    const imagen = data[fileField.id];
-                    if (imagen instanceof File) {
-                        semanal.push({ tipo: fileField.id, imagen });
-                    }
-                });
-            } else if (field.type === 'file') {
+            if (field.type === 'file') {
                 const imagen = data[field.id];
                 if (imagen instanceof File) {
                     semanal.push({ tipo: field.id, imagen });
@@ -111,10 +74,7 @@ export default function RevisionSemanal() {
             {
                 preserveScroll: true,
                 forceFormData: true,
-                onSuccess: () => {
-                    localStorage.removeItem(storageKey);
-                    router.reload({ only: ['revisionSemanal'] });
-                },
+                onSuccess: () => router.reload({ only: ['revisionSemanal'] }),
             },
         );
     };
@@ -139,28 +99,25 @@ export default function RevisionSemanal() {
 
                     <div className="mb-6">
                         <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">Selecciona el tipo de formulario:</label>
-                        <div className="relative">
-                            <select
-                                value={formularioSeleccionado ?? ''}
-                                onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
-                                className="block w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                            >
-                                <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
-                                <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
-                            </select>
-                        </div>
+                        <select
+                            value={formularioSeleccionado ?? ''}
+                            onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
+                            className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        >
+                            <option value="">Campos por defecto ({tipoVehiculo})</option>
+                            <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
+                            <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
+                        </select>
                     </div>
 
-                    {formularioSeleccionado && (
-                        <FichaSeccion
-                            title={`Revisión Semanal ${formularioSeleccionado}`}
-                            fields={fields}
-                            formType="semanal"
-                            expediente={formData}
-                            onChange={setFormData}
-                            onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
-                        />
-                    )}
+                    <FichaSeccion
+                        title={`Revisión Semanal ${formularioSeleccionado ?? tipoVehiculo}`}
+                        fields={fields}
+                        formType="semanal"
+                        expediente={formData}
+                        onChange={setFormData}
+                        onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
+                    />
                 </div>
             </div>
         </AppLayout>
