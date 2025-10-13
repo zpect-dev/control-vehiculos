@@ -16,5 +16,6 @@ class RevisionesSemanales extends Model
         'user_id',
         'observacion_id',
         'revisado',
+        'tipo_formulario'
     ];
 }
