@@ -124,7 +124,7 @@ export default function RevisionSemanal() {
                         />
                     ) : (
                         <>
-                            {tipoVehiculo === 'CARRO' && (
+                            {tipoVehiculo === 'CARRO' && !formularioYaCargado && (
                                 <div className="mb-6">
                                     <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
                                         Selecciona el tipo de formulario:
