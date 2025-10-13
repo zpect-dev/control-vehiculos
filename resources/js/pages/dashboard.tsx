@@ -52,7 +52,7 @@ export default function Dashboard() {
                 </div>
                 <div className="mb-6 flex justify-center gap-4">
                     <div className="relative flex w-full max-w-md items-center gap-2">
-                        <Search className="absolute left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
+                        <Search className="absolute  left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <input
                             type="text"
                             placeholder="Buscar por nombre, placa o modelo"
