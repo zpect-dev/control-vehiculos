@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateField } from '@/components/form-fields/DateField';
 import { SelectField } from '@/components/form-fields/SelectField';
