@@ -116,14 +116,14 @@ class FichaTecnicaController extends Controller
                     if (!session()->has($clave)) {
                         session()->put($clave, true);
 
-                        if ($diasRestantes < 0 || $diasRestantes <= 15) {
-                            broadcast(new EventoPermisoPorVencer(
-                                $placa,
-                                $usuario,
-                                ucfirst($campo),
-                                $vencimientoCarbon->toDateString()
-                            ))->toOthers();
-                        }
+                        // if ($diasRestantes < 0 || $diasRestantes <= 15) {
+                        //     broadcast(new EventoPermisoPorVencer(
+                        //         $placa,
+                        //         $usuario,
+                        //         ucfirst($campo),
+                        //         $vencimientoCarbon->toDateString()
+                        //     ))->toOthers();
+                        // }
                     }
                 }
 
