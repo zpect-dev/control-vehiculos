@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FlashHelper;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Vehiculo;
@@ -57,10 +58,12 @@ class RevisionSemanalController extends Controller
         ]);
     }
 
+
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        DB::beginTransaction();
-        try {
+        return FlashHelper::try(function () use ($request, $vehiculo) {
+            DB::beginTransaction();
+
             $request->validate([
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
@@ -70,7 +73,6 @@ class RevisionSemanalController extends Controller
             ]);
 
             if ($request->observacion) {
-
                 $observacion = Observacion::create([
                     'user_id' => $request->user()->id,
                     'vehiculo_id' => $vehiculo->placa,
@@ -78,7 +80,7 @@ class RevisionSemanalController extends Controller
                     'resuelto' => false
                 ]);
 
-                if (!$observacion) throw new \Exception('Error al generar la observacion');
+                if (!$observacion) throw new \Exception('Error al generar la observación');
             }
 
             $revision = RevisionesSemanales::create([
@@ -89,7 +91,7 @@ class RevisionSemanalController extends Controller
                 'revisado' => false,
             ]);
 
-            if (!$revision) throw new \Exception('Error al generar la revision');
+            if (!$revision) throw new \Exception('Error al generar la revisión');
 
             $datos = [];
             $multimedia = new Multimedia;
@@ -106,16 +108,10 @@ class RevisionSemanalController extends Controller
                     'updated_at' => Carbon::today(),
                 ];
             }
-            // dd($renglon);
+
             FotoRevisionSemanal::insert($datos);
             DB::commit();
-
-            return back()->with('success', 'Revision semanal realizada correctamente');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            report($e);
-            return back()->with('error', 'Error: ' . $e->getMessage());
-        }
+        }, 'Revisión semanal realizada correctamente.', 'Error al registrar la revisión semanal.');
     }
 }
 

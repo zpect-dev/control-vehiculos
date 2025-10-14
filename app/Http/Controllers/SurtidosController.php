@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FlashHelper;
 use Inertia\Inertia;
 use App\Models\Surtido;
 use App\Models\User;
@@ -73,8 +74,9 @@ class SurtidosController extends Controller
 
     public function store(Request $request, Vehiculo $vehiculo)
     {
-        DB::beginTransaction();
-        try {
+        return FlashHelper::try(function () use ($request, $vehiculo) {
+            DB::beginTransaction();
+
             $validatedData = $request->validate([
                 'cant_litros' => 'required|numeric|min:0.1|max:1000',
                 'kilometraje' => 'required|numeric|min:0',
@@ -83,22 +85,37 @@ class SurtidosController extends Controller
                 'user_id' => 'required|exists:users,id'
             ]);
 
-            $valorCarburador = $vehiculo->tipo == 'CARRO' ? 0.10 : 0.035;
+            $valorCarburador = $vehiculo->tipo === 'CARRO' ? 0.10 : 0.035;
 
             $UltimoSurtido = Surtido::where('vehiculo_id', $vehiculo->placa)->latest()->first();
 
-            if ($UltimoSurtido->kilometraje == $validatedData['kilometraje'] || $validatedData['kilometraje'] < $UltimoSurtido->kilometraje) throw new \Exception('Kilometraje invalido, es menor o igual que el anterior');
+            if ($UltimoSurtido && (
+                $validatedData['kilometraje'] <= $UltimoSurtido->kilometraje
+            )) {
+                throw new \Exception('Kilometraje inválido: menor o igual al anterior');
+            }
 
-            $surtido_ideal = $UltimoSurtido ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * $valorCarburador : 0;
-            $diferencia = $surtido_ideal == 0 ? 0 : $surtido_ideal - $validatedData['cant_litros'];
+            $surtido_ideal = $UltimoSurtido
+                ? ($validatedData['kilometraje'] - $UltimoSurtido->kilometraje) * $valorCarburador
+                : 0;
+
+            $diferencia = $surtido_ideal - $validatedData['cant_litros'];
 
             $usuario = User::find($validatedData['user_id']);
-
-            if(!$usuario) throw new \Exception('El vehiculo debe tener un coductor asignado');
+            if (!$usuario) throw new \Exception('El vehículo debe tener un conductor asignado');
 
             $profit = new Gasolina;
-            $fact_num = $profit->registrarFacturaConRenglon($validatedData['kilometraje'], $validatedData['observaciones'], $validatedData['precio'], $vehiculo->placa, $usuario->email, substr($request->user()->name, 0, 20), $diferencia, $validatedData['cant_litros']);
-            
+            $fact_num = $profit->registrarFacturaConRenglon(
+                $validatedData['kilometraje'],
+                $validatedData['observaciones'],
+                $validatedData['precio'],
+                $vehiculo->placa,
+                $usuario->email,
+                substr($request->user()->name, 0, 20),
+                $diferencia,
+                $validatedData['cant_litros']
+            );
+
             if (!is_numeric($fact_num)) {
                 throw new \Exception('No se pudo generar el número de factura');
             }
@@ -110,18 +127,13 @@ class SurtidosController extends Controller
                 'fact_num' => $fact_num,
                 'cant_litros' => $validatedData['cant_litros'],
                 'kilometraje' => $validatedData['kilometraje'],
-                'surtido_ideal' => $surtido_ideal ?? null,
+                'surtido_ideal' => $surtido_ideal,
                 'observaciones' => $validatedData['observaciones'] ?? null,
                 'diferencia' => $diferencia,
                 'precio' => $validatedData['precio']
             ]);
 
             DB::commit();
-            return back()->with('success', 'Surtido realizado correctamente');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            dd($e);
-            return back()->with('error', 'Error: ' . $e->getMessage());
-        }
+        }, 'Surtido realizado correctamente.', 'Error al registrar el surtido.');
     }
 }
