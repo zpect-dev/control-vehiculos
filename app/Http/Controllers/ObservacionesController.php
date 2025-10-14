@@ -76,12 +76,12 @@ class ObservacionesController extends Controller
             }
 
             // Emitir notificación
-            NotificacionHelper::emitirObservacionAgregada(
-                $vehiculo->placa,
-                $request->user()->name,
-                $validatedData['observacion'],
-                'pendiente'
-            );
+            // NotificacionHelper::emitirObservacionAgregada(
+            //     $vehiculo->placa,
+            //     $request->user()->name,
+            //     $validatedData['observacion'],
+            //     'pendiente'
+            // );
         }, 'Observación enviada correctamente.', 'Error al registrar la observación.');
     }
 

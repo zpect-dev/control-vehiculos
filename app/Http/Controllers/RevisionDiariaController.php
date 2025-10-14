@@ -83,14 +83,14 @@ class RevisionDiariaController extends Controller
                 $nivel = $revision['nivel_fluido'];
                 $tipo = $revision['tipo'];
                 
-                if ($nivel === '0') {
-                    NotificacionHelper::emitirNivelBajo(
-                        $vehiculo->placa,
-                        Auth::user()->name,
-                        $tipo,
-                        'Revisión de Fluidos'
-                    );
-                }
+                // if ($nivel === '0') {
+                //     NotificacionHelper::emitirNivelBajo(
+                //         $vehiculo->placa,
+                //         Auth::user()->name,
+                //         $tipo,
+                //         'Revisión de Fluidos'
+                //     );
+                // }
                 
                 $datos[] = [
                     'vehiculo_id' => $vehiculo->placa,

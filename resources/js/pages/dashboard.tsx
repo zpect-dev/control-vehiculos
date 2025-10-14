@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NotificacionRealtime from '@/components/NotificacionRealtime';
+// import NotificacionRealtime from '@/components/NotificacionRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import VehiculoCard from '@/components/VehiculoCard';
 import AppLayout from '@/layouts/app-layout';
@@ -46,7 +46,7 @@ export default function Dashboard() {
         <AppLayout>
             <Head title="Dashboard de Vehículos" />
             <div className="min-h-screen bg-background px-4 py-10 font-sans dark:bg-gray-900">
-                <NotificacionRealtime />
+                {/* <NotificacionRealtime /> */}
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard de Vehículos</h1>
                 </div>

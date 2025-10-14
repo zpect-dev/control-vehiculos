@@ -192,12 +192,12 @@ class FacturasController extends Controller
 
             RenglonAuditoria::insert($datos);
 
-            NotificacionHelper::emitirImagenFacturaSubida(
-                $factura->co_cli,
-                $request->user()->name,
-                $factura->fact_num,
-                count($imagenes)
-            );
+            // NotificacionHelper::emitirImagenFacturaSubida(
+            //     $factura->co_cli,
+            //     $request->user()->name,
+            //     $factura->fact_num,
+            //     count($imagenes)
+            // );
 
             DB::commit();
         }, 'Auditoría registrada con éxito.', 'Error al registrar la auditoría.');

@@ -85,14 +85,14 @@ class UsersController extends Controller
                     $fecha = \Carbon\Carbon::parse($validatedData[$campoVencimiento])->startOfDay();
                     $diasRestantes = \Carbon\Carbon::today()->diffInDays($fecha, false);
 
-                    if ($diasRestantes <= 15) {
-                        NotificacionHelper::emitirDocumentoUsuarioPorVencer(
-                            $user->id,
-                            $user->name,
-                            ucfirst($doc),
-                            $fecha->toDateString()
-                        );
-                    }
+                    // if ($diasRestantes <= 15) {
+                    //     NotificacionHelper::emitirDocumentoUsuarioPorVencer(
+                    //         $user->id,
+                    //         $user->name,
+                    //         ucfirst($doc),
+                    //         $fecha->toDateString()
+                    //     );
+                    // }
                 }
             }
         }, 'Documentos actualizados correctamente.', 'Error al actualizar los documentos.');
