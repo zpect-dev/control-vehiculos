@@ -13,6 +13,8 @@ export default function Dashboard() {
         vehiculos: any[];
         modo: string;
     }>().props;
+    const [fechaDesde, setFechaDesde] = useState('');
+    const [fechaHasta, setFechaHasta] = useState('');
 
     const [searchTerm, setSearchTerm] = useState('');
     // const [tipoFiltro, setTipoFiltro] = useState<'todos' | 'moto' | 'carro'>(() => {
@@ -39,7 +41,19 @@ export default function Dashboard() {
     }, [searchTerm, vehiculos]);
 
     const handleExport = () => {
-        exportGasolinaGeneralExcel(registros);
+        let registrosFiltrados = registros;
+
+        if (fechaDesde && fechaHasta) {
+            const desde = new Date(fechaDesde);
+            const hasta = new Date(fechaHasta);
+
+            registrosFiltrados = registros.filter((r) => {
+                const fechaRegistro = new Date(r.fecha);
+                return fechaRegistro >= desde && fechaRegistro <= hasta;
+            });
+        }
+
+        exportGasolinaGeneralExcel(registrosFiltrados);
     };
 
     return (
@@ -52,7 +66,7 @@ export default function Dashboard() {
                 </div>
                 <div className="mb-6 flex justify-center gap-4">
                     <div className="relative flex w-full max-w-md items-center gap-2">
-                        <Search className="absolute  left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
+                        <Search className="absolute left-3 h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <input
                             type="text"
                             placeholder="Buscar por nombre, placa o modelo"
@@ -70,14 +84,28 @@ export default function Dashboard() {
                         <option value="moto">Motos</option>
                         <option value="carro">Carros</option>
                     </select> */}
-                    {modo === 'admin' && (
-                        <button
-                            onClick={handleExport}
-                            className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
-                        >
-                            Reporte General de Gasolina
-                        </button>
-                    )}
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
+                        <input
+                            type="date"
+                            value={fechaDesde}
+                            onChange={(e) => setFechaDesde(e.target.value)}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        />
+                        <input
+                            type="date"
+                            value={fechaHasta}
+                            onChange={(e) => setFechaHasta(e.target.value)}
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        />
+                        {modo === 'admin' && (
+                            <button
+                                onClick={handleExport}
+                                className="flex w-full items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c] sm:w-auto"
+                            >
+                                Reporte General de Gasolina
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
