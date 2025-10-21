@@ -11,11 +11,11 @@ import { useMemo, useState } from 'react';
 export default function Dashboard() {
     const { vehiculos, registros, modo } = usePage<{
         vehiculos: any[];
+        registros: any[];
         modo: string;
     }>().props;
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
-
     const [searchTerm, setSearchTerm] = useState('');
     // const [tipoFiltro, setTipoFiltro] = useState<'todos' | 'moto' | 'carro'>(() => {
     //     return (localStorage.getItem('tipoFiltro') as 'todos' | 'moto' | 'carro') || 'todos';
@@ -84,28 +84,29 @@ export default function Dashboard() {
                         <option value="moto">Motos</option>
                         <option value="carro">Carros</option>
                     </select> */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
-                        <input
-                            type="date"
-                            value={fechaDesde}
-                            onChange={(e) => setFechaDesde(e.target.value)}
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                        />
-                        <input
-                            type="date"
-                            value={fechaHasta}
-                            onChange={(e) => setFechaHasta(e.target.value)}
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                        />
-                        {modo === 'admin' && (
+                    {modo === 'admin' && (
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
+                            <input
+                                type="date"
+                                value={fechaDesde}
+                                onChange={(e) => setFechaDesde(e.target.value)}
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                            />
+                            <input
+                                type="date"
+                                value={fechaHasta}
+                                onChange={(e) => setFechaHasta(e.target.value)}
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-sm focus:border-green-500 focus:outline-none sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                            />
+
                             <button
                                 onClick={handleExport}
                                 className="flex w-full items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c] sm:w-auto"
                             >
                                 Reporte General de Gasolina
                             </button>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">

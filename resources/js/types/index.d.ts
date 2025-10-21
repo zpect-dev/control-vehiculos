@@ -239,12 +239,6 @@ export interface UsuarioBasico {
     vencimiento_licencia?: string;
     foto_certificado_medico?: string;
     vencimiento_certificado_medico?: string;
-    foto_seguro_civil?: string;
-    vencimiento_seguro_civil?: string;
-    foto_carnet_circulacion?: string;
-    vencimiento_carnet_circulacion?: string;
-    foto_solvencia?: string;
-    vencimiento_solvencia?: string;
 }
 
 export interface UserInterface {
