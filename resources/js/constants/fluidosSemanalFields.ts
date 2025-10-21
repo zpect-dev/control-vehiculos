@@ -1,4 +1,4 @@
-import { Field } from "@/types";
+import { Field } from '@/types';
 
 // Campos para Revision Semanal
 export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {
@@ -138,21 +138,9 @@ export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {
     ],
     MOTO: [
         {
-            id: 'cauchoDel',
-            label: 'Caucho Delantero',
-            type: 'text',
-            required: false,
-        },
-        {
             id: 'cauchoDel_archivo',
             label: 'Caucho Delantero',
             type: 'file',
-            required: false,
-        },
-        {
-            id: 'cauchoTra',
-            label: 'Caucho Trasero',
-            type: 'text',
             required: false,
         },
         {
@@ -162,21 +150,21 @@ export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {
             required: false,
         },
         {
-            id: 'foco',
-            label: 'Foco',
-            type: 'text',
-            required: false,
-        },
-        {
-            id: 'foco_archivo',
-            label: 'Foco',
+            id: 'tacometro_archivo',
+            label: 'Tacometro',
             type: 'file',
             required: false,
         },
         {
-            id: 'stop',
-            label: 'Stop',
-            type: 'text',
+            id: 'luzAlt_archivo',
+            label: 'Luz Alta',
+            type: 'file',
+            required: false,
+        },
+        {
+            id: 'luzBaj_archivo',
+            label: 'Luz Baja',
+            type: 'file',
             required: false,
         },
         {
@@ -186,33 +174,21 @@ export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {
             required: false,
         },
         {
-            id: 'aceite',
-            label: 'Aceite',
-            type: 'text',
-            required: false,
-        },
-        {
-            id: 'aceite_archivo',
-            label: 'Aceite',
-            type: 'file',
-            required: false,
-        },
-        {
-            id: 'relacion',
-            label: 'Relación',
-            type: 'text',
-            required: false,
-        },
-        {
             id: 'relacion_archivo',
             label: 'Relación',
             type: 'file',
             required: false,
         },
         {
-            id: 'asiento',
-            label: 'Asiento',
-            type: 'text',
+            id: 'pito_archivo',
+            label: 'Pito',
+            type: 'file',
+            required: false,
+        },
+        {
+            id: 'placa_archivo',
+            label: 'Placa',
+            type: 'file',
             required: false,
         },
         {
@@ -222,21 +198,9 @@ export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {
             required: false,
         },
         {
-            id: 'crucesDel',
-            label: 'Cruces Delanteros',
-            type: 'text',
-            required: false,
-        },
-        {
             id: 'crucesDel_archivo',
             label: 'Cruces Delanteros',
             type: 'file',
-            required: false,
-        },
-        {
-            id: 'crucesTra',
-            label: 'Cruces Traseros',
-            type: 'text',
             required: false,
         },
         {
@@ -246,27 +210,58 @@ export const fluidosSemanalFields: Record<'CARRO' | 'MOTO', Field[]> = {
             required: false,
         },
         {
-            id: 'motor',
-            label: 'Motor',
-            type: 'text',
-            required: false,
-        },
-        {
             id: 'motor_archivo',
             label: 'Motor',
             type: 'file',
             required: false,
         },
         {
-            id: 'retrovisores',
-            label: 'Retrovisores',
-            type: 'text',
+            id: 'cajon_archivo',
+            label: 'Cajon',
+            type: 'file',
+            required: false,
+        },
+        {
+            id: 'pastillas_archivo',
+            label: 'Pastillas',
+            type: 'file',
+            required: false,
+        },
+        {
+            id: 'bandas_archivo',
+            label: 'Bandas (Varilla)',
+            type: 'file',
             required: false,
         },
         {
             id: 'retrovisores_archivo',
             label: 'Retrovisores',
             type: 'file',
+            required: false,
+        },
+        {
+            id: 'latIzq_archivo',
+            label: 'Lateral Izquierdo',
+            type: 'file',
+            required: false,
+        },
+        {
+            id: 'ladDer_archivo',
+            label: 'Lateral Derecho',
+            type: 'file',
+            required: false,
+        },
+        {
+            id: 'bateria_archivo',
+            label: 'Bateria',
+            type: 'file',
+            required: false,
+        },
+        // OBSERVACION
+        {
+            id: 'observacion_general',
+            label: 'Observacion General',
+            type: 'text',
             required: false,
         },
     ],

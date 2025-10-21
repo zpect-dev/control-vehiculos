@@ -8,7 +8,7 @@ import type { Field } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-type FormularioGrupo = 'SPARK_PEUGEOT' | 'CHEYENNE_TRITON';
+type FormularioGrupo = 'SPARK_PEUGEOT' | 'CHEYENNE_TRITON' | 'MOTO';
 
 export default function RevisionSemanal() {
     const { vehiculo, revisionSemanal, observacion, tipoFormularioCargado, inicio, final } = usePage<{
@@ -21,28 +21,20 @@ export default function RevisionSemanal() {
     }>().props;
 
     const formularioYaCargado = revisionSemanal.length > 0;
-
     const tipoVehiculo = vehiculo.tipo;
     const placa = vehiculo.placa;
 
     const [formularioSeleccionado, setFormularioSeleccionado] = useState<FormularioGrupo | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
 
-    const baseFields: Field[] =
-        tipoVehiculo === 'MOTO'
-            ? fluidosSemanalFields['MOTO']
-            : formularioSeleccionado === 'SPARK_PEUGEOT'
-              ? sparkPeugeotFields['CARRO']
-              : formularioSeleccionado === 'CHEYENNE_TRITON'
-                ? cheyenneTritonFields['CARRO']
-                : [];
+    // Asignar automáticamente "MOTO" si el vehículo es tipo moto
+    useEffect(() => {
+        if (tipoVehiculo === 'MOTO') {
+            setFormularioSeleccionado('MOTO');
+        }
+    }, [tipoVehiculo]);
 
-    const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
-
-    const fields: Field[] = hasObservacion
-        ? baseFields
-        : [...baseFields, { id: 'observacion_general', label: 'Observación general', type: 'textarea', required: false }];
-
+    // Cargar datos si ya hay revisión registrada
     useEffect(() => {
         if (revisionSemanal.length > 0) {
             const initial: Record<string, any> = {};
@@ -60,10 +52,34 @@ export default function RevisionSemanal() {
 
             // Detectar tipo de formulario cargado y fijarlo automáticamente
             if (!formularioSeleccionado && tipoFormularioCargado) {
-                setFormularioSeleccionado(tipoFormularioCargado === 1 ? 'SPARK_PEUGEOT' : tipoFormularioCargado === 2 ? 'CHEYENNE_TRITON' : null);
+                setFormularioSeleccionado(
+                    tipoFormularioCargado === 1
+                        ? 'SPARK_PEUGEOT'
+                        : tipoFormularioCargado === 2
+                          ? 'CHEYENNE_TRITON'
+                          : tipoVehiculo === 'MOTO'
+                            ? 'MOTO'
+                            : null,
+                );
             }
         }
-    }, [revisionSemanal, observacion, formularioSeleccionado, tipoFormularioCargado]);
+    }, [revisionSemanal, observacion, formularioSeleccionado, tipoFormularioCargado, tipoVehiculo]);
+
+    // Determinar campos según formulario seleccionado
+    const baseFields: Field[] =
+        formularioSeleccionado === 'MOTO'
+            ? fluidosSemanalFields['MOTO']
+            : formularioSeleccionado === 'SPARK_PEUGEOT'
+              ? sparkPeugeotFields['CARRO']
+              : formularioSeleccionado === 'CHEYENNE_TRITON'
+                ? cheyenneTritonFields['CARRO']
+                : [];
+
+    const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
+
+    const fields: Field[] = hasObservacion
+        ? baseFields
+        : [...baseFields, { id: 'observacion_general', label: 'Observación general', type: 'textarea', required: false }];
 
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
         const semanal: { tipo: string; imagen: File }[] = [];
@@ -123,36 +139,35 @@ export default function RevisionSemanal() {
                             onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
                         />
                     ) : (
-                        <>
-                            {tipoVehiculo === 'CARRO' && !formularioYaCargado && (
-                                <div>
-                                    <div className="mb-6">
-                                        <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
-                                            Selecciona el tipo de formulario:
-                                        </label>
-                                        <select
-                                            value={formularioSeleccionado ?? ''}
-                                            onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
-                                            className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                        >
-                                            <option value="">Selecciona una opción</option>
-                                            <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
-                                            <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
-                                        </select>
-                                    </div>
-                                    {formularioSeleccionado && (
-                                        <FichaSeccion
-                                            title={`Revisión Semanal ${formularioSeleccionado}`}
-                                            fields={fields}
-                                            formType="semanal"
-                                            expediente={formData}
-                                            onChange={setFormData}
-                                            onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
-                                        />
-                                    )}
+                        <div>
+                            {tipoVehiculo === 'CARRO' && (
+                                <div className="mb-6">
+                                    <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                        Selecciona el tipo de formulario:
+                                    </label>
+                                    <select
+                                        value={formularioSeleccionado ?? ''}
+                                        onChange={(e) => setFormularioSeleccionado(e.target.value as FormularioGrupo)}
+                                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                    >
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="SPARK_PEUGEOT">Spark / Peugeot</option>
+                                        <option value="CHEYENNE_TRITON">Cheyenne / Triton</option>
+                                    </select>
                                 </div>
                             )}
-                        </>
+
+                            {formularioSeleccionado && (
+                                <FichaSeccion
+                                    title={`Revisión Semanal ${formularioSeleccionado}`}
+                                    fields={fields}
+                                    formType="semanal"
+                                    expediente={formData}
+                                    onChange={setFormData}
+                                    onSubmit={(data) => handleFormSubmit('semanal', data, placa)}
+                                />
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
