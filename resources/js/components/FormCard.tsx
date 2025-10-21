@@ -59,7 +59,7 @@ export default function FormCard({ title, fields, buttonText, formType = 'expedi
                 const safeFile = value instanceof File || value === null ? value : undefined;
 
                 const baseId = field.id.replace(/_archivo$/, '');
-                const rawDocumento = expediente[`${baseId}`] ?? expediente[`${baseId}_documento`];
+                const rawDocumento = expediente[field.id] ?? expediente[`${baseId}`] ?? expediente[`${baseId}_documento`];
                 const documentoActual = typeof rawDocumento === 'string' ? rawDocumento : undefined;
 
                 const progress = compProgress[field.id];

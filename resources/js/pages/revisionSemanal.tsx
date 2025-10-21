@@ -39,10 +39,9 @@ export default function RevisionSemanal() {
         if (revisionSemanal.length > 0) {
             const initial: Record<string, any> = {};
 
-            revisionSemanal.forEach((item) => {
-                initial[item.tipo] = null;
-                initial[`${item.tipo}_documento`] = item.imagen;
-            });
+             revisionSemanal.forEach((item) => {
+            initial[item.tipo] = item.imagen; // ✅ clave directa, sin "_documento"
+        });
 
             if (observacion?.observacion) {
                 initial['observacion_general'] = observacion.observacion;
@@ -57,7 +56,7 @@ export default function RevisionSemanal() {
                         ? 'SPARK_PEUGEOT'
                         : tipoFormularioCargado === 2
                           ? 'CHEYENNE_TRITON'
-                          : tipoVehiculo === 'MOTO'
+                          : tipoFormularioCargado === 3
                             ? 'MOTO'
                             : null,
                 );
@@ -83,7 +82,7 @@ export default function RevisionSemanal() {
 
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
         const semanal: { tipo: string; imagen: File }[] = [];
-        const tipoFormulario = formularioSeleccionado === 'SPARK_PEUGEOT' ? 1 : formularioSeleccionado === 'CHEYENNE_TRITON' ? 2 : null;
+        const tipoFormulario = formularioSeleccionado === 'SPARK_PEUGEOT' ? 1 : formularioSeleccionado === 'CHEYENNE_TRITON' ? 2 : formularioSeleccionado === 'MOTO' ? 3 : null;
 
         fields.forEach((field) => {
             if (field.type === 'file') {
@@ -110,7 +109,7 @@ export default function RevisionSemanal() {
             },
         );
     };
-
+console.log(revisionSemanal)
     return (
         <AppLayout>
             <Head title={`Revisión Semanal - ${vehiculo.modelo}`} />

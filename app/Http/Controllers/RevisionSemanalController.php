@@ -64,12 +64,14 @@ class RevisionSemanalController extends Controller
         return FlashHelper::try(function () use ($request, $vehiculo) {
             DB::beginTransaction();
 
+            // dd($request->all());
+
             $request->validate([
                 'semanal' => 'required|array',
                 'semanal.*.tipo' => 'required|string',
                 'semanal.*.imagen' => 'required|image',
                 'observacion' => 'nullable|string',
-                'tipo_formulario' => 'required|in:1,2'
+                'tipo_formulario' => 'required|in:1,2,3'
             ]);
 
             if ($request->observacion) {
