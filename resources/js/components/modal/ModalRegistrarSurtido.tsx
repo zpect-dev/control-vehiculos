@@ -65,6 +65,9 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
             return;
         }
 
+        const confirmarKilometraje = window.confirm(`ESTAS REGISTRANDO UN SURTIDO CON ${kilometraje}KM DE KILOMETRAJE. ¿Deseas continuar?`);
+        if (!confirmarKilometraje) return;
+
         ejecutarRegistro();
     }
 
@@ -201,7 +204,17 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
                             <p className="mb-4">La cantidad ingresada difiere significativamente del cálculo ideal.</p>
                             <div className="flex justify-end gap-2">
                                 <button
-                                    onClick={() => setMostrarConfirmacion(false)}
+                                    onClick={() => {
+                                        setMostrarConfirmacion(false);
+
+                                        // Confirmación adicional de kilometraje
+                                        const confirmarKilometraje = window.confirm(
+                                            `Estás registrando un surtido con kilometraje ${kilometraje}. ¿Deseas continuar?`,
+                                        );
+                                        if (!confirmarKilometraje) return;
+
+                                        ejecutarRegistro();
+                                    }}
                                     className="rounded bg-gray-300 px-3 py-1 text-sm font-medium text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-white"
                                 >
                                     Cancelar
