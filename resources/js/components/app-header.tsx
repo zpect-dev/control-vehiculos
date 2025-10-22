@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound, UserStar } from 'lucide-react';
+import { CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound, UserStar } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -122,11 +122,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </Link>
                             )}
 
-                            {auth.user.is_admin && (
+                            {/* {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch>
                                     <Bell className="h-6 w-6 text-gray-800 dark:text-white" />
                                 </Link>
-                            )}
+                            )} */}
                         </div>
                     </div>
                     {/* Desktop Menu */}
@@ -175,11 +175,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <SquareUserRound />
                                 </Link>
                             )}
-                            {auth.user.is_admin && (
+                            {/* {auth.user.is_admin && (
                                 <Link href="/notificaciones" prefetch className="flex items-center justify-start">
                                     <Bell />
                                 </Link>
-                            )}
+                            )} */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="size-10 rounded-full p-1">

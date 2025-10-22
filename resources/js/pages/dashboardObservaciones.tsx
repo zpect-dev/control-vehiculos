@@ -71,7 +71,7 @@ export default function DashboardObservaciones() {
                 </div>
 
                 {observacionesFiltradas.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
                         {observacionesFiltradas.map((obs) => (
                             <ObservacionesCardDashboard key={obs.id} observacion={obs} />
                         ))}
