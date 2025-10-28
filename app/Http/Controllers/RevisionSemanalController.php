@@ -20,36 +20,32 @@ class RevisionSemanalController extends Controller
     {
         $vehiculo->load('usuario');
 
-        $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY)->toImmutable();
-        $finalSemana = Carbon::now()->endOfWeek(Carbon::SATURDAY)->toImmutable();
+        // Obtener todas las revisiones del vehículo
+        $revisiones = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($revision) {
+                // Cargar observación si existe
+                $revision->observacion = $revision->observacion_id
+                    ? Observacion::find($revision->observacion_id)
+                    : null;
 
-        $revisionSemanal = RevisionesSemanales::where('vehiculo_id', $vehiculo->placa)
-            ->whereBetween('created_at', [$inicioSemana, $finalSemana])
-            ->first();
+                // Cargar imágenes asociadas
+                $revision->imagenes = FotoRevisionSemanal::where('revision_semanal_id', $revision->id)
+                    ->get()
+                    ->map(function ($item) {
+                        $basePath = '/storage/uploads/fotos-semanales/';
+                        $item->imagen = $basePath . ltrim($item->imagen, '/');
+                        return $item;
+                    });
 
-        if ($revisionSemanal) {
+                return $revision;
+            });
+        // dd($revisiones);
 
-            if ($revisionSemanal->observacion_id) {
-                $observacion = Observacion::find($revisionSemanal->observacion_id);
-            }
-
-
-            $imagenes = FotoRevisionSemanal::where('revision_semanal_id', $revisionSemanal->id)
-                ->get()
-                ->map(function ($item) {
-                    $basePath = '/storage/uploads/fotos-semanales/';
-                    $item->imagen = $basePath . ltrim($item->imagen, '/');
-                    return $item;
-                });
-        }
-        // dd($imagenes);
         return Inertia::render('revisionSemanal', [
             'vehiculo' => $vehiculo,
-            'revisionSemanal' => $imagenes ?? [],
-            'observacion' => $observacion ?? null,
-            'tipoFormularioCargado' => $revisionSemanal->tipo_formulario ?? null,
-            'inicio' => $inicioSemana->isoFormat('D-M-YYYY'),
-            'final' => $finalSemana->isoFormat('D-M-YYYY'),
+            'revisiones' => $revisiones,
             'modo' => Auth::user()->hasRole('admin') ? 'admin' : 'normal',
             'flash' => [
                 'success' => session('success'),
@@ -57,6 +53,7 @@ class RevisionSemanalController extends Controller
             ],
         ]);
     }
+
 
 
     public function store(Request $request, Vehiculo $vehiculo)
