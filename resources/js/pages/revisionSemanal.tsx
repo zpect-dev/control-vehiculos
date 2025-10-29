@@ -30,6 +30,9 @@ export default function RevisionSemanal() {
     const [formularioSeleccionado, setFormularioSeleccionado] = useState<FormularioGrupo | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
 
+    const ultimaRevision = revisiones[0]; // Solo la más reciente
+
+    // Autoasignar tipo de formulario si es moto
     useEffect(() => {
         if (tipoVehiculo === 'MOTO') {
             setFormularioSeleccionado('MOTO');
@@ -38,14 +41,21 @@ export default function RevisionSemanal() {
 
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
         const semanal: { tipo: string; imagen: File }[] = [];
-        const tipoFormulario = formularioSeleccionado === 'SPARK_PEUGEOT' ? 1 : formularioSeleccionado === 'CHEYENNE_TRITON' ? 2 : formularioSeleccionado === 'MOTO' ? 3 : null;
+        const tipoFormulario =
+            formularioSeleccionado === 'SPARK_PEUGEOT'
+                ? 1
+                : formularioSeleccionado === 'CHEYENNE_TRITON'
+                  ? 2
+                  : formularioSeleccionado === 'MOTO'
+                    ? 3
+                    : null;
 
         const baseFields: Field[] =
             formularioSeleccionado === 'MOTO'
                 ? fluidosSemanalFields['MOTO']
                 : formularioSeleccionado === 'SPARK_PEUGEOT'
-                ? sparkPeugeotFields['CARRO']
-                : cheyenneTritonFields['CARRO'];
+                  ? sparkPeugeotFields['CARRO']
+                  : cheyenneTritonFields['CARRO'];
 
         baseFields.forEach((field) => {
             if (field.type === 'file') {
@@ -73,20 +83,15 @@ export default function RevisionSemanal() {
         );
     };
 
-    const renderFichaFromRevision = (revision: any, index: number) => {
-        const tipoFormulario =
-            revision.tipo_formulario === 1
-                ? 'SPARK_PEUGEOT'
-                : revision.tipo_formulario === 2
-                ? 'CHEYENNE_TRITON'
-                : 'MOTO';
+    const renderFichaFromRevision = (revision: any) => {
+        const tipoFormulario = revision.tipo_formulario === 1 ? 'SPARK_PEUGEOT' : revision.tipo_formulario === 2 ? 'CHEYENNE_TRITON' : 'MOTO';
 
         const baseFields: Field[] =
             tipoFormulario === 'MOTO'
                 ? fluidosSemanalFields['MOTO']
                 : tipoFormulario === 'SPARK_PEUGEOT'
-                ? sparkPeugeotFields['CARRO']
-                : cheyenneTritonFields['CARRO'];
+                  ? sparkPeugeotFields['CARRO']
+                  : cheyenneTritonFields['CARRO'];
 
         const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
         const fields: Field[] = hasObservacion
@@ -104,7 +109,7 @@ export default function RevisionSemanal() {
         return (
             <FichaSeccion
                 key={revision.id}
-                title={`Revisión #${index + 1} (${tipoFormulario}) - ${new Date(revision.created_at).toLocaleDateString()}`}
+                title={`Última revisión (${tipoFormulario}) - ${new Date(revision.created_at).toLocaleDateString()}`}
                 fields={fields}
                 formType="semanal"
                 expediente={expediente}
@@ -119,8 +124,8 @@ export default function RevisionSemanal() {
             formularioSeleccionado === 'MOTO'
                 ? fluidosSemanalFields['MOTO']
                 : formularioSeleccionado === 'SPARK_PEUGEOT'
-                ? sparkPeugeotFields['CARRO']
-                : cheyenneTritonFields['CARRO'];
+                  ? sparkPeugeotFields['CARRO']
+                  : cheyenneTritonFields['CARRO'];
 
         const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
         const fields: Field[] = hasObservacion
@@ -157,11 +162,7 @@ export default function RevisionSemanal() {
                         </p>
                     </div>
 
-                    {revisiones.length > 0 && (
-                        <div className="mb-10 space-y-8">
-                            {revisiones.map((revision, index) => renderFichaFromRevision(revision, index))}
-                        </div>
-                    )}
+                    {ultimaRevision && <div className="mb-10">{renderFichaFromRevision(ultimaRevision)}</div>}
 
                     <div className="mt-10 border-t pt-10">
                         <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">Registrar nueva revisión</h2>
