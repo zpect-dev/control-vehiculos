@@ -31,6 +31,8 @@ export default function ModalRegistroSurtido({ isOpen, onClose, vehiculo }: Moda
 
     const precioTotal = Number(litros) * precioUnitario;
 
+    console.log(valorCarburador);
+
     useEffect(() => {
         if (isOpen) {
             fetch(`/fichaTecnica/${vehiculo.placa}/gasolina/info`)

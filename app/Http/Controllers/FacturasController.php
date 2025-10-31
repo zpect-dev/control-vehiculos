@@ -161,6 +161,7 @@ class FacturasController extends Controller
             $request->validate([
                 'observacion' => 'nullable|string',
                 'imagenes.*' => 'image|max:5120',
+                'kilometraje' => 'required|numeric'
             ]);
 
             FacturaAuditoria::create([
@@ -168,6 +169,7 @@ class FacturasController extends Controller
                 'vehiculo_id' => $factura->co_cli,
                 'user_id' => $request->user()->id,
                 'observaciones_res' => $request->input('observacion'),
+                'kilometraje' => $request->kilometraje
             ]);
 
             $datos = [];
