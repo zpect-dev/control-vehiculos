@@ -347,6 +347,7 @@ export type ModalDetalleFacturaProps = {
     factura: FacturaModalData;
     renglones: Renglon[];
     auditados: boolean;
+    kilometraje: number;
     vehiculo: {
         placa: string;
         conductor: any;
@@ -369,6 +370,7 @@ export type FacturaModalData = {
     supervisores: any;
     observaciones_admin: string;
     aprobado: boolean;
+    kilometraje: number;
     observaciones_res: string;
     observacion_res: string;
     descripcion: string;

@@ -51,16 +51,29 @@ export default function ModalDetalleFactura({
         cubreUsuario: factura.cubre_usuario ? factura.cubre_usuario : '-',
     });
 
+    // --- CAMBIO 1: Estados para los datos del conductor ---
+    // (Asumo que 'factura.kilometraje' puede tener un valor previo si ya se guardó)
+    const [kilometraje, setKilometraje] = useState(String(factura.kilometraje ?? ''));
+    const [observacionConductor, setObservacionConductor] = useState(factura.observaciones_res ?? '');
+    const [imagenes, setImagenes] = useState<Record<string, File | null>>({});
+    // --- FIN CAMBIO 1 ---
+
     const handleSubmitAuditoria = () => {
         const hayImagenes = Object.values(imagenes).some((file) => file instanceof File);
 
-        if (!hayImagenes) {
+        // --- CAMBIO 3: Validación ---
+        // Se valida que haya imágenes Y que se haya ingresado el kilometraje
+        if (!hayImagenes || !kilometraje) {
+            console.log('Faltan imágenes o el kilometraje');
             return;
         }
 
         const formData = new FormData();
         formData.append('fact_num', factura.fact_num);
         formData.append('observacion', observacionConductor);
+        formData.append('kilometraje', kilometraje); // <-- DATO AÑADIDO
+        // --- FIN CAMBIO 3 ---
+
         Object.entries(imagenes).forEach(([co_art, file]) => {
             if (file) formData.append(`imagenes[${co_art}]`, file);
         });
@@ -103,9 +116,6 @@ export default function ModalDetalleFactura({
             },
         });
     };
-
-    const [observacionConductor, setObservacionConductor] = useState(factura.observaciones_res ?? '');
-    const [imagenes, setImagenes] = useState<Record<string, File | null>>({});
 
     const usuarioAudito = renglones.every((r) => imagenes[r.co_art] instanceof File);
 
@@ -274,30 +284,53 @@ export default function ModalDetalleFactura({
                         </div>
                     </div>
                 </div>
-                {/* Observación del conductor */}
+
+                {/* --- CAMBIO 2: SECCIÓN DE AUDITORÍA DEL CONDUCTOR ACTUALIZADA --- */}
                 <div className="my-6">
-                    <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del conductor</h3>
+                    {/* Campo de Kilometraje */}
+                    <div className="mb-4">
+                        <label htmlFor="kilometraje" className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">
+                            Kilometraje
+                        </label>
+                        <input
+                            type="number"
+                            id="kilometraje"
+                            name="kilometraje"
+                            value={kilometraje}
+                            onChange={(e) => setKilometraje(e.target.value)}
+                            className="w-full rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
+                            placeholder="Ingrese el kilometraje"
+                        />
+                    </div>
 
-                    <textarea
-                        value={observacionConductor}
-                        onChange={(e) => setObservacionConductor(e.target.value)}
-                        className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
-                        rows={4}
-                        placeholder="Escribe aquí..."
-                    />
+                    {/* Campo de Observación */}
+                    <div>
+                        <h3 className="mb-2 block text-lg font-semibold text-gray-800 dark:text-white">Observación del conductor</h3>
+                        <textarea
+                            value={observacionConductor}
+                            onChange={(e) => setObservacionConductor(e.target.value)}
+                            className="w-full resize-none rounded border px-3 py-2 text-sm font-medium text-gray-800 dark:bg-gray-800 dark:text-white"
+                            rows={4}
+                            placeholder="Escribe aquí..."
+                        />
+                    </div>
 
+                    {/* Botón de Guardar */}
                     <div className="flex items-center justify-end">
                         <button
                             onClick={handleSubmitAuditoria}
-                            disabled={!usuarioAudito}
+                            // Se deshabilita si faltan imágenes O falta el kilometraje
+                            disabled={!usuarioAudito || !kilometraje}
                             className={`mt-4 rounded-md px-4 py-2 text-sm font-semibold text-white ${
-                                !usuarioAudito ? 'cursor-not-allowed bg-gray-400' : 'bg-[#1a9888] hover:bg-[#188576]'
+                                !usuarioAudito || !kilometraje ? 'cursor-not-allowed bg-gray-400' : 'bg-[#1a9888] hover:bg-[#188576]'
                             }`}
                         >
                             Guardar auditoría del conductor
                         </button>
                     </div>
                 </div>
+                {/* --- FIN CAMBIO 2 --- */}
+
                 {/* Sección Admin */}
                 {isAdmin && (
                     <>
