@@ -128,6 +128,7 @@ class FacturasController extends Controller
                 'supervisores' => User::role('admin')->whereNotIn('email', [29960819, 26686507, 25025870])->select('id', 'name')->get(),
                 'cubre' => $facturaAuditada->cubre ?? true,
                 'cubre_usuario' => $usuarioQuePaga,
+                'kilometraje' => $facturaAuditada->kilometraje ?? null
             ],
             'renglones' => $renglones,
             'auditados' => $auditados,
