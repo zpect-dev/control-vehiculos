@@ -135,6 +135,13 @@ interface TextFieldProps {
     onChange: (id: string, value: string) => void;
 }
 
+export type AssignedUserPayload = {
+    principal: UsuarioAsignado | null;
+    adicional1: UsuarioAsignado | null;
+    adicional2: UsuarioAsignado | null;
+    adicional3: UsuarioAsignado | null;
+};
+
 export interface ModalAsignacionUserProps {
     isOpen: boolean;
     onClose: () => void;
@@ -146,7 +153,7 @@ export interface ModalAsignacionUserProps {
         id: string | number;
         name: string;
     }[];
-    onSuccess?: (usuario: { id: string | number; name: string } | null) => void;
+    onSuccess?: (payload: AssignedUserPayload | null) => void;
     isAdmin: boolean;
 }
 

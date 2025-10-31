@@ -16,7 +16,7 @@ class ObservacionesController extends Controller
         $user = $request->user();
 
         $observaciones = Observacion::with(['vehiculo', 'user', 'admin'])
-            ->join('users', 'observaciones.user_id', '=', 'users.id') // Necesario para comparar columnas
+            // ->join('users', 'observaciones.user_id', '=', 'users.id') // Necesario para comparar columnas
             ->when($user->tipo, function ($query) use ($user) {
                 $query->whereHas('vehiculo', function ($qVehiculo) use ($user) {
                     $qVehiculo->where('tipo', $user->tipo);

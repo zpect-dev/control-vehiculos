@@ -200,8 +200,27 @@ export default function fichaTecnica({
                             vehiculo={vehiculoActual}
                             users={users}
                             isAdmin={isAdmin}
-                            onSuccess={(nuevoUsuario: any) => {
-                                setVehiculoActual((prev: any) => ({ ...prev, usuario: nuevoUsuario }));
+                            onSuccess={(payload: any) => {
+                                if (payload === null) {
+                                    // Caso 1: Se desasignaron todos
+                                    setVehiculoActual((prev: any) => ({
+                                        ...prev,
+                                        usuario: null,
+                                        usuario_adicional1: null,
+                                        usuario_adicional2: null,
+                                        usuario_adicional3: null,
+                                    }));
+                                } else {
+                                    // Caso 2: Se asignaron usuarios
+                                    // (payload es { principal, adicional1, adicional2, adicional3 })
+                                    setVehiculoActual((prev: any) => ({
+                                        ...prev,
+                                        usuario: payload.principal,
+                                        usuario_adicional1: payload.adicional1,
+                                        usuario_adicional2: payload.adicional2,
+                                        usuario_adicional3: payload.adicional3,
+                                    }));
+                                }
                             }}
                         />
                     )}
