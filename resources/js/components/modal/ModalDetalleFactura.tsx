@@ -154,7 +154,7 @@ export default function ModalDetalleFactura({
                     </div>
 
                     <div>
-                        <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Placa</p>{' '}
+                        <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Placa</p>
                         <div className="rounded-lg border bg-gray-100 p-3 font-medium text-black shadow-sm dark:bg-gray-200">{vehiculo.placa}</div>
                     </div>
 
@@ -215,10 +215,10 @@ export default function ModalDetalleFactura({
                                                 className="max-w-[125px] truncate px-4 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
                                                 title={r.repuesto?.art_des ?? '—'}
                                             >
-                                                {r.repuesto?.art_des ?? '—'}{' '}
+                                                {r.repuesto?.art_des ?? '—'}
                                             </td>
                                             <td className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">{r.co_art}</td>
-                                            <td className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">{formatCantidad(cantidad)}</td>{' '}
+                                            <td className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">{formatCantidad(cantidad)}</td>
                                             <td className="px-4 py-2 text-left font-bold text-green-700 dark:text-green-400">
                                                 {formatPrecio(precio)}
                                             </td>
@@ -275,12 +275,12 @@ export default function ModalDetalleFactura({
                     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="rounded-lg border bg-gray-100 p-4 shadow-sm dark:bg-gray-800">
                             <p className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-300">Total Bruto</p>
-                            <p className="text-lg font-bold text-green-700 dark:text-green-400">{formatPrecio(factura.tot_bruto)}</p>{' '}
+                            <p className="text-lg font-bold text-green-700 dark:text-green-400">{formatPrecio(factura.tot_bruto)}</p>
                         </div>
 
                         <div className="rounded-lg border bg-gray-100 p-4 shadow-sm dark:bg-gray-800">
                             <p className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-300">Total Neto</p>
-                            <p className="text-lg font-bold text-green-700 dark:text-green-400">{formatPrecio(factura.tot_neto)}</p>{' '}
+                            <p className="text-lg font-bold text-green-700 dark:text-green-400">{formatPrecio(factura.tot_neto)}</p>
                         </div>
                     </div>
                 </div>
@@ -403,7 +403,7 @@ export default function ModalDetalleFactura({
                                         >
                                             {opcionesPago.map((opcion) => (
                                                 <option key={opcion.id} value={opcion.id}>
-                                                    {opcion.name}{' '}
+                                                    {opcion.name}
                                                 </option>
                                             ))}
                                         </select>
