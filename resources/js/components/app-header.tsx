@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
@@ -59,8 +59,9 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     </Button>
                                 </SheetTrigger>
                                 <SheetContent side="left" className="flex h-full w-64 flex-col justify-between bg-sidebar">
-                                    <SheetHeader className="flex justify-start p-4 text-left">
-                                        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Control de Vehículos</h2>
+                                    <SheetHeader className="p-4 text-left">
+                                        <SheetTitle>Control de Vehículos</SheetTitle>
+                                        <SheetDescription className="sr-only">Menú de navegación principal y opciones de usuario.</SheetDescription>
                                     </SheetHeader>
                                     <div className="flex-1 overflow-y-auto px-4 pb-4">
                                         {!isDashboard && vehiculoNavItems.length > 0 && (
@@ -141,11 +142,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                         {vehiculoNavItems.map((item, index) => (
                                             <NavigationMenuItem key={index}>
                                                 <Link
-                                                    href={typeof item.href === 'string' ? item.href : item.href.url}
+                                                    href={item.href}
                                                     className={cn(
                                                         navigationMenuTriggerStyle(),
                                                         'flex h-10 items-center rounded-lg px-4 transition-colors duration-200 hover:bg-[#3d9641] dark:hover:bg-gray-800',
-                                                        page.url === (typeof item.href === 'string' ? item.href : item.href.url)
+                                                        page.url === item.href
                                                             ? 'bg-[#49af4e] font-semibold text-white dark:bg-gray-700 dark:text-gray-50'
                                                             : 'text-gray-600 dark:text-gray-400',
                                                     )}
