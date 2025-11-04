@@ -9,10 +9,9 @@ import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
-
     {
         title: 'Apariencia',
-        href: appearance(),
+        href: appearance() as unknown as string,
         icon: null,
     },
 ];
@@ -36,12 +35,12 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     <nav className="flex flex-col space-y-1">
                         {sidebarNavItems.map((item, index) => (
                             <Button
-                                key={`${typeof item.href === 'string' ? item.href : item.href.url}-${index}`}
+                                key={`${item.href}-${index}`}
                                 size="lg"
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted': currentPath === (typeof item.href === 'string' ? item.href : item.href.url),
+                                    'bg-muted': currentPath === item.href,
                                 })}
                             >
                                 <Link href={item.href} prefetch>

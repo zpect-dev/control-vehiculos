@@ -70,7 +70,7 @@ class FichaTecnicaController extends Controller
         $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
         $users = User::whereNotIn('email', [29960819, 26686507, 25025870])->select('id', 'name')->get();
-        
+
         return Inertia::render('fichaTecnica', [
             'vehiculos' => [$vehiculo],
             'expedientesTecnicos' => $expedientesTecnicosPorVehiculo,

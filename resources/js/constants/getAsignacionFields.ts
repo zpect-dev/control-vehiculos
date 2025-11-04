@@ -1,4 +1,4 @@
-import { Field } from "@/types";
+import { Field } from '@/types';
 
 // Fields para asignaciones para mas de 1 conductor
 export const getAsignacionFields = (users: { id: string | number; name: string }[]): Field[] => {

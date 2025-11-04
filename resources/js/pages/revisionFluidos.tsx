@@ -110,7 +110,7 @@ export default function revisionFluidos({ vehiculoId }: RevisionFluidosProps) {
             onSuccess: () => setValidationError(null),
         });
     };
-    
+
     return (
         <AppLayout>
             <Head title="Revisión Semanal de Fluidos" />

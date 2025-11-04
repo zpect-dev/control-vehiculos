@@ -13,7 +13,7 @@ class PistaController extends Controller
     {
         // 1. Lista de cédulas permitidas
         $cedulasPermitidas = ['26686508', '26686507', '29960819'];
-        
+
         // 2. Obtener nombres de usuarios por cédula (email)
         $userNames = User::whereIn('email', $cedulasPermitidas)->pluck('name');
 

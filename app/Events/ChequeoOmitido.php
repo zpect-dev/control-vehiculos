@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Events;
+// namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Queue\SerializesModels;
+// use Illuminate\Broadcasting\Channel;
+// use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+// use Illuminate\Queue\SerializesModels;
 
 // class ChequeoOmitido implements ShouldBroadcast
 // {

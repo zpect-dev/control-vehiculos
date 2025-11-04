@@ -62,7 +62,7 @@ class DashboardController extends Controller
 
             $vehiculo->imagenes_factura_pendientes = $auditoriasPendientes;
 
-            $facturas = DB::connection('sqlsrv')->select('SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ? AND co_tran <> ?',[$vehiculo->placa, '2025-06-10', '000003']);
+            $facturas = DB::connection('sqlsrv')->select('SELECT fact_num FROM factura WHERE co_cli = ? AND anulada = 0 AND fec_emis >= ? AND co_tran <> ?', [$vehiculo->placa, '2025-06-10', '000003']);
 
             $factNums = collect($facturas)->pluck('fact_num')->all();
 
@@ -74,7 +74,7 @@ class DashboardController extends Controller
 
             $vehiculo->factura_pendiente = count(array_diff($factNums, $factNumsAudit));
 
-            if(!$vehiculo->user_id) continue;
+            if (!$vehiculo->user_id) continue;
 
             $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
                 ->whereDate('fecha_creacion', Carbon::today())

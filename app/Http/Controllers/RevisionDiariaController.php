@@ -68,21 +68,21 @@ class RevisionDiariaController extends Controller
                 if (!$revision['revisado']) {
                     continue;
                 }
-                
+
                 if ($revision['revisado'] && !array_key_exists('imagen', $revision)) {
                     continue;
                 }
-                
+
                 $multimedia = new Multimedia;
                 $nameImage = $multimedia->guardarImagen($revision['imagen'], 'diario');
-                
+
                 if (!$nameImage) {
                     throw new \Exception('Error al guardar la imagen');
                 }
-                
+
                 $nivel = $revision['nivel_fluido'];
                 $tipo = $revision['tipo'];
-                
+
                 // if ($nivel === '0') {
                 //     NotificacionHelper::emitirNivelBajo(
                 //         $vehiculo->placa,
@@ -91,7 +91,7 @@ class RevisionDiariaController extends Controller
                 //         'Revisión de Fluidos'
                 //     );
                 // }
-                
+
                 $datos[] = [
                     'vehiculo_id' => $vehiculo->placa,
                     'user_id' => Auth::id(),

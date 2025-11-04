@@ -2,16 +2,16 @@
 
 namespace App\Helpers;
 
-use App\Events\ChequeoOmitido;
-use App\Events\DocumentoUsuarioPorVencer;
-use App\Events\EventoCambioInputs;
-use App\Events\EventoAsignacionUsuario;
-use App\Events\EventoNivelBajo;
-use App\Events\EventoPermisoPorVencer;
-use App\Events\ImagenFacturaSubida;
-use App\Events\NotificacionPush;
-use App\Events\ObservacionAgregada;
-use App\Events\VideoSemanalOmitido;
+// use App\Events\ChequeoOmitido;
+// use App\Events\DocumentoUsuarioPorVencer;
+// use App\Events\EventoCambioInputs;
+// use App\Events\EventoAsignacionUsuario;
+// use App\Events\EventoNivelBajo;
+// use App\Events\EventoPermisoPorVencer;
+// use App\Events\ImagenFacturaSubida;
+// use App\Events\NotificacionPush;
+// use App\Events\ObservacionAgregada;
+// use App\Events\VideoSemanalOmitido;
 use App\Models\Notificacion;
 use App\Models\User;
 use App\Models\Vehiculo;
@@ -158,7 +158,7 @@ class NotificacionHelper
         $campo = self::mapCampo($formType, $tipoVehiculo, $field);
         $estado = self::mapEstado($value);
 
-        broadcast(new EventoCambioInputs($field, $value, $placa, $userName, $tipoVehiculo, $formType))->toOthers();
+        // broadcast(new EventoCambioInputs($field, $value, $placa, $userName, $tipoVehiculo, $formType))->toOthers();
 
         $admin = User::role('admin')->first();
 
@@ -171,7 +171,7 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
 
-        broadcast(new NotificacionPush($admin->id))->toOthers();
+        // broadcast(new NotificacionPush($admin->id))->toOthers();
     }
 
     /**
@@ -180,7 +180,7 @@ class NotificacionHelper
 
     public static function emitirAsignacionUsuario(string $placa, string $adminName, string $nuevoUsuario): void
     {
-        broadcast(new EventoAsignacionUsuario($placa, $adminName, $nuevoUsuario))->toOthers();
+        // broadcast(new EventoAsignacionUsuario($placa, $adminName, $nuevoUsuario))->toOthers();
 
         $admin = User::role('admin')->first();
 
@@ -192,7 +192,7 @@ class NotificacionHelper
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
-        broadcast(new NotificacionPush($admin->id))->toOthers();
+        // broadcast(new NotificacionPush($admin->id))->toOthers();
     }
 
     /**
@@ -213,7 +213,7 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
 
-        broadcast(new EventoNivelBajo($placa, $userName, $campo, $formulario))->toOthers();
+        // broadcast(new EventoNivelBajo($placa, $userName, $campo, $formulario))->toOthers();
     }
 
 
@@ -235,7 +235,7 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
 
-        broadcast(new ChequeoOmitido($placa, $userName, $fecha))->toOthers();
+        // broadcast(new ChequeoOmitido($placa, $userName, $fecha))->toOthers();
     }
 
 
@@ -257,7 +257,7 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
 
-        broadcast(new EventoPermisoPorVencer($placa, $userName, $permiso, $fechaVencimiento))->toOthers();
+        // broadcast(new EventoPermisoPorVencer($placa, $userName, $permiso, $fechaVencimiento))->toOthers();
     }
 
 
@@ -279,7 +279,7 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
 
-        broadcast(new VideoSemanalOmitido($placa, $userName, $semana))->toOthers();
+        // broadcast(new VideoSemanalOmitido($placa, $userName, $semana))->toOthers();
     }
 
 
@@ -298,7 +298,7 @@ class NotificacionHelper
             'usuario_id' => $admin->id,
             'solo_admin' => true,
         ]);
-        broadcast(new ObservacionAgregada($placa, $userName, $contenido, $estado))->toOthers();
+        // broadcast(new ObservacionAgregada($placa, $userName, $contenido, $estado))->toOthers();
     }
 
     /**
@@ -316,26 +316,25 @@ class NotificacionHelper
             'solo_admin' => true,
         ]);
 
-        broadcast(new DocumentoUsuarioPorVencer($usuario, $userName, $documento, $fechaVencimiento))->toOthers();
+        // broadcast(new DocumentoUsuarioPorVencer($usuario, $userName, $documento, $fechaVencimiento))->toOthers();
     }
 
-        /**
+    /**
      * Emite y guarda una notificación de Imagen de factura subida por usuario.
      */
     public static function emitirImagenFacturaSubida(string $placa, string $userName, string $factNum, int $cantidad): void
-{
-    $admin = User::role('admin')->first();
+    {
+        $admin = User::role('admin')->first();
 
-    Notificacion::create([
-        'titulo' => 'Imágenes subidas a factura',
-        'vehiculo_id' => $placa,
-        'descripcion' => "El usuario '{$userName}' subió la imagen a la factura #{$factNum} del vehículo '{$placa}'.",
-        'tipo' => 'auditoria',
-        'usuario_id' => $admin->id,
-        'solo_admin' => true,
-    ]);
+        Notificacion::create([
+            'titulo' => 'Imágenes subidas a factura',
+            'vehiculo_id' => $placa,
+            'descripcion' => "El usuario '{$userName}' subió la imagen a la factura #{$factNum} del vehículo '{$placa}'.",
+            'tipo' => 'auditoria',
+            'usuario_id' => $admin->id,
+            'solo_admin' => true,
+        ]);
 
-    broadcast(new ImagenFacturaSubida($placa, $userName, $factNum, $cantidad))->toOthers();
-}
-
+        // broadcast(new ImagenFacturaSubida($placa, $userName, $factNum, $cantidad))->toOthers();
+    }
 }
