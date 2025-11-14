@@ -212,10 +212,10 @@ export default function ModalDetalleFactura({
                                     return (
                                         <tr key={`${r.fact_num}-${r.co_art}-${index}`} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td
-                                                className="max-w-[125px] truncate px-4 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
-                                                title={r.repuesto?.art_des ?? '—'}
-                                            >
-                                                {r.repuesto?.art_des ?? '—'}
+                                                className="px-4 py-2 text-left font-semibold text-gray-900 dark:text-gray-100 md:max-w-[125px] md:truncate"
+    title={r.repuesto?.art_des ?? '—'}
+>
+    {r.repuesto?.art_des ?? '—'}
                                             </td>
                                             <td className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">{r.co_art}</td>
                                             <td className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">{formatCantidad(cantidad)}</td>
