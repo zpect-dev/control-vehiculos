@@ -97,6 +97,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Observaciones globales
     Route::get('observaciones', [ObservacionesController::class, 'index'])->name('observaciones.index');
 
+    // Exportar gasolina
+    Route::get('gasolina/exportar-seleccion', [SurtidosController::class, 'exportSelected'])->name('gasolina.exportSelected');
     // Rutas gasolina
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina', [SurtidosController::class, 'index'])->name('gasolina.index');
     Route::get('fichaTecnica/{vehiculo:placa}/gasolina/info', [SurtidosController::class, 'info']);

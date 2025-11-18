@@ -7,9 +7,15 @@ import { useMemo, useState } from 'react';
 
 export default function Gasolina() {
     const { vehiculo, registros } = usePage<{ vehiculo: VehiculoData; registros: RegistroGasolina[] }>().props;
+    
+    // Filtros
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [factura, setFactura] = useState('');
+
+    // Estado para la selección múltiple (Array de números de factura)
+    const [selectedFacturas, setSelectedFacturas] = useState<number[]>([]);
+
     const registrosFiltrados = useMemo(() => {
         return registros.filter((r) => {
             const matchFactura = factura ? r.factura.toString().includes(factura) : true;
@@ -18,10 +24,42 @@ export default function Gasolina() {
             return matchFactura && matchDesde && matchHasta;
         });
     }, [factura, fechaDesde, fechaHasta, registros]);
+
     const [modalOpen, setModalOpen] = useState(false);
+
+    // Seleccionar o Deseleccionar
+    const toggleSeleccion = (numFactura: number) => {
+        setSelectedFacturas((prev) => 
+            prev.includes(numFactura) 
+                ? prev.filter((f) => f !== numFactura)
+                : [...prev, numFactura]
+        );
+    };
+
+    // Seleccionar o Deseleccionar todos
+    const toggleSeleccionarTodo = () => {
+        if (selectedFacturas.length === registrosFiltrados.length) {
+            setSelectedFacturas([]);
+        } else {
+            setSelectedFacturas(registrosFiltrados.map((r) => r.factura));
+        }
+    };
 
     const handleExport = () => {
         exportGasolinaExcel(registros);
+    };
+
+    // Función para enviar al backend los seleccionados
+    const handleExportSeleccionados = () => {
+        if (selectedFacturas.length === 0) {
+            return;
+        }
+        // const url = `/gasolina/exportar-seleccion?facturas=${ids}`;
+        console.log("Facturas IDs (Array):", selectedFacturas);
+        // console.log("URL Backend:", url);
+        console.groupEnd();
+
+        // window.location.href = url;
     };
 
     return (
@@ -51,41 +89,55 @@ export default function Gasolina() {
                             type="date"
                             value={fechaDesde}
                             onChange={(e) => setFechaDesde(e.target.value)}
-                            className="rounded-md border px-3 py-2 text-sm"
+                            className="rounded-md border px-3 py-2 text-sm dark:bg-gray-800 dark:text-white"
                         />
                     </div>
-
                     <div className="flex flex-col">
                         <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Fecha hasta</label>
-
                         <input
                             type="date"
                             value={fechaHasta}
                             onChange={(e) => setFechaHasta(e.target.value)}
-                            className="rounded-md border px-3 py-2 text-sm"
+                            className="rounded-md border px-3 py-2 text-sm dark:bg-gray-800 dark:text-white"
                         />
                     </div>
                     <div className="flex flex-col">
                         <label className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-100">Buscar por N° de factura</label>
-
                         <input
                             type="text"
                             value={factura}
                             onChange={(e) => setFactura(e.target.value)}
-                            placeholder="Ej: ABC123"
-                            className="rounded-md border px-3 py-2 text-sm"
+                            placeholder="Ej: ABC12345"
+                            className="rounded-md border px-3 py-2 text-sm dark:bg-gray-800 dark:text-white"
                         />
                     </div>
                 </div>
 
-                {/* Botón para abrir modal */}
-                <div className="mb-6 flex flex-col items-center justify-center text-center">
+                {/* Botones de Acción */}
+                <div className="mb-6 flex flex-wrap items-center justify-center gap-4 text-center">
                     <button
                         onClick={() => setModalOpen(true)}
                         className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
                     >
                         Nuevo surtido
                     </button>
+
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
+                    >
+                        Reporte de Excel
+                    </button>
+
+                    {/* Botón exportar seleccionados */}
+                    {selectedFacturas.length > 0 && (
+                        <button
+                            onClick={handleExportSeleccionados}
+                            className="flex items-center gap-1 rounded-2xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:bg-purple-500 hover:shadow-xl"
+                        >
+                            Exportar Seleccionados ({selectedFacturas.length})
+                        </button>
+                    )}
                 </div>
 
                 {/* Tabla */}
@@ -93,6 +145,15 @@ export default function Gasolina() {
                     <table className="min-w-full table-auto border-collapse bg-white dark:bg-gray-800">
                         <thead className="bg-gray-200 dark:bg-gray-700">
                             <tr className="text-left text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                {/* Checkbox Header (Seleccionar Todo) */}
+                                <th className="px-4 py-2 text-center">
+                                    <input 
+                                        type="checkbox" 
+                                        className="h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-[#49af4e]"
+                                        onChange={toggleSeleccionarTodo}
+                                        checked={registrosFiltrados.length > 0 && selectedFacturas.length === registrosFiltrados.length}
+                                    />
+                                </th>
                                 <th className="px-4 py-2">N° Factura</th>
                                 <th className="px-4 py-2">Fecha</th>
                                 <th className="px-4 py-2">Vehículo</th>
@@ -110,13 +171,25 @@ export default function Gasolina() {
                         <tbody>
                             {registros.length === 0 ? (
                                 <tr>
-                                    <td colSpan={12} className="py-4 text-center text-gray-500">
+                                    <td colSpan={13} className="py-4 text-center text-gray-500">
                                         No hay registros de gasolina para este vehículo.
                                     </td>
                                 </tr>
                             ) : (
                                 registrosFiltrados.map((registro, index) => (
-                                    <tr key={index} className="text-sm text-gray-700 even:bg-gray-50 dark:text-gray-300 dark:even:bg-gray-700">
+                                    <tr 
+                                        key={index} 
+                                        className={`text-sm text-gray-700 even:bg-gray-50 dark:text-gray-300 dark:even:bg-gray-700 ${selectedFacturas.includes(registro.factura) ? 'bg-green-50 dark:bg-green-900/20' : ''}`}
+                                    >
+                                        {/* Checkbox Individual */}
+                                        <td className="px-4 py-2 text-center">
+                                            <input 
+                                                type="checkbox" 
+                                                className="h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-[#49af4e]"
+                                                checked={selectedFacturas.includes(registro.factura)}
+                                                onChange={() => toggleSeleccion(registro.factura)}
+                                            />
+                                        </td>
                                         <td className="px-4 py-2">{registro.factura}</td>
                                         <td className="px-4 py-2">{registro.fecha}</td>
                                         <td className="px-4 py-2">{registro.vehiculo}</td>
@@ -134,16 +207,6 @@ export default function Gasolina() {
                             )}
                         </tbody>
                     </table>
-                </div>
-
-                {/* Botón exportar */}
-                <div className="my-6 flex flex-col items-center justify-center text-center">
-                    <button
-                        onClick={handleExport}
-                        className="flex items-center gap-1 rounded-2xl bg-[#49af4e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#47a84c]"
-                    >
-                        Generar Reporte
-                    </button>
                 </div>
             </div>
         </AppLayout>
