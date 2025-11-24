@@ -3,11 +3,12 @@ import AppLayout from '@/layouts/app-layout';
 import { RegistroGasolina, VehiculoData } from '@/types';
 import { exportGasolinaExcel } from '@/utils/exportExcel';
 import { Head, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { useMemo, useState } from 'react';
 
 export default function Gasolina() {
     const { vehiculo, registros } = usePage<{ vehiculo: VehiculoData; registros: RegistroGasolina[] }>().props;
-    
+
     // Filtros
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
@@ -29,11 +30,7 @@ export default function Gasolina() {
 
     // Seleccionar o Deseleccionar
     const toggleSeleccion = (numFactura: number) => {
-        setSelectedFacturas((prev) => 
-            prev.includes(numFactura) 
-                ? prev.filter((f) => f !== numFactura)
-                : [...prev, numFactura]
-        );
+        setSelectedFacturas((prev) => (prev.includes(numFactura) ? prev.filter((f) => f !== numFactura) : [...prev, numFactura]));
     };
 
     // Seleccionar o Deseleccionar todos
@@ -50,16 +47,20 @@ export default function Gasolina() {
     };
 
     // Función para enviar al backend los seleccionados
-    const handleExportSeleccionados = () => {
-        if (selectedFacturas.length === 0) {
-            return;
-        }
-        // const url = `/gasolina/exportar-seleccion?facturas=${ids}`;
-        console.log("Facturas IDs (Array):", selectedFacturas);
-        // console.log("URL Backend:", url);
-        console.groupEnd();
+    const handleExportSeleccionados = async () => {
+        if (selectedFacturas.length === 0) return;
 
-        // window.location.href = url;
+        try {
+            const response = await axios.post('/gasolina/exportar-seleccion', {
+                facturas: selectedFacturas,
+            });
+
+            const datos = response.data;
+            console.log(datos);
+        } catch (error) {
+            console.error('Error al exportar:', error);
+            alert('Hubo un error al generar el reporte.');
+        }
     };
 
     return (
@@ -147,8 +148,8 @@ export default function Gasolina() {
                             <tr className="text-left text-sm font-semibold text-gray-700 dark:text-gray-200">
                                 {/* Checkbox Header (Seleccionar Todo) */}
                                 <th className="px-4 py-2 text-center">
-                                    <input 
-                                        type="checkbox" 
+                                    <input
+                                        type="checkbox"
                                         className="h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-[#49af4e]"
                                         onChange={toggleSeleccionarTodo}
                                         checked={registrosFiltrados.length > 0 && selectedFacturas.length === registrosFiltrados.length}
@@ -177,14 +178,14 @@ export default function Gasolina() {
                                 </tr>
                             ) : (
                                 registrosFiltrados.map((registro, index) => (
-                                    <tr 
-                                        key={index} 
+                                    <tr
+                                        key={index}
                                         className={`text-sm text-gray-700 even:bg-gray-50 dark:text-gray-300 dark:even:bg-gray-700 ${selectedFacturas.includes(registro.factura) ? 'bg-green-50 dark:bg-green-900/20' : ''}`}
                                     >
                                         {/* Checkbox Individual */}
                                         <td className="px-4 py-2 text-center">
-                                            <input 
-                                                type="checkbox" 
+                                            <input
+                                                type="checkbox"
                                                 className="h-4 w-4 rounded border-gray-300 text-[#49af4e] focus:ring-[#49af4e]"
                                                 checked={selectedFacturas.includes(registro.factura)}
                                                 onChange={() => toggleSeleccion(registro.factura)}

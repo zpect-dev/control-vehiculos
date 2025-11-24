@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\FlashHelper;
+use App\Models\FacturaAuditoria;
 use Inertia\Inertia;
 use App\Models\Surtido;
 use App\Models\User;
@@ -47,6 +48,29 @@ class SurtidosController extends Controller
                     'admin' => $admin->name,
                 ];
             }),
+        ]);
+    }
+
+    public function exportSelected(Request $request)
+    {
+        $facturas = Surtido::whereIn('fact_num', $request->facturas)->get();
+
+        $ultimoSurtido = $facturas->first();
+        $primerSurtido = $facturas->last();
+
+        $recorrido = $ultimoSurtido->kilometraje - $primerSurtido->kilometraje;
+
+        $litros = 0;
+        foreach($facturas as $registro) {
+            $litros += $registro->cant_litros;
+        }
+
+        $valorCarburador =  $litros / $recorrido;
+
+        return response()->json([
+            'valorCarburador' => $valorCarburador,
+            'litros' => $litros,
+            'recorrido' => $recorrido,
         ]);
     }
 
