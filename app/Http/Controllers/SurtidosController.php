@@ -53,10 +53,10 @@ class SurtidosController extends Controller
 
     public function exportSelected(Request $request)
     {
-        $facturas = Surtido::whereIn('fact_num', $request->facturas)->get();
+        $facturas = Surtido::whereIn('fact_num', $request->facturas)->orderBy('fact_num')->get();
 
-        $ultimoSurtido = $facturas->first();
-        $primerSurtido = $facturas->last();
+        $ultimoSurtido = $facturas->last();
+        $primerSurtido = $facturas->first();
 
         $recorrido = $ultimoSurtido->kilometraje - $primerSurtido->kilometraje;
 
