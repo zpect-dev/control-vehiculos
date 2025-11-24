@@ -28,9 +28,50 @@ export default function Gasolina() {
 
     const [modalOpen, setModalOpen] = useState(false);
 
-    // Seleccionar o Deseleccionar
+    // Seleccionar o Deseleccionar (Con restricción de adyacencia)
     const toggleSeleccion = (numFactura: number) => {
-        setSelectedFacturas((prev) => (prev.includes(numFactura) ? prev.filter((f) => f !== numFactura) : [...prev, numFactura]));
+        // 1. Encontrar en qué posición visual está la fila clickeada
+        const currentIndex = registrosFiltrados.findIndex((r) => r.factura === numFactura);
+
+        if (currentIndex === -1) return; // Seguridad
+
+        setSelectedFacturas((prev) => {
+            // A. Si no hay nada seleccionado, es el primero: adelante.
+            if (prev.length === 0) return [numFactura];
+
+            const isSelected = prev.includes(numFactura);
+
+            // B. Obtener los índices visuales de lo que YA está seleccionado
+            const selectedIndices = prev
+                .map((id) => registrosFiltrados.findIndex((r) => r.factura === id))
+                .filter((idx) => idx !== -1) // Filtrar por si el filtro ocultó alguno
+                .sort((a, b) => a - b);
+
+            // Si los seleccionados no son visibles (ej. cambio de filtro), reseteamos con el nuevo
+            if (selectedIndices.length === 0) return [numFactura];
+
+            const minIndex = selectedIndices[0];
+            const maxIndex = selectedIndices[selectedIndices.length - 1];
+
+            if (isSelected) {
+                // DESELECCIONAR: Solo permitir si es el primero o el último del bloque
+                // (Evita crear huecos en el medio)
+                if (currentIndex === minIndex || currentIndex === maxIndex) {
+                    return prev.filter((f) => f !== numFactura);
+                } else {
+                    alert('Solo puedes deseleccionar los extremos para no dejar huecos en la lista.');
+                    return prev;
+                }
+            } else {
+                // SELECCIONAR: Solo permitir si es vecino inmediato (arriba o abajo)
+                if (currentIndex === minIndex - 1 || currentIndex === maxIndex + 1) {
+                    return [...prev, numFactura];
+                } else {
+                    alert('Solo puedes seleccionar filas consecutivas (la que está justo arriba o justo abajo de tu selección actual).');
+                    return prev;
+                }
+            }
+        });
     };
 
     // Seleccionar o Deseleccionar todos
@@ -51,12 +92,31 @@ export default function Gasolina() {
         if (selectedFacturas.length === 0) return;
 
         try {
-            const response = await axios.post('/gasolina/exportar-seleccion', {
-                facturas: selectedFacturas,
-            });
+            const response = await axios.post(
+                '/gasolina/exportar-seleccion',
+                {
+                    facturas: selectedFacturas,
+                },
+                {
+                    responseType: 'blob',
+                },
+            );
 
-            const datos = response.data;
-            console.log(datos);
+            // Crear una URL temporal para el archivo
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            // Crear un enlace invisible y darle click
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Reporte_Gasolina_${new Date().toISOString().split('T')[0]}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+
+            // Limpiar
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            console.log('Exportación exitosa');
         } catch (error) {
             console.error('Error al exportar:', error);
             alert('Hubo un error al generar el reporte.');

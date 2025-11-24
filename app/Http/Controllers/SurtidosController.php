@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\GasolinaSelectionExport; // <--- IMPORTANTE: Necesario para exportar
+use Maatwebsite\Excel\Facades\Excel;     // <--- IMPORTANTE: Necesario para la fachada Excel
 use App\Helpers\FlashHelper;
 use App\Models\FacturaAuditoria;
 use Inertia\Inertia;
@@ -45,7 +47,7 @@ class SurtidosController extends Controller
                     'observaciones' => $surtido->observaciones,
                     'diferencia' => $surtido->diferencia,
                     'conductor' => $user->name ?? 'Sin conductor',
-                    'admin' => $admin->name,
+                    'admin' => $admin->name ?? '-', // Agregado manejo de nulo por si acaso
                 ];
             }),
         ]);
@@ -53,25 +55,49 @@ class SurtidosController extends Controller
 
     public function exportSelected(Request $request)
     {
-        $facturas = Surtido::whereIn('fact_num', $request->facturas)->orderBy('fact_num')->get();
+        // Validar que lleguen facturas
+        $request->validate([
+            'facturas' => 'required|array|min:1',
+        ]);
 
+        // 1. Obtener los datos
+        $facturas = Surtido::whereIn('fact_num', $request->facturas)
+            ->orderBy('fact_num')
+            ->get();
+
+        if ($facturas->isEmpty()) {
+            return response()->json(['error' => 'No hay facturas seleccionadas'], 400);
+        }
+
+        // 2. Realizar los cálculos
         $ultimoSurtido = $facturas->last();
         $primerSurtido = $facturas->first();
 
-        $recorrido = $ultimoSurtido->kilometraje - $primerSurtido->kilometraje;
+        // Evitar error si solo hay 1 factura o el km es igual
+        $recorrido = ($ultimoSurtido && $primerSurtido)
+            ? $ultimoSurtido->kilometraje - $primerSurtido->kilometraje
+            : 0;
 
-        $litros = 0;
-        foreach($facturas as $registro) {
-            $litros += $registro->cant_litros;
+        // Si el recorrido es 0 o negativo, ponemos 1 para evitar división por cero
+        if ($recorrido <= 0) {
+            $recorrido = 1;
         }
 
-        $valorCarburador =  $litros / $recorrido;
+        $litros = $facturas->sum('cant_litros');
+        $valorCarburador = $litros / $recorrido;
 
-        return response()->json([
+        $datosCalculados = [
             'valorCarburador' => $valorCarburador,
             'litros' => $litros,
             'recorrido' => $recorrido,
-        ]);
+        ];
+
+        // 3. Generar y descargar el Excel
+        // El nombre del archivo se genera dinámicamente
+        return Excel::download(
+            new GasolinaSelectionExport($facturas, $datosCalculados),
+            'Reporte_Gasolina_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
     }
 
     public function info(Vehiculo $vehiculo)
