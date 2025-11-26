@@ -16,8 +16,6 @@ interface LoginProps {
     canResetPassword: boolean;
 }
 
-
-
 export default function Login({ status }: LoginProps) {
     const [showPassword, setShowPassword] = useState(false);
     return (
@@ -105,9 +103,9 @@ export default function Login({ status }: LoginProps) {
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Resetear contraseña{' '}
+                            Olvidaste tu contraseña?{' '}
                             <TextLink href={'reset-password'} tabIndex={5} className="text-blue-600 hover:underline">
-                                Resetear
+                                Cambiar contraseña
                             </TextLink>
                         </div>
                     </>
