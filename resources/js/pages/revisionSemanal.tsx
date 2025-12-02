@@ -30,7 +30,13 @@ export default function RevisionSemanal() {
     const [formularioSeleccionado, setFormularioSeleccionado] = useState<FormularioGrupo | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
 
-    const ultimaRevision = revisiones[0]; // Solo la más reciente
+    // 1. NUEVO ESTADO: Controla si vemos todas o solo las recientes
+    const [verHistorialCompleto, setVerHistorialCompleto] = useState(false);
+
+    // 2. LÓGICA DE FILTRADO: Muestra todas si el estado es true, sino corta en 3
+    const revisionesVisibles = verHistorialCompleto
+        ? revisiones
+        : revisiones.slice(0, 3);
 
     // Autoasignar tipo de formulario si es moto
     useEffect(() => {
@@ -40,22 +46,23 @@ export default function RevisionSemanal() {
     }, [tipoVehiculo]);
 
     const handleFormSubmit = (formType: string, data: Record<string, any>, placa: string) => {
+        // ... (Tu lógica de submit se mantiene igual)
         const semanal: { tipo: string; imagen: File }[] = [];
         const tipoFormulario =
             formularioSeleccionado === 'SPARK_PEUGEOT'
                 ? 1
                 : formularioSeleccionado === 'CHEYENNE_TRITON'
-                  ? 2
-                  : formularioSeleccionado === 'MOTO'
-                    ? 3
-                    : null;
+                    ? 2
+                    : formularioSeleccionado === 'MOTO'
+                        ? 3
+                        : null;
 
         const baseFields: Field[] =
             formularioSeleccionado === 'MOTO'
                 ? fluidosSemanalFields['MOTO']
                 : formularioSeleccionado === 'SPARK_PEUGEOT'
-                  ? sparkPeugeotFields['CARRO']
-                  : cheyenneTritonFields['CARRO'];
+                    ? sparkPeugeotFields['CARRO']
+                    : cheyenneTritonFields['CARRO'];
 
         baseFields.forEach((field) => {
             if (field.type === 'file') {
@@ -78,20 +85,25 @@ export default function RevisionSemanal() {
             {
                 preserveScroll: true,
                 forceFormData: true,
-                onSuccess: () => router.reload({ only: ['revisiones'] }),
+                onSuccess: () => {
+                    // Opcional: Resetear la vista al enviar
+                    setVerHistorialCompleto(false);
+                    router.reload({ only: ['revisiones'] });
+                },
             },
         );
     };
 
-    const renderFichaFromRevision = (revision: any) => {
+    // 3. CAMBIO VISUAL: Añadimos un index para saber cuál es la más reciente visualmente
+    const renderFichaFromRevision = (revision: any, index: number) => {
         const tipoFormulario = revision.tipo_formulario === 1 ? 'SPARK_PEUGEOT' : revision.tipo_formulario === 2 ? 'CHEYENNE_TRITON' : 'MOTO';
 
         const baseFields: Field[] =
             tipoFormulario === 'MOTO'
                 ? fluidosSemanalFields['MOTO']
                 : tipoFormulario === 'SPARK_PEUGEOT'
-                  ? sparkPeugeotFields['CARRO']
-                  : cheyenneTritonFields['CARRO'];
+                    ? sparkPeugeotFields['CARRO']
+                    : cheyenneTritonFields['CARRO'];
 
         const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
         const fields: Field[] = hasObservacion
@@ -106,26 +118,32 @@ export default function RevisionSemanal() {
             expediente['observacion_general'] = revision.observacion.observacion;
         }
 
+        // Ajustamos el título para que no diga siempre "Última"
+        const titulo = index === 0
+            ? `Última revisión (${tipoFormulario}) - ${new Date(revision.created_at).toLocaleDateString()}`
+            : `Revisión Histórica (${tipoFormulario}) - ${new Date(revision.created_at).toLocaleDateString()}`;
+
         return (
             <FichaSeccion
                 key={revision.id}
-                title={`Última revisión (${tipoFormulario}) - ${new Date(revision.created_at).toLocaleDateString()}`}
+                title={titulo}
                 fields={fields}
                 formType="semanal"
                 expediente={expediente}
-                onChange={() => {}}
-                onSubmit={() => {}}
+                onChange={() => { }}
+                onSubmit={() => { }}
             />
         );
     };
 
     const renderFormularioNuevo = () => {
+        // ... (Tu renderFormularioNuevo se mantiene igual)
         const baseFields: Field[] =
             formularioSeleccionado === 'MOTO'
                 ? fluidosSemanalFields['MOTO']
                 : formularioSeleccionado === 'SPARK_PEUGEOT'
-                  ? sparkPeugeotFields['CARRO']
-                  : cheyenneTritonFields['CARRO'];
+                    ? sparkPeugeotFields['CARRO']
+                    : cheyenneTritonFields['CARRO'];
 
         const hasObservacion = baseFields.some((f) => f.id === 'observacion_general');
         const fields: Field[] = hasObservacion
@@ -154,19 +172,37 @@ export default function RevisionSemanal() {
 
                 <div className="mx-auto mb-10 max-w-5xl">
                     <div className="mb-4 flex justify-end gap-4 text-gray-700 dark:text-gray-200">
-                        <p>
-                            <span className="font-semibold">Desde:</span> {inicio}
-                        </p>
-                        <p>
-                            <span className="font-semibold">Hasta:</span> {final}
-                        </p>
+                        <p><span className="font-semibold">Desde:</span> {inicio}</p>
+                        <p><span className="font-semibold">Hasta:</span> {final}</p>
                     </div>
 
-                    {ultimaRevision && <div className="mb-10">{renderFichaFromRevision(ultimaRevision)}</div>}
+                    {/* 4. RENDERIZADO DINÁMICO: Mapeamos el array visible */}
+                    <div className="space-y-10 mb-10">
+                        {revisionesVisibles.length > 0 ? (
+                            revisionesVisibles.map((revision, index) => (
+                                <div key={revision.id}>
+                                    {renderFichaFromRevision(revision, index)}
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-500">No hay revisiones registradas.</p>
+                        )}
+                    </div>
+
+                    {/* 5. BOTÓN VER MÁS: Solo aparece si hay más de 3 revisiones en total */}
+                    {revisiones.length > 3 && (
+                        <div className="flex justify-center mb-10">
+                            <button
+                                onClick={() => setVerHistorialCompleto(!verHistorialCompleto)}
+                                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                            >
+                                {verHistorialCompleto ? 'Ocultar historial antiguo' : `Ver ${revisiones.length - 3} revisiones anteriores`}
+                            </button>
+                        </div>
+                    )}
 
                     <div className="mt-10 border-t pt-10">
                         <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">Registrar nueva revisión</h2>
-
                         {tipoVehiculo === 'CARRO' && (
                             <div className="mb-6">
                                 <label className="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -183,7 +219,6 @@ export default function RevisionSemanal() {
                                 </select>
                             </div>
                         )}
-
                         {formularioSeleccionado && renderFormularioNuevo()}
                     </div>
                 </div>
