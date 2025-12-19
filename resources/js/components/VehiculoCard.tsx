@@ -6,6 +6,7 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
         observaciones_no_resueltas = 0,
         imagenes_factura_pendientes = 0,
         factura_pendiente = 0,
+        envios_pendientes = 0,
         revision_diaria = true,
         usuario,
         usuario_adicional1,
@@ -89,6 +90,19 @@ export default function VehiculoCard({ vehiculo }: { vehiculo: VehiculoCompleto 
                                 className="cursor-pointer rounded-sm bg-red-100 px-2 py-1 text-xs font-semibold text-red-700 hover:underline dark:bg-red-800 dark:text-red-300"
                             >
                                 revision diaria pendiente
+                            </button>
+                        )}
+                        {envios_pendientes > 0 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.get(`/fichaTecnica/${vehiculo.placa}/envios`);
+                                }}
+                                className="cursor-pointer rounded-sm bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700 hover:underline dark:bg-blue-800 dark:text-blue-300"
+                            >
+                                {envios_pendientes} envio
+                                {envios_pendientes > 1 ? 'es' : ''} pendiente
+                                {envios_pendientes > 1 ? 's' : ''}
                             </button>
                         )}
                     </div>

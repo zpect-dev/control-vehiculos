@@ -90,7 +90,7 @@ export interface FormCardProps {
     title?: string;
     fields: Field[];
     buttonText?: string;
-    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido' | 'semanal';
+    formType?: 'expediente' | 'permisologia' | 'accesorios' | 'piezas' | 'revisionFluidos' | 'asignacion' | 'surtido' | 'semanal' | 'solicitud';
     onChange?: (data: Record<string, any>) => void;
     onSubmit?: (formData: Record<string, string | boolean | File | null>) => void;
     expediente?: Record<string | number, string | boolean | File | null>;
@@ -282,6 +282,7 @@ export type VehiculoCompleto = VehiculoConductor & {
     observaciones_no_resueltas?: number;
     imagenes_factura_pendientes?: number;
     factura_pendiente?: number;
+    envios_pendientes?: number;
 };
 
 export interface VehiculoData {
@@ -289,6 +290,9 @@ export interface VehiculoData {
     placa: string;
     modelo: string;
     usuario?: { name: string } | null;
+    usuario_adicional1?: { name: string; id: any } | null;
+    usuario_adicional2?: { name: string; id: any } | null;
+    usuario_adicional3?: { name: string; id: any } | null;
 }
 
 // Facturas
@@ -502,4 +506,26 @@ interface Pista {
     user?: {
         name: string;
     };
+}
+
+// Envios
+
+export interface Envio {
+    id: number;
+    vehiculo_id: string;
+    user_id: number;
+    admin_id: number | null;
+    descripcion: string;
+    estado: 'pendiente' | 'en_camino' | 'recibido' | 'rechazado';
+    foto_envio: string | null;
+    foto_recibo: string | null;
+    created_at: string;
+    updated_at: string;
+    user: UserInterface;
+    admin: UserInterface | null;
+}
+
+export interface PagePropsEnvio extends PageProps {
+    envios: Envio[];
+    auth: Auth;
 }

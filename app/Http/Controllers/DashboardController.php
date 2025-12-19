@@ -29,29 +29,37 @@ class DashboardController extends Controller
                 'usuarioAdicional2',
                 'usuarioAdicional3',
             ])
-            ->when($user->tipo, function ($query) use ($user) {
-                $query->where('tipo', $user->tipo);
-            })
-            ->withCount([
-                'observaciones as observaciones_no_resueltas' => function ($query) {
-                    $query->where('resuelto', false);
-                }
-            ])
-            ->get()
+                ->when($user->tipo, function ($query) use ($user) {
+                    $query->where('tipo', $user->tipo);
+                })
+                ->withCount([
+                    'observaciones as observaciones_no_resueltas' => function ($query) {
+                        $query->where('resuelto', false);
+                    },
+                    'envios as envios_pendientes' => function ($query) {
+                        $query->where('estado', 'pendiente');
+                    }
+                ])
+                ->get()
             : Vehiculo::with([
                 'usuario',
                 'usuarioAdicional1',
                 'usuarioAdicional2',
                 'usuarioAdicional3',
             ])
-            ->withCount('observaciones as observaciones_no_resueltas')
-            ->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('user_id_adicional_1', $user->id)
-                    ->orWhere('user_id_adicional_2', $user->id)
-                    ->orWhere('user_id_adicional_3', $user->id);
-            })
-            ->get();
+                ->withCount([
+                    'observaciones as observaciones_no_resueltas',
+                    'envios as envios_pendientes' => function ($query) {
+                        $query->where('estado', 'pendiente');
+                    }
+                ])
+                ->where(function ($query) use ($user) {
+                    $query->where('user_id', $user->id)
+                        ->orWhere('user_id_adicional_1', $user->id)
+                        ->orWhere('user_id_adicional_2', $user->id)
+                        ->orWhere('user_id_adicional_3', $user->id);
+                })
+                ->get();
 
         foreach ($vehiculos as $vehiculo) {
             $auditoriasPendientes = FacturaAuditoria::where('vehiculo_id', $vehiculo->placa)
@@ -74,7 +82,8 @@ class DashboardController extends Controller
 
             $vehiculo->factura_pendiente = count(array_diff($factNums, $factNumsAudit));
 
-            if (!$vehiculo->user_id) continue;
+            if (!$vehiculo->user_id)
+                continue;
 
             $revisadoHoy = RevisionesDiarias::where('vehiculo_id', $vehiculo->placa)
                 ->whereDate('fecha_creacion', Carbon::today())

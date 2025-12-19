@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound, UserStar } from 'lucide-react';
+import { Bolt, CalendarRange, Car, Droplets, Eye, Fuel, History, Menu, ReceiptText, SquareUserRound, UserStar } from 'lucide-react';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -29,14 +29,15 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const isAdmin = auth.user?.roles?.some((role: { name: string }) => role.name === 'admin');
     const vehiculoNavItems: NavItem[] = placaActual
         ? [
-              { title: 'Ficha Técnica', href: `/fichaTecnica/${placaActual}`, icon: Car },
-              { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
-              { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
-              { title: 'Observaciones', href: `/fichaTecnica/${placaActual}/observaciones`, icon: Eye },
-              { title: 'Facturas', href: `/fichaTecnica/${placaActual}/facturas`, icon: ReceiptText },
-              ...(isAdmin ? [{ title: 'Gasolina', href: `/fichaTecnica/${placaActual}/gasolina`, icon: Fuel }] : []),
-              { title: 'Asignaciones', href: `/fichaTecnica/${placaActual}/asignaciones`, icon: History },
-          ]
+            { title: 'Ficha Técnica', href: `/fichaTecnica/${placaActual}`, icon: Car },
+            { title: 'Revisión de Fluidos', href: `/fichaTecnica/${placaActual}/revisionFluidos`, icon: Droplets },
+            { title: 'Revisión Semanal', href: `/fichaTecnica/${placaActual}/revisionSemanal`, icon: CalendarRange },
+            { title: 'Observaciones', href: `/fichaTecnica/${placaActual}/observaciones`, icon: Eye },
+            { title: 'Facturas', href: `/fichaTecnica/${placaActual}/facturas`, icon: ReceiptText },
+            ...(isAdmin ? [{ title: 'Gasolina', href: `/fichaTecnica/${placaActual}/gasolina`, icon: Fuel }] : []),
+            { title: 'Asignaciones', href: `/fichaTecnica/${placaActual}/asignaciones`, icon: History },
+            { title: 'Envíos', href: `/fichaTecnica/${placaActual}/envios`, icon: Bolt },
+        ]
         : [];
 
     const getHeaderTitle = () => {
@@ -48,7 +49,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     return (
         <>
             <div className="border-b border-sidebar-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="mx-auto flex h-16 items-center justify-between px-4 md:max-w-7xl">
+                <div className="flex h-16 items-center justify-between px-4">
                     {/* Mobile & Tablet Menu */}
                     <div className="flex w-full items-center justify-between lg:hidden">
                         <div className="flex items-center">
@@ -138,7 +139,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         <div className="flex flex-1 justify-center">
                             {!isDashboard && (
                                 <NavigationMenu>
-                                    <NavigationMenuList className="flex items-center">
+                                    <NavigationMenuList className="flex items-center gap-4">
                                         {vehiculoNavItems.map((item, index) => (
                                             <NavigationMenuItem key={index}>
                                                 <Link
@@ -160,7 +161,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 </NavigationMenu>
                             )}
                         </div>
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-6">
                             {auth.user.is_admin && (
                                 <Link href="/supervision" prefetch>
                                     <UserStar className="h-6 w-6 text-gray-800 dark:text-white" />
